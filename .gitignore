@@ -1,0 +1,23 @@
+# 环境变量（含密钥）
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+dist/
+
+# 数据
+data/
+*.db
+
+# IDE
+.vscode/
+.idea/
+
+# 系统
+.DS_Store

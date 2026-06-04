@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* 自定义样式 */
+@theme {
+  --color-panda-primary: #6366f1;
+  --color-panda-secondary: #8b5cf6;
+  --color-panda-accent: #ec4899;
+  --color-panda-warm: #f59e0b;
+  --color-panda-calm: #06b6d4;
+  --color-panda-safe: #10b981;
+  --color-panda-crisis: #ef4444;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* 打字动画 */
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.2; }
+  30% { opacity: 1; }
+}
+.typing-dot {
+  animation: typing-dot 1.4s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* 消息气泡动画 */
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.message-bubble {
+  animation: message-in 0.3s ease-out;
+}
+
+/* 呼吸动画 */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+.breathe-animation {
+  animation: breathe 4s ease-in-out infinite;
+}
