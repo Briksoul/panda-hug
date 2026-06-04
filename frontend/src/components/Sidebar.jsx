@@ -2,8 +2,13 @@ import { useState, useEffect } from "react";
 
 const agentLabels = {
   triage: { name: "Triage Agent", desc: "初筛评估", emoji: "🐼", color: "indigo" },
+  counselor: { name: "Counselor Agent", desc: "心理咨询", emoji: "💬", color: "blue" },
   sensing: { name: "Sensing Agent", desc: "情感分析", emoji: "📡", color: "amber" },
+  risk: { name: "Risk Agent", desc: "危机监测", emoji: "⚠️", color: "orange" },
+  case_formulation: { name: "CaseFormulation", desc: "案例构建", emoji: "📋", color: "teal" },
+  supervisor: { name: "Supervisor Agent", desc: "咨询督导", emoji: "👁️", color: "slate" },
   cultural: { name: "Cultural Agent", desc: "跨文化分析", emoji: "🧠", color: "purple" },
+  insight_report: { name: "InsightReport", desc: "洞察报告", emoji: "📊", color: "pink" },
   coach: { name: "Coach Agent", desc: "干预训练", emoji: "🧘", color: "cyan" },
   crisis: { name: "Crisis Agent", desc: "危机守护", emoji: "🛡️", color: "red" },
   knowledge: { name: "Knowledge Base", desc: "知识检索", emoji: "📚", color: "emerald" },
@@ -11,8 +16,13 @@ const agentLabels = {
 
 const colorMap = {
   indigo: { bg: "bg-indigo-100", border: "border-indigo-300", text: "text-indigo-600", dot: "bg-indigo-500", glow: "shadow-indigo-200" },
+  blue: { bg: "bg-blue-100", border: "border-blue-300", text: "text-blue-600", dot: "bg-blue-500", glow: "shadow-blue-200" },
   amber: { bg: "bg-amber-100", border: "border-amber-300", text: "text-amber-600", dot: "bg-amber-500", glow: "shadow-amber-200" },
+  orange: { bg: "bg-orange-100", border: "border-orange-300", text: "text-orange-600", dot: "bg-orange-500", glow: "shadow-orange-200" },
+  teal: { bg: "bg-teal-100", border: "border-teal-300", text: "text-teal-600", dot: "bg-teal-500", glow: "shadow-teal-200" },
+  slate: { bg: "bg-slate-100", border: "border-slate-300", text: "text-slate-600", dot: "bg-slate-500", glow: "shadow-slate-200" },
   purple: { bg: "bg-purple-100", border: "border-purple-300", text: "text-purple-600", dot: "bg-purple-500", glow: "shadow-purple-200" },
+  pink: { bg: "bg-pink-100", border: "border-pink-300", text: "text-pink-600", dot: "bg-pink-500", glow: "shadow-pink-200" },
   cyan: { bg: "bg-cyan-100", border: "border-cyan-300", text: "text-cyan-600", dot: "bg-cyan-500", glow: "shadow-cyan-200" },
   red: { bg: "bg-red-100", border: "border-red-300", text: "text-red-600", dot: "bg-red-500", glow: "shadow-red-200" },
   emerald: { bg: "bg-emerald-100", border: "border-emerald-300", text: "text-emerald-600", dot: "bg-emerald-500", glow: "shadow-emerald-200" },
@@ -28,8 +38,9 @@ const emotionColors = {
 
 const phases = [
   { key: "triage", label: "初筛评估" },
-  { key: "cultural", label: "文化分析" },
-  { key: "coach", label: "心理训练" },
+  { key: "counseling", label: "心理咨询" },
+  { key: "insight_report", label: "洞察报告" },
+  { key: "coaching", label: "干预训练" },
 ];
 
 export default function Sidebar({ state, agentTrace, onNewSession }) {

@@ -1,9 +1,14 @@
 const agentConfig = {
   triage: { name: "接待助手", emoji: "🐼", color: "bg-indigo-500" },
+  counselor: { name: "心理咨询师", emoji: "💬", color: "bg-blue-500" },
+  sensing: { name: "感知引擎", emoji: "📡", color: "bg-amber-500" },
+  risk: { name: "风险监测", emoji: "⚠️", color: "bg-orange-500" },
+  case_formulation: { name: "案例构建", emoji: "📋", color: "bg-teal-500" },
+  supervisor: { name: "咨询督导", emoji: "👁️", color: "bg-slate-500" },
   cultural: { name: "文化分析师", emoji: "🧠", color: "bg-purple-500" },
+  insight_report: { name: "洞察报告", emoji: "📊", color: "bg-pink-500" },
   coach: { name: "训练教练", emoji: "🧘", color: "bg-cyan-500" },
   crisis: { name: "安全守护", emoji: "🛡️", color: "bg-red-500" },
-  sensing: { name: "感知引擎", emoji: "📡", color: "bg-amber-500" },
   system: { name: "系统", emoji: "⚙️", color: "bg-gray-400" },
 };
 

@@ -1,3 +1,3 @@
-from .orchestrator import Orchestrator
+from .orchestrator import CognitiveOrchestrator
 
-__all__ = ["Orchestrator"]
+__all__ = ["CognitiveOrchestrator"]

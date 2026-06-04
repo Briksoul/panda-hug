@@ -3,8 +3,9 @@ import MessageBubble from "./MessageBubble";
 import SuggestionChips from "./SuggestionChips";
 import TypingIndicator from "./TypingIndicator";
 import CrisisAlert from "./CrisisAlert";
+import InsightReport from "./InsightReport";
 
-export default function ChatWindow({ messages, onSend, loading }) {
+export default function ChatWindow({ messages, onSend, loading, insightReport }) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -54,12 +55,15 @@ export default function ChatWindow({ messages, onSend, loading }) {
       {/* 消息列表 */}
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
         {messages.map((msg, i) => {
-          // Guardrail 触发的危机响应 → 醒目红色卡片
           if (msg.metadata?.guardrail_triggered) {
             return <CrisisAlert key={i} message={msg} />;
           }
           return <MessageBubble key={i} message={msg} />;
         })}
+        {/* 心理洞察报告 */}
+        {insightReport && Object.keys(insightReport).length > 0 && (
+          <InsightReport report={insightReport} />
+        )}
         {loading && <TypingIndicator />}
         <div ref={messagesEndRef} />
       </div>

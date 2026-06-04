@@ -47,11 +47,15 @@ export default function App() {
   };
 
   // 创建新会话
-  const handleStart = useCallback(async (userName) => {
+  const handleStart = useCallback(async (userName, emotion) => {
     setLoading(true);
     try {
       const data = await createSession(userName);
       setSessionId(data.session_id);
+      // 如果选择了情绪，自动发送给 Triage Agent
+      const firstMessage = emotion
+        ? `我现在感觉${emotion === 'positive' ? '充满活力' : emotion === 'mild' ? '还可以' : emotion === 'tired' ? '略显疲惫' : emotion === 'anxious' ? '有些焦虑' : '有些低落'}`
+        : "";
       setMessages([
         { role: "assistant", content: data.welcome_message, agent: "triage" },
       ]);
@@ -59,6 +63,10 @@ export default function App() {
       localStorage.setItem(STORAGE_KEY, data.session_id);
       const state = await getSessionState(data.session_id);
       setSessionState(state);
+      // 自动发送情绪选择
+      if (firstMessage) {
+        setTimeout(() => handleSend(firstMessage), 500);
+      }
     } catch (err) {
       console.error("创建会话失败:", err);
     } finally {
@@ -133,6 +141,7 @@ export default function App() {
         messages={messages}
         onSend={handleSend}
         loading={loading}
+        insightReport={sessionState?.insight_report}
       />
     </div>
   );

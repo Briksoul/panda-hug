@@ -91,6 +91,68 @@ CULTURAL_INTERPRETATIONS = [
     },
 ]
 
+# ─── 咨询技术库（V2 新增）───────────────────────────────────
+COUNSELING_TECHNIQUES = [
+    {
+        "id": "ct_001",
+        "content": "人本主义疗法核心：无条件积极关注（Unconditional Positive Regard）。咨询师不对用户的想法和感受做评判，而是完全接纳。技术要点：反映性倾听、情感确认、真诚一致。",
+        "tags": ["人本主义", "共情", "无条件积极关注"],
+    },
+    {
+        "id": "ct_002",
+        "content": "动机式访谈（MI）核心：引导用户自己发现改变的理由，而不是告诉他们应该怎么做。技术要点：开放式提问、肯定、反映性倾听、总结（OARS）。避免直接给建议。",
+        "tags": ["MI", "动机式访谈", "开放式提问"],
+    },
+    {
+        "id": "ct_003",
+        "content": "叙事疗法核心：问题是问题，人不是问题。帮助用户将问题外化，重新讲述自己的故事。技术要点：外化对话、寻找独特结果、重写故事。",
+        "tags": ["叙事疗法", "外化", "重写故事"],
+    },
+    {
+        "id": "ct_004",
+        "content": "ACT（接纳承诺疗法）核心：接纳无法控制的情绪，承诺采取符合价值观的行动。六大过程：接纳、认知解离、当下觉察、自我为语境、价值澄清、承诺行动。",
+        "tags": ["ACT", "接纳", "认知解离", "价值"],
+    },
+]
+
+# ─── 危机干预库（V2 新增）───────────────────────────────────
+CRISIS_INTERVENTION = [
+    {
+        "id": "cr_001",
+        "content": "Columbia Suicide Severity Rating Scale (C-SSRS) 评估框架：Level 0=无自杀意念，Level 1=被动意念，Level 2=非特异性主动意念，Level 3=有计划的主动意念，Level 4=有意图的主动意念。",
+        "tags": ["C-SSRS", "自杀评估", "风险等级"],
+    },
+    {
+        "id": "cr_002",
+        "content": "WHO危机干预指南：1. 确保安全 2. 倾听不评判 3. 提供支持 4. 制定安全计划 5. 转介专业资源。关键原则：不要离开处于危机中的用户，直到确认其安全。",
+        "tags": ["WHO", "危机干预", "安全计划"],
+    },
+    {
+        "id": "cr_003",
+        "content": "危机热线资源（按地区）：中国=12356（全国心理援助热线）、010-82951332（北京）。美国=988（Suicide & Crisis Lifeline）、741741（Crisis Text Line）。英国=116 123（Samaritans）。国际=https://www.iasp.info/resources/Crisis_Centres/",
+        "tags": ["热线", "资源", "中国", "美国", "国际"],
+    },
+]
+
+# ─── 督导规则库（V2 新增）───────────────────────────────────
+SUPERVISION_RULES = [
+    {
+        "id": "sr_001",
+        "content": "咨询对话比例规范：共情回应应占60-70%，探索性提问占20-30%，建议和反馈不超过10%。如果AI回复中建议过多，说明'说教'过度，需要调整。",
+        "tags": ["比例", "共情", "探索", "说教"],
+    },
+    {
+        "id": "sr_002",
+        "content": "咨询师禁忌：1.不要说你应该 2.不要最小化用户感受 3.不要急于给解决方案 4.不要说我理解（用听起来替代）5.不要比较",
+        "tags": ["禁忌", "说教", "共情"],
+    },
+    {
+        "id": "sr_003",
+        "content": "探索性提问模板：开放性=能多和我说说吗/然后呢？澄清性=你说的具体是指？情感性=当时你是什么感觉？认知性=那时候你脑子里在想什么？社会支持=平时会和谁聊这些？",
+        "tags": ["提问", "模板", "探索"],
+    },
+]
+
 
 class KnowledgeBase:
     """4层知识库（Phase 1: 内存关键词匹配，Phase 2: ChromaDB 向量检索）"""
@@ -106,6 +168,9 @@ class KnowledgeBase:
             "cultural": CULTURAL_FEATURES,
             "events": EVENT_PATTERNS,
             "interpretations": CULTURAL_INTERPRETATIONS,
+            "counseling_techniques": COUNSELING_TECHNIQUES,
+            "crisis_intervention": CRISIS_INTERVENTION,
+            "supervision_rules": SUPERVISION_RULES,
         }
 
         if self.use_chroma:

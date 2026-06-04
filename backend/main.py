@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse
 import os
 
 from config import config
-from orchestrator import Orchestrator
+from orchestrator import CognitiveOrchestrator as Orchestrator
 from knowledge import KnowledgeBase
 from api.routes import router, set_orchestrator
 

@@ -14,8 +14,13 @@ from config import config
 # ─── 枚举 ────────────────────────────────────────────────────────────
 class AgentRole(str, Enum):
     TRIAGE = "triage"
+    COUNSELOR = "counselor"
     SENSING = "sensing"
+    RISK = "risk"
+    CASE_FORMULATION = "case_formulation"
+    SUPERVISOR = "supervisor"
     CULTURAL = "cultural"
+    INSIGHT_REPORT = "insight_report"
     COACH = "coach"
     CRISIS = "crisis"
 
