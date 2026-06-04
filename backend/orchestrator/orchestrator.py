@@ -120,7 +120,7 @@ class Orchestrator:
         return self.sessions.get(session_id)
 
     async def process_message(self, session_id: str, user_message: str) -> AgentResponse:
-        """处理用户消息的核心流程"""
+        """处理用户消息的核心流程（含 Agent 思考链路追踪）"""
         session = self.sessions.get(session_id)
         if not session:
             return AgentResponse(
@@ -131,12 +131,25 @@ class Orchestrator:
         session.last_active = time.time()
         profile = session.profile
         profile.session_turns += 1
+        agent_trace = []  # 思考链路
 
         # ─── Step 1: Sensing Agent 隐形分析 ───
+        agent_trace.append({
+            "agent": "sensing",
+            "status": "analyzing",
+            "label": "Sensing Agent 分析情感中...",
+        })
         sensing_result = await self.sensing.analyze(user_message, profile)
+        agent_trace[-1]["status"] = "done"
+        agent_trace[-1]["detail"] = f"情感={sensing_result.sentiment}, 强度={sensing_result.intensity:.1f}"
 
         # 危机关键词 → 强制切换危机模式
         if sensing_result.should_trigger_crisis:
+            agent_trace.append({
+                "agent": "crisis",
+                "status": "triggered",
+                "label": "🚨 Crisis Agent 激活！",
+            })
             session.current_agent = AgentRole.CRISIS
             session.phase = "crisis"
             profile.emotion_level = EmotionLevel.CRISIS
@@ -145,18 +158,36 @@ class Orchestrator:
         # ─── Step 2: 知识库检索 ───
         knowledge_ctx = ""
         if session.current_agent in (AgentRole.CULTURAL, AgentRole.COACH):
+            agent_trace.append({
+                "agent": "knowledge",
+                "status": "searching",
+                "label": "知识库检索匹配规则...",
+            })
             knowledge_ctx = await self.kb.search(
                 query=user_message,
                 cultural_bg=profile.cultural_bg.value,
                 agent_role=session.current_agent.value,
             )
+            agent_trace[-1]["status"] = "done"
+            agent_trace[-1]["detail"] = f"命中 {len(knowledge_ctx.split(chr(10))) if knowledge_ctx else 0} 条规则"
 
         # ─── Step 3: 当前 Agent 处理 ───
+        agent_labels = {
+            AgentRole.TRIAGE: "Triage Agent 筛查评估中...",
+            AgentRole.CULTURAL: "Cultural Agent 跨文化分析中...",
+            AgentRole.COACH: "Coach Agent 生成干预策略...",
+            AgentRole.CRISIS: "Crisis Agent 危机干预中...",
+        }
+        agent_trace.append({
+            "agent": session.current_agent.value,
+            "status": "thinking",
+            "label": agent_labels.get(session.current_agent, "Agent 处理中..."),
+        })
+
         agent = self.agents.get(session.current_agent)
         if not agent:
             agent = self.agents[AgentRole.TRIAGE]
 
-        # 注入 Sensing 结果到 metadata
         session.history.append({"role": "user", "content": user_message})
 
         response = await agent.chat(
@@ -166,11 +197,19 @@ class Orchestrator:
             knowledge_context=knowledge_ctx,
         )
 
+        agent_trace[-1]["status"] = "done"
+
         # 记录 Agent 回复
         session.history.append({"role": "assistant", "content": response.content})
 
         # ─── Step 4: 状态转移 ───
         if response.should_transition and response.next_agent:
+            next_label = agent_labels.get(response.next_agent, "")
+            agent_trace.append({
+                "agent": response.next_agent.value,
+                "status": "transition",
+                "label": f"切换 → {next_label}",
+            })
             self._transition(session, response.next_agent)
 
         # 补充感知元数据
@@ -181,6 +220,7 @@ class Orchestrator:
         }
         response.metadata["session_id"] = session_id
         response.metadata["turn"] = profile.session_turns
+        response.metadata["agent_trace"] = agent_trace
 
         # 持久化保存
         self._save_session(session)

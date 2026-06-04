@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import MessageBubble from "./MessageBubble";
 import SuggestionChips from "./SuggestionChips";
 import TypingIndicator from "./TypingIndicator";
+import CrisisAlert from "./CrisisAlert";
 
 export default function ChatWindow({ messages, onSend, loading }) {
   const [input, setInput] = useState("");
@@ -52,9 +53,13 @@ export default function ChatWindow({ messages, onSend, loading }) {
 
       {/* 消息列表 */}
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-        {messages.map((msg, i) => (
-          <MessageBubble key={i} message={msg} />
-        ))}
+        {messages.map((msg, i) => {
+          // Guardrail 触发的危机响应 → 醒目红色卡片
+          if (msg.metadata?.guardrail_triggered) {
+            return <CrisisAlert key={i} message={msg} />;
+          }
+          return <MessageBubble key={i} message={msg} />;
+        })}
         {loading && <TypingIndicator />}
         <div ref={messagesEndRef} />
       </div>

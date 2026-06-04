@@ -10,6 +10,7 @@ export default function App() {
   const [sessionId, setSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [sessionState, setSessionState] = useState(null);
+  const [agentTrace, setAgentTrace] = useState([]);
   const [loading, setLoading] = useState(false);
   const [started, setStarted] = useState(false);
   const [restoring, setRestoring] = useState(true);
@@ -82,8 +83,10 @@ export default function App() {
           agent: data.agent,
           suggestions: data.suggestions,
           emotion_level: data.emotion_level,
+          metadata: data.metadata,
         };
         setMessages((prev) => [...prev, agentMsg]);
+        setAgentTrace(data.agent_trace || []);
         const state = await getSessionState(sessionId);
         setSessionState(state);
       } catch (err) {
@@ -125,7 +128,7 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <Sidebar state={sessionState} onNewSession={handleNewSession} />
+      <Sidebar state={sessionState} agentTrace={agentTrace} onNewSession={handleNewSession} />
       <ChatWindow
         messages={messages}
         onSend={handleSend}

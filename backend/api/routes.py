@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
+from guardrail import check_guardrail, build_crisis_response
 
 router = APIRouter(prefix="/api")
 
@@ -42,6 +43,7 @@ class ChatResp(BaseModel):
     suggestions: list[str] = Field(default_factory=list)
     emotion_level: Optional[str] = None
     metadata: dict = Field(default_factory=dict)
+    agent_trace: list[dict] = Field(default_factory=list)  # Agent 思考链路
 
 
 class TransitionReq(BaseModel):
@@ -68,7 +70,17 @@ async def create_session(req: CreateSessionReq):
 
 @router.post("/chat", response_model=ChatResp)
 async def chat(req: ChatReq):
-    """发送消息"""
+    """发送消息（含 Guardrail 危机拦截）"""
+    # ─── Guardrail: 零延迟危机检测（<1ms，纯正则，绕过 LLM）───
+    guard = check_guardrail(req.message)
+    if guard.triggered:
+        # 物理熔断，直接返回危机响应
+        lang = "zh" if any(ord(c) > 127 for c in req.message) else "en"
+        crisis_resp = build_crisis_response(lang)
+        crisis_resp["metadata"]["matched_keywords"] = guard.matched_keywords
+        return ChatResp(**crisis_resp)
+
+    # ─── 正常 Agent 链路 ───
     orch = get_orchestrator()
     response = await orch.process_message(req.session_id, req.message)
     return ChatResp(
@@ -77,6 +89,7 @@ async def chat(req: ChatReq):
         suggestions=response.suggestions,
         emotion_level=response.emotion_level.value if response.emotion_level else None,
         metadata=response.metadata,
+        agent_trace=response.metadata.get("agent_trace", []),
     )
 
 
