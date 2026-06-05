@@ -10,6 +10,7 @@ from orchestrator import CognitiveOrchestrator as Orchestrator
 from knowledge import KnowledgeBase
 from api.routes import router, set_orchestrator
 from api.voice import router as voice_router
+from api.emotion import router as emotion_router
 
 
 def create_app() -> FastAPI:
@@ -36,6 +37,7 @@ def create_app() -> FastAPI:
     # 注册路由
     app.include_router(router)
     app.include_router(voice_router, prefix="/api")
+    app.include_router(emotion_router, prefix="/api")
 
     # 静态文件（前端构建产物）
     frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
