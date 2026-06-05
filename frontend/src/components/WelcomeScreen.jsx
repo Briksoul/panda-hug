@@ -1,11 +1,16 @@
 import { useState } from "react";
+import moodHappy from "../assets/emotions/mood_happy.png";
+import moodOkay from "../assets/emotions/mood_okay.png";
+import moodAnxious from "../assets/emotions/mood_anxious.png";
+import moodSad from "../assets/emotions/mood_sad.png";
+import moodTired from "../assets/emotions/mood_tired.png";
 
 const emotionOptions = [
-  { emoji: "☀️", label: "充满活力", color: "from-yellow-400 to-orange-400", value: "positive" },
-  { emoji: "🌤️", label: "还可以", color: "from-blue-300 to-cyan-400", value: "mild" },
-  { emoji: "⛅", label: "略显疲惫", color: "from-gray-400 to-slate-400", value: "tired" },
-  { emoji: "🌧️", label: "感到焦虑", color: "from-purple-400 to-indigo-400", value: "anxious" },
-  { emoji: "⛈️", label: "感到抑郁", color: "from-gray-600 to-blue-900", value: "depressed" },
+  { image: moodHappy, label: "开心", value: "positive" },
+  { image: moodOkay, label: "还可以", value: "mild" },
+  { image: moodAnxious, label: "焦虑", value: "anxious" },
+  { image: moodSad, label: "难过", value: "sad" },
+  { image: moodTired, label: "疲惫", value: "tired" },
 ];
 
 export default function WelcomeScreen({ onStart, loading }) {
@@ -67,23 +72,25 @@ export default function WelcomeScreen({ onStart, loading }) {
             <p className="text-gray-600 mb-2">
               {name ? `${name}，` : ""}你现在感觉怎么样？
             </p>
-            <div className="grid grid-cols-1 gap-3">
+            <div className="flex justify-center gap-4 flex-wrap">
               {emotionOptions.map((emotion) => (
                 <button
                   key={emotion.value}
                   onClick={() => handleEmotionSelect(emotion)}
                   disabled={loading}
                   className={`
-                    flex items-center gap-4 px-6 py-4 rounded-2xl border border-gray-200
+                    flex flex-col items-center gap-2 p-4 rounded-2xl border border-gray-200
                     bg-white/80 backdrop-blur hover:border-indigo-300 hover:shadow-lg
-                    transition-all group
+                    transition-all group w-24
                     ${selectedEmotion === emotion.value ? "border-indigo-500 shadow-lg ring-2 ring-indigo-100" : ""}
                   `}
                 >
-                  <span className="text-3xl group-hover:scale-110 transition-transform">
-                    {emotion.emoji}
-                  </span>
-                  <span className="text-lg text-gray-700 font-medium">{emotion.label}</span>
+                  <img
+                    src={emotion.image}
+                    alt={emotion.label}
+                    className="w-16 h-16 group-hover:scale-110 transition-transform"
+                  />
+                  <span className="text-sm text-gray-700 font-medium">{emotion.label}</span>
                 </button>
               ))}
             </div>
