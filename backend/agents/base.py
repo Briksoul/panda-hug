@@ -129,6 +129,7 @@ class BaseAgent(ABC):
             raw = resp.choices[0].message.content or ""
             return self._parse_response(raw, profile)
         except Exception as e:
+            print(f"[Agent Error] {self.role}: {e}")
             return AgentResponse(
                 agent=self.role,
                 content="抱歉，系统暂时遇到了问题，请稍后再试。",
