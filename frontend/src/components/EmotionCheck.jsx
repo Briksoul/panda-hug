@@ -32,10 +32,11 @@ const bearResults = {
 
 export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, language, onSend }) {
   const isZh = language === "zh";
-  const [step, setStep] = useState("select"); // select | assess | result
+  const [step, setStep] = useState("select"); // select | assess | science | result
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [bearStatus, setBearStatus] = useState(null);
+  const [submitting, setSubmitting] = useState(false); // 防抖
   const [greeting, setGreeting] = useState("");
 
   // 根据时间设置问候
@@ -59,39 +60,45 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
 
   // 选择情绪
   const handleEmotionSelect = async (emotion) => {
+    if (submitting) return;
     setSelectedEmotion(emotion);
     if (emotion.id === "positive" || emotion.id === "stable") {
-      // 积极情绪，直接显示科普提示
+      setSubmitting(true);
       await onSend(isZh ? `我现在感觉${emotion.zh}` : `I'm feeling ${emotion.en}`);
       setBearStatus("happy");
-      setStep("result");
+      setStep("science");
+      setSubmitting(false);
     } else {
-      // 需要量表评估
       setStep("assess");
     }
   };
 
   // 量表回答
   const handleAnswer = async (score) => {
+    if (submitting) return;
+    setSubmitting(true);
     const newAnswers = [...answers, score];
     setAnswers(newAnswers);
-
-    // 发送到后端
     const option = scoreOptions.find((o) => o.score === score);
     await onSend(isZh ? option.zh : option.en);
-
     if (newAnswers.length >= 4) {
-      // 计算结果
-      const phq2 = newAnswers[0] + newAnswers[1];
-      const gad2 = newAnswers[2] + newAnswers[3];
-      const total = phq2 + gad2;
-
+      const total = newAnswers[0] + newAnswers[1] + newAnswers[2] + newAnswers[3];
       if (total <= 1) setBearStatus("happy");
-      else if (total <= 3) setBearStatus("calm");
+      else if (total <= 5) setBearStatus("calm");
       else setBearStatus("tired");
-
       setStep("result");
     }
+    setSubmitting(false);
+  };
+
+  // 跳过量表
+  const handleSkipAssessment = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    await onSend("跳过测试");
+    setBearStatus("calm");
+    setStep("result");
+    setSubmitting(false);
   };
 
   const bear = bearResults[bearStatus] || bearResults.calm;
@@ -161,11 +168,56 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
                 <button
                   key={opt.score}
                   onClick={() => handleAnswer(opt.score)}
-                  className="px-4 py-3 rounded-xl bg-[#faf6f0] border border-[#e8ddd0] text-[#5a4a3a] font-medium hover:bg-[#f0e6d8] hover:scale-[1.02] transition-all"
+                  disabled={submitting}
+                  className="px-4 py-3 rounded-xl bg-[#faf6f0] border border-[#e8ddd0] text-[#5a4a3a] font-medium hover:bg-[#f0e6d8] hover:scale-[1.02] transition-all disabled:opacity-50"
                 >
                   {isZh ? opt.zh : opt.en}
                 </button>
               ))}
+            </div>
+            {/* 跳过按钮 */}
+            <button
+              onClick={handleSkipAssessment}
+              disabled={submitting}
+              className="mt-4 text-sm text-[#8a7a6a] hover:text-[#5a4a3a] underline disabled:opacity-50"
+            >
+              {isZh ? "跳过测试，直接聊聊" : "Skip, let's chat"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 步骤2b：科普文案（积极情绪） */}
+      {step === "science" && (
+        <div className="text-center">
+          <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#e8ddd0] max-w-lg mx-auto">
+            <div className="text-6xl mb-4">☀️</div>
+            <h3 className="text-xl font-bold text-[#3a2a1a] mb-4">
+              {isZh ? "心理小科普" : "Psychology Tip"}
+            </h3>
+            <div className="bg-[#faf6f0] rounded-xl p-5 border border-[#e8ddd0] mb-6">
+              <p className="text-[#5a4a3a] leading-relaxed">
+                {isZh
+                  ? "心理健康需要关注日常情绪调节和心理自我照护，这是每个人都可以实践的小技巧。保持积极心态的同时，也别忘了给自己留一些放松和反思的时间。"
+                  : "Mental health requires daily emotional regulation and self-care. These are small practices everyone can do. While maintaining a positive attitude, remember to set aside time for relaxation and reflection."}
+              </p>
+            </div>
+            <p className="text-[#6a5a4a] mb-4">
+              {isZh ? "要进一步和我聊聊吗？" : "Would you like to chat more?"}
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={onGoNext}
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold hover:shadow-lg transition-all"
+              >
+                {isZh ? "陪你倾诉 →" : "Confide →"}
+              </button>
+              <button
+                onClick={() => onNavigate("home")}
+                className="px-6 py-2.5 rounded-xl bg-[#faf6f0] border border-[#e8ddd0] text-[#5a4a3a] font-medium hover:bg-[#f0e6d8] transition-all"
+              >
+                {isZh ? "返回主页" : "Home"}
+              </button>
             </div>
           </div>
         </div>

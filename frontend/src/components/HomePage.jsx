@@ -1,4 +1,4 @@
-import homePanda from "../assets/home-panda.png";
+import homePanda from "../assets/panda-1.png";
 
 // 5个核心功能（严格按设计图）
 const features = [

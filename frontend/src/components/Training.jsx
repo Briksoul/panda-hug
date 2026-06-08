@@ -97,21 +97,22 @@ export default function Training({ sessionId, state, onNavigate, onGoNext, langu
               <button
                 key={t.id}
                 onClick={() => handleSelect(t)}
-                className={`flex items-start gap-4 p-6 rounded-2xl bg-gradient-to-br ${t.color} border ${t.border} hover:scale-[1.03] hover:shadow-lg transition-all text-left`}
+                className={`flex flex-col p-5 rounded-2xl bg-gradient-to-br ${t.color} border ${t.border} hover:scale-[1.03] hover:shadow-lg transition-all text-left`}
               >
-                <span className="text-4xl flex-shrink-0">{t.emoji}</span>
-                {t.image && <img src={t.image} alt={isZh ? t.zh.title : t.en.title} className="w-full h-32 object-contain rounded-lg mb-2" />}
-                <div>
-                  <h3 className="text-lg font-bold text-[#3a2a1a] mb-1">
-                    {isZh ? t.zh.title : t.en.title}
-                  </h3>
-                  <p className="text-sm text-[#6a5a4a] mb-2">
-                    {isZh ? t.zh.intro : t.en.intro}
-                  </p>
-                  <p className="text-xs text-[#8a7a6a]">
-                    {isZh ? `适合：${t.zh.suitable}` : `For: ${t.en.suitable}`}
-                  </p>
-                </div>
+                {t.image ? (
+                  <img src={t.image} alt="" className="w-full h-40 object-contain rounded-xl mb-3" />
+                ) : (
+                  <div className="text-4xl mb-3">{t.emoji}</div>
+                )}
+                <h3 className="text-lg font-bold text-[#3a2a1a] mb-1">
+                  {isZh ? t.zh.title : t.en.title}
+                </h3>
+                <p className="text-sm text-[#6a5a4a] mb-2 leading-relaxed">
+                  {isZh ? t.zh.intro : t.en.intro}
+                </p>
+                <p className="text-xs text-[#8a7a6a]">
+                  {isZh ? `适合：${t.zh.suitable}` : `For: ${t.en.suitable}`}
+                </p>
               </button>
             ))}
           </div>
@@ -126,6 +127,17 @@ export default function Training({ sessionId, state, onNavigate, onGoNext, langu
             {selectedTraining.image && (
               <img src={selectedTraining.image} alt="" className="w-full max-w-sm mx-auto rounded-2xl mb-4 shadow-md" />
             )}
+
+            {/* 视频播放器预留位置 */}
+            <div className="bg-gray-100 rounded-2xl mb-4 flex items-center justify-center" style={{ minHeight: "200px" }}>
+              <div className="text-center text-gray-400">
+                <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-sm">{isZh ? "视频加载区域" : "Video area"}</p>
+              </div>
+            </div>
             <h3 className="text-2xl font-bold text-[#3a2a1a] mb-2">
               {isZh ? selectedTraining.zh.title : selectedTraining.en.title}
             </h3>

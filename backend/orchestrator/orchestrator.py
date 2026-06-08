@@ -32,6 +32,7 @@ class SessionState:
     insight_report: dict = field(default_factory=dict)
     training_records: list[dict] = field(default_factory=list)
     emotion_assessment_done: bool = False
+    crisis_override_available: bool = False
     created_at: float = field(default_factory=time.time)
     last_active: float = field(default_factory=time.time)
 
@@ -141,6 +142,23 @@ class CognitiveOrchestrator:
                 break
 
         if score is not None:
+            # 跳过量表
+            if "跳过" in user_message or "skip" in user_message.lower():
+                session.emotion_assessment_done = True
+                profile.bear_status = BearStatus.CALM
+                profile.phq2_score = 0
+                profile.gad2_score = 0
+                # 生成报告
+                session.insight_report = await self.agents[AgentRole.INSIGHT_REPORT].generate(
+                    case_formulation={}, cultural_analysis={}, profile=profile,
+                )
+                self._save_session(session)
+                return AgentResponse(
+                    agent=AgentRole.COGNITIVE_ORCHESTRATOR,
+                    content=(is_zh and "没关系，如果觉得测试有压力，我们可以直接聊聊。" or "No worries. If the test feels stressful, we can just chat."),
+                    action_links=[{"label": "陪你倾诉" if is_zh else "Confide", "phase": "counseling", "type": "next"}],
+                )
+
             if "assessment_answers" not in session.counseling_data:
                 session.counseling_data["assessment_answers"] = []
             session.counseling_data["assessment_answers"].append(score)
@@ -225,11 +243,27 @@ class CognitiveOrchestrator:
 
         # 危机检测
         if sensing_result.should_trigger_crisis:
+            session.crisis_override_available = True
             return AgentResponse(
                 agent=AgentRole.RISK,
-                content=(is_zh and "我很担心你。请立即寻求专业帮助。" or "I'm concerned. Please seek help immediately."),
+                content=(is_zh and "我很担心你。请立即寻求专业帮助。\n\n如果你只是在举例或目前很安全，请点击下方按钮。" or "I'm concerned. Please seek help immediately.\n\nIf you were just giving an example or are currently safe, click below."),
                 emotion_level=EmotionLevel.CRISIS,
+                suggestions=["我只是在举例" if is_zh else "I was just giving an example", "我目前很安全" if is_zh else "I'm currently safe"],
             )
+
+        # 用户澄清危机误判
+        if getattr(session, 'crisis_override_available', False):
+            override_keywords = ["我只是在举例", "我目前很安全", "just giving an example", "currently safe"]
+            if any(kw in user_message for kw in override_keywords):
+                session.crisis_override_available = False
+                profile.crisis_triggered = False
+                profile.emotion_level = EmotionLevel.MILD
+                self._save_session(session)
+                return AgentResponse(
+                    agent=AgentRole.COGNITIVE_ORCHESTRATOR,
+                    content=(is_zh and "明白了，谢谢你告诉我。我们继续吧。" or "Got it, thank you. Let's continue."),
+                    suggestions=["继续聊聊" if is_zh else "Continue"],
+                )
 
         # 知识库检索
         kb_context = await self.kb.search(user_message, agent_role="counselor")
@@ -249,9 +283,16 @@ class CognitiveOrchestrator:
         if response.metadata.get("counseling_data"):
             session.counseling_data.update(response.metadata["counseling_data"])
 
-        # 如果 Counselor 判断信息收集完毕
-        if response.should_transition:
-            # 生成洞察报告
+        # 计算咨询轮数
+        counseling_turns = sum(1 for m in session.history if m["role"] == "user")
+
+        # 如果 Counselor 判断信息收集完毕，或达到最大轮数强制生成
+        if response.should_transition or counseling_turns >= 15:
+            if counseling_turns >= 15 and not response.should_transition:
+                # 强制终止探索，添加提示
+                response.content += ("\n\n" + (is_zh and "我们已经聊了很多，让我为你生成一份心理洞察报告吧。" or "We've talked a lot. Let me generate an insight report for you."))
+
+            # 生成洞察报告（兜底：即使数据不完整也强行生成）
             cf = await self.agents[AgentRole.CASE_FORMULATION].build(session.counseling_data, profile)
             session.case_formulation = {
                 "core_event": cf.core_event,
@@ -265,6 +306,7 @@ class CognitiveOrchestrator:
                 cultural_analysis={},
                 profile=profile,
             )
+            response.should_transition = True
             response.action_links = [
                 {"label": "看见自己" if is_zh else "See Yourself", "phase": "insight", "type": "next"},
             ]

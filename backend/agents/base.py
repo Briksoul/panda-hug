@@ -148,28 +148,37 @@ class BaseAgent(ABC):
         profile: UserProfile,
         knowledge_context: str = "",
     ) -> AgentResponse:
-        """与用户对话的核心方法"""
+        """与用户对话的核心方法（含重试机制）"""
         system = self._build_system_prompt(profile, knowledge_context)
         messages = [{"role": "system", "content": system}]
-        messages.extend(history[-20:])  # 保留最近 20 轮
+        messages.extend(history[-20:])
         messages.append({"role": "user", "content": user_message})
 
-        try:
-            resp = await self.client.chat.completions.create(
-                model=config.LLM_MODEL,
-                messages=messages,
-                temperature=config.LLM_TEMPERATURE,
-                max_tokens=config.LLM_MAX_TOKENS,
-            )
-            raw = resp.choices[0].message.content or ""
-            return self._parse_response(raw, profile)
-        except Exception as e:
-            print(f"[Agent Error] {self.role}: {e}")
-            return AgentResponse(
-                agent=self.role,
-                content="抱歉，系统暂时遇到了问题，请稍后再试。",
-                metadata={"error": str(e)},
-            )
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                resp = await self.client.chat.completions.create(
+                    model=config.LLM_MODEL,
+                    messages=messages,
+                    temperature=config.LLM_TEMPERATURE,
+                    max_tokens=config.LLM_MAX_TOKENS,
+                )
+                raw = resp.choices[0].message.content or ""
+                return self._parse_response(raw, profile)
+            except Exception as e:
+                print(f"[Agent Error] {self.role} attempt {attempt+1}/{max_retries}: {e}")
+                if attempt < max_retries - 1:
+                    import asyncio
+                    await asyncio.sleep(1 * (attempt + 1))
+                else:
+                    # 全部失败，返回兜底话术，不抛500
+                    is_zh = profile.language == Language.ZH
+                    fallback = is_zh and "Panda 的大脑刚才开了一下小差，你可以再说一遍吗？" or "Panda's brain took a quick break. Could you say that again?"
+                    return AgentResponse(
+                        agent=self.role,
+                        content=fallback,
+                        metadata={"error": str(e), "fallback": True},
+                    )
 
     def _build_system_prompt(self, profile: UserProfile, knowledge_context: str) -> str:
         """构建系统提示词（子类可覆盖）"""
