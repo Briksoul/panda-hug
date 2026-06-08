@@ -31,7 +31,6 @@ const trainings = [
     zh: { title: "东方动作", intro: "融合中国传统养生智慧，通过太极拳、八段锦等调节促进心理平衡。", suitable: "身体疲劳、睡眠问题、长期压力、情绪紧绷" },
     en: { title: "Eastern Movement", intro: "Traditional Chinese wellness wisdom for mental balance.", suitable: "Fatigue, sleep issues, chronic stress" },
     image: trainingEastern,
-    color: "from-amber-200 to-orange-200",
     border: "border-amber-300",
   },
   {
