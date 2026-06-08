@@ -351,6 +351,7 @@ class CognitiveOrchestrator:
                         case_formulation=session.case_formulation,
                         cultural_analysis={},
                         profile=profile,
+                        history_text=session.counseling_data.get("history_text", ""),
                     ),
                     timeout=30.0
                 )
