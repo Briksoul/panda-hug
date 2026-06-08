@@ -114,11 +114,15 @@ export default function Counseling({ sessionId, messages, onSend, loading, state
         )}
         {messages.map((msg, i) => (
           <div key={i} className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-            {msg.role !== "user" && <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center text-xl">🐼</div>}
+            {/* 头像始终在前：Panda左，用户右 */}
+            {msg.role === "user" ? (
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-400 flex items-center justify-center text-white text-sm">👤</div>
+            ) : (
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center text-xl">🐼</div>
+            )}
             <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === "user" ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-br-md" : "bg-white border border-[#e8ddd0] text-[#5a4a3a] rounded-bl-md shadow-sm"}`}>
               <p className="whitespace-pre-wrap">{msg.content}</p>
             </div>
-            {msg.role === "user" && <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-400 flex items-center justify-center text-white text-sm">👤</div>}
           </div>
         ))}
         {/* #2 加载动画 */}
