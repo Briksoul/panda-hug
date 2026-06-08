@@ -309,20 +309,23 @@ class CognitiveOrchestrator:
         # 计算咨询轮数
         counseling_turns = sum(1 for m in session.history if m["role"] == "user")
 
-        # 对话不足5轮时，强制继续，不生成报告
-        if counseling_turns < 5:
-            remaining = 5 - counseling_turns
-            response.content += ("\n\n" + (is_zh and f"再多和我聊聊吧，再聊{remaining}轮左右我就能为你生成分析报告了。" or f"Let's chat a bit more. About {remaining} more exchanges and I can generate your report."))
-            response.should_transition = False
-            response.action_links = []
+        # 后端静默判断是否可以生成报告
+        # 条件：至少5轮 + 用户分享了足够内容（总字数>50）
+        history_text = " ".join(m["content"] for m in session.history if m["role"] == "user")
+        can_generate = counseling_turns >= 5 and len(history_text) >= 20
+
+        # 不足条件，继续对话
+        if not can_generate and not response.should_transition:
             self._save_session(session)
             return response
 
-        # 达到5轮，生成报告
-        if response.should_transition or counseling_turns >= 5:
-            if counseling_turns >= 5 and not response.should_transition:
-                # 强制终止探索，添加提示
-                response.content += ("\n\n" + (is_zh and "我们已经聊了很多，让我为你生成一份心理洞察报告吧。" or "We've talked a lot. Let me generate an insight report for you."))
+        # 达到条件，生成报告
+        if can_generate or response.should_transition:
+            if can_generate and not response.should_transition:
+                response.content += ("\n\n" + (is_zh and "谢谢你的分享，让我为你生成一份心理洞察报告吧。" or "Thank you for sharing. Let me generate an insight report for you."))
+
+            # 用对话历史作为信息来源
+            session.counseling_data["history_text"] = history_text
 
             # 生成洞察报告（兜底：即使数据不完整也强行生成，带超时）
             try:
