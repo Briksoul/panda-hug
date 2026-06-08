@@ -12,7 +12,6 @@ const trainings = [
     zh: { title: "呼吸训练", intro: "通过调节呼吸节奏影响神经系统，帮助身体快速放松。", suitable: "缓解焦虑、降低压力、稳定情绪" },
     en: { title: "Breathing", intro: "Regulate your nervous system through breathing rhythm.", suitable: "Anxiety relief, stress reduction" },
     image: trainingBreathing,
-    image: trainingBreathing,
     color: "from-teal-200 to-cyan-200",
     border: "border-teal-300",
   },
