@@ -40,3 +40,8 @@ export async function getSessionHistory(sessionId) {
   const res = await fetch(`${API_BASE}/session/${sessionId}/history`);
   return res.json();
 }
+
+export async function generateReport(sessionId) {
+  const res = await fetch(`${API_BASE}/session/${sessionId}/generate_report`, { method: "POST" });
+  return res.json();
+}

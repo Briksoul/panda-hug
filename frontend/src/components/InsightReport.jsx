@@ -1,9 +1,32 @@
-export default function InsightReport({ report, state, onNavigate, onGoNext, language }) {
+import { useState, useEffect } from "react";
+import { generateReport } from "../utils/api";
+
+export default function InsightReport({ report, state, onNavigate, onGoNext, language, sessionId, onReportGenerated }) {
   const isZh = language === "zh";
   const profile = state?.profile || {};
+  const [generating, setGenerating] = useState(false);
+  const [localReport, setLocalReport] = useState(report);
+
+  // 按需生成报告
+  useEffect(() => {
+    if ((!localReport || Object.keys(localReport).length === 0) && sessionId && !generating) {
+      setGenerating(true);
+      generateReport(sessionId).then(data => {
+        if (data.report) {
+          setLocalReport(data.report);
+          if (onReportGenerated) onReportGenerated(data.report);
+        }
+      }).catch(console.error).finally(() => setGenerating(false));
+    }
+  }, [sessionId, localReport]);
+
+  // 同步外部report
+  useEffect(() => {
+    if (report && Object.keys(report).length > 0) setLocalReport(report);
+  }, [report]);
 
   // #2 骨架屏 — 报告生成中
-  if (!report || Object.keys(report).length === 0) {
+  if (generating || !localReport || Object.keys(localReport).length === 0) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12">
         <div className="text-center mb-8">
@@ -35,10 +58,10 @@ export default function InsightReport({ report, state, onNavigate, onGoNext, lan
     );
   }
 
-  const bearStatus = report.bear_status || {};
-  const whatHappened = report.what_happened || {};
-  const whyThisHappens = report.why_this_happens || {};
-  const whatINeed = report.what_i_need || {};
+  const bearStatus = localReport.bear_status || {};
+  const whatHappened = localReport.what_happened || {};
+  const whyThisHappens = localReport.why_this_happens || {};
+  const whatINeed = localReport.what_i_need || {};
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
@@ -116,10 +139,10 @@ export default function InsightReport({ report, state, onNavigate, onGoNext, lan
       )}
 
       {/* 模块5：小熊寄语 */}
-      {report.bear_message && (
+      {localReport.bear_message && (
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 mb-6 border border-amber-200">
           <h3 className="text-lg font-bold text-[#3a2a1a] mb-3">🐻 {isZh ? "小熊寄语" : "Bear's Message"}</h3>
-          <p className="text-[#5a4a3a] leading-relaxed">{report.bear_message}</p>
+          <p className="text-[#5a4a3a] leading-relaxed">{localReport.bear_message}</p>
         </div>
       )}
 

@@ -168,6 +168,8 @@ export default function App() {
             onNavigate={navigate}
             onGoNext={() => goNext("insight")}
             language={language}
+            sessionId={sessionId}
+            onReportGenerated={(r) => setInsightReport(r)}
           />
         )}
         {currentPage === "training" && (

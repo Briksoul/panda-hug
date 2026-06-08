@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
 from guardrail import check_guardrail, build_crisis_response
+from agents.base import AgentRole
 
 router = APIRouter(prefix="/api")
 _orchestrator = None
@@ -125,6 +126,34 @@ async def get_history(session_id: str):
             "agent": session.current_agent.value if msg["role"] == "assistant" else None,
         })
     return {"session_id": session_id, "messages": messages, "state": orch.get_state(session_id)}
+
+
+@router.post("/session/{session_id}/generate_report")
+async def generate_report(session_id: str):
+    """按需生成洞察报告"""
+    orch = get_orchestrator()
+    session = orch.get_session(session_id)
+    if not session:
+        raise HTTPException(404, "session not found")
+    
+    profile = session.profile
+    
+    # 用已有数据生成报告（即使数据不完整）
+    cf = await orch.agents[AgentRole.CASE_FORMULATION].build(session.counseling_data, profile)
+    session.case_formulation = {
+        "core_event": cf.core_event,
+        "core_emotions": cf.core_emotions,
+        "auto_thoughts": cf.auto_thoughts,
+        "behavior_pattern": cf.behavior_pattern,
+        "social_support": cf.social_support,
+    }
+    session.insight_report = await orch.agents[AgentRole.INSIGHT_REPORT].generate(
+        case_formulation=session.case_formulation,
+        cultural_analysis={},
+        profile=profile,
+    )
+    orch._save_session(session)
+    return {"status": "ok", "report": session.insight_report}
 
 
 @router.get("/knowledge/{layer_name}")
