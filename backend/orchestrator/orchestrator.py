@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from dataclasses import dataclass, field
 
+import asyncio
+
 from agents.base import (
     AgentRole, AgentResponse, UserProfile, EmotionLevel, BearStatus,
     CulturalBackground, Phase, Language, CommunicationMode,
@@ -216,11 +218,28 @@ class CognitiveOrchestrator:
                     profile.emotion_level = EmotionLevel.POSITIVE
                     profile.bear_status = BearStatus.HAPPY
                     session.emotion_assessment_done = True
+
+                    # 需求13: Cognitive Orchestrator 检索心理科普库，输出科普提示
+                    kb_result = await self.kb.search(
+                        "积极心理学 幸福 感恩 情绪调节 心理自我照护",
+                        agent_role="cognitive_orchestrator",
+                    )
+                    science_tip = (
+                        "心理健康需要关注日常情绪调节和心理自我照护，这是每个人都可以实践的小技巧。\n\n"
+                        "保持积极心态的同时，也别忘了给自己留一些放松和反思的时间。"
+                    ) if is_zh else (
+                        "Mental health requires daily emotional regulation and self-care. "
+                        "These are small practices everyone can do."
+                    )
+                    if kb_result:
+                        # 用知识库内容补充科普文案
+                        science_tip += "\n\n" + kb_result[:200]
+
                     self._save_session(session)
                     return AgentResponse(
                         agent=AgentRole.COGNITIVE_ORCHESTRATOR,
-                        content="太好了！",
-                        metadata={"bear_status": "happy"},
+                        content=science_tip,
+                        metadata={"bear_status": "happy", "science_tip": True},
                         action_links=[
                             {"label": "陪你倾诉" if is_zh else "Confide", "phase": "counseling", "type": "next"},
                         ],
@@ -240,6 +259,10 @@ class CognitiveOrchestrator:
 
         # 后台分析
         sensing_result = await self.agents[AgentRole.SENSING].analyze(user_message, profile)
+
+        # #9 低置信度时降级处理
+        if sensing_result.confidence < 0.4:
+            sensing_result.intensity = max(0.1, sensing_result.intensity * 0.5)
 
         # 危机检测
         if sensing_result.should_trigger_crisis:
@@ -292,8 +315,16 @@ class CognitiveOrchestrator:
                 # 强制终止探索，添加提示
                 response.content += ("\n\n" + (is_zh and "我们已经聊了很多，让我为你生成一份心理洞察报告吧。" or "We've talked a lot. Let me generate an insight report for you."))
 
-            # 生成洞察报告（兜底：即使数据不完整也强行生成）
-            cf = await self.agents[AgentRole.CASE_FORMULATION].build(session.counseling_data, profile)
+            # 生成洞察报告（兜底：即使数据不完整也强行生成，带超时）
+            try:
+                cf = await asyncio.wait_for(
+                    self.agents[AgentRole.CASE_FORMULATION].build(session.counseling_data, profile),
+                    timeout=30.0
+                )
+            except asyncio.TimeoutError:
+                from agents.case_formulation import CaseFormulation
+                cf = CaseFormulation(completeness=0.3)
+
             session.case_formulation = {
                 "core_event": cf.core_event,
                 "core_emotions": cf.core_emotions,
@@ -301,11 +332,24 @@ class CognitiveOrchestrator:
                 "behavior_pattern": cf.behavior_pattern,
                 "social_support": cf.social_support,
             }
-            session.insight_report = await self.agents[AgentRole.INSIGHT_REPORT].generate(
-                case_formulation=session.case_formulation,
-                cultural_analysis={},
-                profile=profile,
-            )
+
+            try:
+                session.insight_report = await asyncio.wait_for(
+                    self.agents[AgentRole.INSIGHT_REPORT].generate(
+                        case_formulation=session.case_formulation,
+                        cultural_analysis={},
+                        profile=profile,
+                    ),
+                    timeout=30.0
+                )
+            except asyncio.TimeoutError:
+                # 超时使用降级报告
+                session.insight_report = self.agents[AgentRole.INSIGHT_REPORT].generate.__wrapped__(
+                    self.agents[AgentRole.INSIGHT_REPORT],
+                    case_formulation=session.case_formulation,
+                    cultural_analysis={},
+                    profile=profile,
+                ) if hasattr(self.agents[AgentRole.INSIGHT_REPORT].generate, '__wrapped__') else {}
             response.should_transition = True
             response.action_links = [
                 {"label": "看见自己" if is_zh else "See Yourself", "phase": "insight", "type": "next"},

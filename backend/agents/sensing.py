@@ -16,7 +16,9 @@ class SensingResult:
     crisis_keywords: list[str] = None
     emotion_tags: list[str] = None
     intensity: float = 0.0              # 0.0 - 1.0
+    confidence: float = 1.0             # #9 置信度 0.0 - 1.0
     should_trigger_crisis: bool = False
+    modality_used: str = "text"          # #9 使用的模态: text/voice/video
 
     def __post_init__(self):
         if self.crisis_keywords is None:
@@ -88,8 +90,14 @@ class SensingAgent(BaseAgent):
                 result.sentiment = data.get("sentiment", "neutral")
                 result.emotion_tags = data.get("emotion_tags", [])
                 result.intensity = float(data.get("intensity", 0.5))
+                result.confidence = float(data.get("confidence", 0.8))
         except Exception:
             pass
+
+        # #9 置信度过低时，降低权重
+        if result.confidence < 0.4:
+            result.modality_used = "text"
+            result.intensity = max(0.1, result.intensity * 0.5)
 
         return result
 

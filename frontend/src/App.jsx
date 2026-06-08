@@ -80,11 +80,7 @@ export default function App() {
 
   // 发送消息（倾诉陪伴用）
   const handleSend = async (text) => {
-    if (!sessionId || !text.trim()) {
-      console.log('[onSend] blocked:', { sessionId, text: text.trim() });
-      return;
-    }
-    console.log('[onSend] sending:', text, 'sessionId:', sessionId);
+    if (!sessionId || !text.trim()) return;
     setLoading(true);
     try {
       const data = await sendMessage(sessionId, text);
@@ -111,6 +107,12 @@ export default function App() {
     }
   };
 
+  // #5 语言切换（不刷新页面，保留状态）
+  const handleLanguageSwitch = () => {
+    const newLang = language === "zh" ? "en" : "zh";
+    setLanguage(newLang);
+  };
+
   // 新建会话
   const handleNewSession = () => {
     localStorage.removeItem(STORAGE_KEY);
@@ -131,6 +133,7 @@ export default function App() {
         onNewSession={handleNewSession}
         language={language}
         sessionId={sessionId}
+        onLanguageSwitch={handleLanguageSwitch}
       />
       <main>
         {currentPage === "home" && (

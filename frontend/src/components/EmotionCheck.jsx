@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { sendMessage, getSessionState } from "../utils/api";
-import emotionSelectImg from "../assets/emotion-select.png";
 
 const emotions = [
   { id: "positive", emoji: "☀️", zh: "充满活力", en: "Energy High", color: "from-yellow-200 to-amber-200", border: "border-amber-300" },
@@ -47,13 +45,10 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
     else setGreeting(isZh ? "晚上好" : "Good evening");
   }, [isZh]);
 
-  // 恢复状态
+  // 恢复状态 - 仅在评估已完成时跳到结果页
   useEffect(() => {
-    if (state?.profile?.emotion_level && state?.emotion_assessment_done) {
-      const total = (state.profile.phq2_score || 0) + (state.profile.gad2_score || 0);
-      if (total <= 1) setBearStatus("happy");
-      else if (total <= 3) setBearStatus("calm");
-      else setBearStatus("tired");
+    if (state?.emotion_assessment_done && state?.profile?.bear_status) {
+      setBearStatus(state.profile.bear_status);
       setStep("result");
     }
   }, [state]);
@@ -61,16 +56,12 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
   // 选择情绪
   const handleEmotionSelect = async (emotion) => {
     if (submitting) return;
-    console.log('[EmotionCheck] clicked:', emotion.id, emotion.zh);
     setSelectedEmotion(emotion);
     if (emotion.id === "positive" || emotion.id === "stable") {
       setSubmitting(true);
       try {
         await onSend(isZh ? `我现在感觉${emotion.zh}` : `I'm feeling ${emotion.en}`);
-        console.log('[EmotionCheck] onSend done');
-      } catch(e) {
-        console.error('[EmotionCheck] onSend error:', e);
-      }
+      } catch(e) { /* ignore */ }
       setBearStatus("happy");
       setStep("science");
       setSubmitting(false);
