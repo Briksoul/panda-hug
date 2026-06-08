@@ -5,7 +5,6 @@ import EmotionCheck from "./components/EmotionCheck";
 import Counseling from "./components/Counseling";
 import InsightReport from "./components/InsightReport";
 import Training from "./components/Training";
-import Knowledge from "./components/Knowledge";
 import Navbar from "./components/Navbar";
 
 const STORAGE_KEY = "panda_…n_id";
@@ -174,9 +173,7 @@ export default function App() {
             onSend={handleSend}
           />
         )}
-        {currentPage === "knowledge" && (
-          <Knowledge language={language} />
-        )}
+
       </main>
     </div>
   );

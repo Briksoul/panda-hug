@@ -1,23 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* 自定义样式 */
+@theme {
+  --color-panda-primary: #6366f1;
+  --color-panda-secondary: #8b5cf6;
+  --color-panda-accent: #ec4899;
+  --color-panda-warm: #f59e0b;
+  --color-panda-calm: #06b6d4;
+  --color-panda-safe: #10b981;
+  --color-panda-crisis: #ef4444;
 }
 
-html, body, #root {
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #4A3A2A;
-  background: #F2E6D9;
-}
-
-/* 自定义滚动条 */
+/* 滚动条美化 */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -25,18 +19,53 @@ html, body, #root {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(168,152,136,0.3);
+  background: #d1d5db;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(168,152,136,0.5);
+  background: #9ca3af;
 }
 
-/* 隐藏移动端滚动条 */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+/* 打字动画 */
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.2; }
+  30% { opacity: 1; }
 }
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.typing-dot {
+  animation: typing-dot 1.4s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* 消息气泡动画 */
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.message-bubble {
+  animation: message-in 0.3s ease-out;
+}
+
+/* 呼吸动画 */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+.breathe-animation {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* 危机警报动画 */
+@keyframes crisis-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+}
+.crisis-alert {
+  animation: crisis-pulse 2s ease-in-out infinite;
+}
+
+/* Agent Trace 滑入动画 */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
