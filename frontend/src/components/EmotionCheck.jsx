@@ -9,10 +9,10 @@ const emotions = [
 ];
 
 const questions = [
-  { zh: "做事情缺乏兴趣或乐趣", en: "Little interest or pleasure in doing things" },
-  { zh: "感到情绪低落、沮丧或绝望", en: "Feeling down, depressed, or hopeless" },
-  { zh: "感到紧张、焦虑或心神不宁", en: "Feeling nervous, anxious, or on edge" },
-  { zh: "无法停止或控制担忧", en: "Not being able to stop or control worrying" },
+  { zh: "近两周出现做事情缺乏兴趣或乐趣的频率", en: "Frequency of little interest or pleasure in doing things over the past 2 weeks" },
+  { zh: "近两周出现感到情绪低落、沮丧或绝望的频率", en: "Frequency of feeling down, depressed, or hopeless over the past 2 weeks" },
+  { zh: "近两周出现感到紧张、焦虑或心神不宁的频率", en: "Frequency of feeling nervous, anxious, or on edge over the past 2 weeks" },
+  { zh: "近两周出现无法停止或控制担忧的频率", en: "Frequency of not being able to stop or control worrying over the past 2 weeks" },
 ];
 
 const scoreOptions = [
