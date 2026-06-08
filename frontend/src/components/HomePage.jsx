@@ -67,7 +67,7 @@ const features = [
   },
 ];
 
-export default function HomePage({ onStart, onNavigate, language, loading, sessionId }) {
+export default function HomePage({ onStart, onNavigate, language, loading, sessionId, onNewSession }) {
   const isZh = language === "zh";
 
   return (
@@ -154,6 +154,13 @@ export default function HomePage({ onStart, onNavigate, language, loading, sessi
               ? "点击下方功能，开启你的心灵治愈之旅"
               : "Start your soul-healing journey by clicking the functions below"}
           </p>
+          {/* 重新开始按钮 */}
+          {sessionId && onNewSession && (
+            <button onClick={onNewSession}
+              className="mb-4 px-5 py-2 rounded-xl text-sm text-[#8a7a6a] hover:text-[#5a4a3a] border border-[#d8c8b8] hover:bg-white/40 transition-all">
+              {isZh ? "🔄 重新开始" : "🔄 Start Over"}
+            </button>
+          )}
         </div>
       </section>
 

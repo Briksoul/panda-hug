@@ -137,7 +137,7 @@ export default function App() {
       />
       <main>
         {currentPage === "home" && (
-          <HomePage onStart={handleStart} onNavigate={navigate} language={language} loading={loading} sessionId={sessionId} />
+          <HomePage onStart={handleStart} onNavigate={navigate} language={language} loading={loading} sessionId={sessionId} onNewSession={handleNewSession} />
         )}
         {currentPage === "emotion" && (
           <EmotionCheck
