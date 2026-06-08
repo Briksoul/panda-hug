@@ -309,9 +309,17 @@ class CognitiveOrchestrator:
         # 计算咨询轮数
         counseling_turns = sum(1 for m in session.history if m["role"] == "user")
 
-        # 如果 Counselor 判断信息收集完毕，或达到最大轮数强制生成
-        if response.should_transition or counseling_turns >= 15:
-            if counseling_turns >= 15 and not response.should_transition:
+        # 对话不足5轮时，提醒用户继续分享
+        if counseling_turns < 5 and not response.should_transition:
+            remaining = 5 - counseling_turns
+            response.content += ("\n\n" + (is_zh and f"再多和我聊聊吧，再聊{remaining}轮左右我就能为你生成分析报告了。" or f"Let's chat a bit more. About {remaining} more exchanges and I can generate your report."))
+            response.action_links = []
+            self._save_session(session)
+            return response
+
+        # 达到5轮或Counselor判断完毕，生成报告
+        if response.should_transition or counseling_turns >= 5:
+            if counseling_turns >= 5 and not response.should_transition:
                 # 强制终止探索，添加提示
                 response.content += ("\n\n" + (is_zh and "我们已经聊了很多，让我为你生成一份心理洞察报告吧。" or "We've talked a lot. Let me generate an insight report for you."))
 
