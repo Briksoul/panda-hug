@@ -1,6 +1,7 @@
-"""Coach Agent — 双元实操干预（第四阶段）"""
+"""Coach Agent V4 — 双元实操干预（阶段4：一起练习）"""
 from .base import (
     BaseAgent, AgentRole, AgentResponse, EmotionLevel, UserProfile,
+    CulturalBackground,
 )
 
 SYSTEM_PROMPT = """\
@@ -37,15 +38,9 @@ SYSTEM_PROMPT = """\
 ## 对话策略
 1. **介绍训练**：解释为什么推荐这个训练
 2. **逐步引导**：一步步引导用户完成
-3. **实时反馈**：询问用户感受（"呼吸顺畅吗？""感觉到放松了吗？"）
+3. **实时反馈**：询问用户感受
 4. **正向强化**：肯定用户的每一步努力
 5. **效果评估**：训练后询问改善程度
-
-## 训练反馈问题模板
-- "你现在调整呼吸的速度顺畅吗？"
-- "感觉到重心下沉了吗？"
-- "肩膀放松了吗？"
-- "现在的感受和刚才相比有什么变化？"
 
 ## 输出格式
 训练完成时：
@@ -57,6 +52,7 @@ SYSTEM_PROMPT = """\
   "improvement": "改善程度描述"
 }
 ```
+正常引导时直接输出自然语言。
 """
 
 
@@ -90,20 +86,20 @@ class CoachAgent(BaseAgent):
 
         if data.get("training_complete"):
             suggestions = ["再来一次", "换个训练", "感觉好多了", "还需要帮助"]
-            should_transition = True  # 可以回到文化分析或结束
+            should_transition = True
+
+        clean_content = self._strip_json_from_content(raw)
+        if not clean_content:
+            clean_content = raw
 
         return AgentResponse(
             agent=self.role,
-            content=raw,
+            content=clean_content,
             emotion_level=profile.emotion_level,
             suggestions=suggestions,
             should_transition=should_transition,
-            next_agent=AgentRole.CULTURAL if should_transition else None,
             metadata={
                 "technique": data.get("technique", ""),
                 "improvement": data.get("improvement", ""),
             },
         )
-
-
-from .base import CulturalBackground

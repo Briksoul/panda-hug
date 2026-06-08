@@ -1,4 +1,4 @@
-"""Sensing Agent — 多模态感知（Phase 1: 纯文本情感分析）"""
+"""Sensing Agent V4 — 多模态感知（后台情感分析）"""
 from __future__ import annotations
 import json
 import re
@@ -39,7 +39,7 @@ CRISIS_KEYWORDS = {
 
 
 class SensingAgent(BaseAgent):
-    """Phase 1: 纯文本情感分析，Phase 2 扩展多模态"""
+    """V4: 文本情感分析，后台运行"""
     role = AgentRole.SENSING
 
     async def analyze(self, text: str, profile: UserProfile) -> SensingResult:

@@ -1,4 +1,4 @@
-"""CaseFormulation Agent — 案例概念化（后台构建心理机制模型）"""
+"""CaseFormulation Agent V4 — 案例概念化（后台构建心理机制模型）"""
 from __future__ import annotations
 import json
 import re
@@ -24,7 +24,7 @@ class CaseFormulation:
 
 
 class CaseFormulationAgent:
-    """后台 Agent，无需 system_prompt（由 Orchestrator 直接调用）"""
+    """后台 Agent，由 Orchestrator 直接调用"""
     role = AgentRole.CASE_FORMULATION
 
     def __init__(self):

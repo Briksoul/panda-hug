@@ -1,4 +1,4 @@
-"""InsightReport Agent — 心理洞察报告生成"""
+"""InsightReport Agent V4 — 心理洞察报告生成（阶段3：看见自己）"""
 from __future__ import annotations
 import json
 import re
@@ -9,7 +9,7 @@ from .base import (
 
 
 class InsightReportAgent:
-    """生成图文心理洞察报告"""
+    """生成5模块心理洞察报告"""
     role = AgentRole.INSIGHT_REPORT
 
     def __init__(self):
@@ -21,7 +21,7 @@ class InsightReportAgent:
         cultural_analysis: dict,
         profile: UserProfile,
     ) -> dict:
-        """生成心理洞察报告（6个模块）"""
+        """生成心理洞察报告（5个模块）"""
         if not self.client:
             self.client = get_llm()
 
@@ -30,8 +30,9 @@ class InsightReportAgent:
             f"案例概念化：\n{json.dumps(case_formulation, ensure_ascii=False)}\n\n"
             f"文化分析：\n{json.dumps(cultural_analysis, ensure_ascii=False)}\n\n"
             f"用户文化背景：{profile.cultural_bg.value}\n"
-            f"PHQ-2分数：{profile.phq2_score}, GAD-2分数：{profile.gad2_score}\n\n"
-            "请生成包含以下6个模块的报告，返回JSON：\n"
+            f"PHQ-2分数：{profile.phq2_score}, GAD-2分数：{profile.gad2_score}\n"
+            f"小熊状态：{profile.bear_status.value}\n\n"
+            "请生成包含以下5个模块的报告，返回JSON：\n"
             "{\n"
             '  "bear_status": {\n'
             '    "emoji": "🐻",\n'

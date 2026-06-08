@@ -1,6 +1,6 @@
-"""Counselor Agent — 数字心理咨询师（前台咨询）"""
+"""Counselor Agent V4 — 数字心理咨询师（阶段2：陪你倾诉）"""
 from .base import (
-    BaseAgent, AgentRole, AgentResponse, EmotionLevel, UserProfile,
+    BaseAgent, AgentRole, AgentResponse, EmotionLevel, UserProfile, Phase,
 )
 
 SYSTEM_PROMPT = """\
@@ -77,6 +77,7 @@ SYSTEM_PROMPT = """\
   "risk_level": "low|medium|high"
 }
 ```
+正常对话时直接输出自然语言，不要包含JSON。
 """
 
 
@@ -88,21 +89,26 @@ class CounselorAgent(BaseAgent):
         data = self._json_parse(raw)
 
         should_transition = False
-        next_agent = None
         suggestions = []
+        action_links = []
 
         if data.get("counseling_complete"):
             should_transition = True
-            next_agent = AgentRole.CULTURAL
             suggestions = ["好的，继续", "我还想多聊聊"]
+
+        # 移除JSON，只保留自然语言
+        clean_content = self._strip_json_from_content(raw)
+        if not clean_content:
+            clean_content = raw
 
         return AgentResponse(
             agent=self.role,
-            content=raw,
+            content=clean_content,
             emotion_level=profile.emotion_level,
             suggestions=suggestions,
             should_transition=should_transition,
-            next_agent=next_agent,
+            next_phase=Phase.INSIGHT if should_transition else None,
+            action_links=action_links,
             metadata={
                 "counseling_data": {
                     k: v for k, v in data.items() if k != "counseling_complete"

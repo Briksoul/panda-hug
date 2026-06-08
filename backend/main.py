@@ -1,4 +1,4 @@
-"""Panda Hug — FastAPI 主入口"""
+"""Panda Hug V4 — FastAPI 主入口"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -15,9 +15,9 @@ from api.emotion import router as emotion_router
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="Panda Hug",
-        description="温暖跨文化心理伴侣 — 多 Agent 心理咨询系统",
-        version="0.1.0",
+        title="Panda Hug V4",
+        description="跨文化智能心理伴侣 — 7 Agent + 6 知识库 RAG 系统",
+        version="4.0.0",
     )
 
     # CORS

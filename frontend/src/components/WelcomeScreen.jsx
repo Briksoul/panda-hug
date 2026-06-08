@@ -1,36 +1,24 @@
 import { useState, useEffect } from "react";
-import yunyunDefault from "../assets/yunyun/okay.jpg";
-import yunyunHappy from "../assets/yunyun/happy.jpg";
-import yunyunOkay from "../assets/yunyun/okay.jpg";
-import yunyunAnxious from "../assets/yunyun/anxious.jpg";
-import yunyunSad from "../assets/yunyun/sad.jpg";
-import yunyunTired from "../assets/yunyun/tired.jpg";
 
-const emotions = [
-  { id: "happy", label: "开心", image: yunyunHappy, color: "#FFD93D" },
-  { id: "okay", label: "平静", image: yunyunOkay, color: "#6BCB77" },
-  { id: "anxious", label: "焦虑", image: yunyunAnxious, color: "#9B59B6" },
-  { id: "sad", label: "难过", image: yunyunSad, color: "#4A90D9" },
-  { id: "tired", label: "疲惫", image: yunyunTired, color: "#95A5A6" },
-];
-
-export default function WelcomeScreen({ onStart }) {
-  const [step, setStep] = useState("intro"); // intro | select | done
-  const [selected, setSelected] = useState(null);
+export default function WelcomeScreen({ onStart, loading }) {
+  const [step, setStep] = useState("language"); // language | intro | done
+  const [language, setLanguage] = useState("zh");
   const [fadeClass, setFadeClass] = useState("opacity-100");
 
-  // 点击云云进入选择
-  const handleYunYunClick = () => {
+  const isZh = language === "zh";
+
+  // 选择语言
+  const handleLanguageSelect = (lang) => {
+    setLanguage(lang);
     setFadeClass("opacity-0");
     setTimeout(() => {
-      setStep("select");
+      setStep("intro");
       setFadeClass("opacity-100");
     }, 400);
   };
 
-  // 选择情绪
-  const handleSelect = (emotion) => {
-    setSelected(emotion);
+  // 点击 Panda 进入对话
+  const handlePandaClick = () => {
     setFadeClass("opacity-0 scale-95");
     setTimeout(() => {
       setStep("done");
@@ -40,73 +28,69 @@ export default function WelcomeScreen({ onStart }) {
 
   // 动画完成后进入对话
   useEffect(() => {
-    if (step === "done" && selected) {
+    if (step === "done") {
       const timer = setTimeout(() => {
-        onStart("", selected.id);
+        onStart("", language);
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [step, selected, onStart]);
+  }, [step, language, onStart]);
 
   return (
     <div className="welcome-screen">
-      {/* 背景渐变 */}
       <div className="bg-gradient" />
 
-      {/* Intro: 全屏云云 */}
+      {/* 语言选择 */}
+      {step === "language" && (
+        <div className={`language-view ${fadeClass}`}>
+          <div className="panda-icon">🐼</div>
+          <h1 className="title">Panda Hug</h1>
+          <p className="subtitle">{isZh ? "跨文化智能心理伴侣" : "Cross-cultural AI Companion"}</p>
+
+          <div className="lang-row">
+            <button className="lang-btn" onClick={() => handleLanguageSelect("zh")}>
+              <span className="lang-flag">🇨🇳</span>
+              <span className="lang-name">中文</span>
+            </button>
+            <button className="lang-btn" onClick={() => handleLanguageSelect("en")}>
+              <span className="lang-flag">🇺🇸</span>
+              <span className="lang-name">English</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 介绍页 */}
       {step === "intro" && (
-        <div className={`intro-view ${fadeClass}`} onClick={handleYunYunClick}>
-          <div className="yunyun-container">
-            <img src={yunyunDefault} alt="云云" className="yunyun-img breathe" />
+        <div className={`intro-view ${fadeClass}`} onClick={handlePandaClick}>
+          <div className="panda-container">
+            <div className="panda-emoji breathe">🐼</div>
             <div className="glow-ring" />
           </div>
-          <h1 className="title">云云</h1>
-          <p className="subtitle">你的 AI 心灵伙伴</p>
-          <p className="hint">轻触云云，开始对话 ✨</p>
+          <div className="intro-text">
+            <p>{isZh ? "Hi，我是 Panda！" : "Hi, I'm Panda!"}</p>
+            <p>{isZh
+              ? "无论你来自中国、美国，还是正在异国求学的留学生，"
+              : "Whether you're from China, the US, or studying abroad,"}</p>
+            <p>{isZh
+              ? "当你开心、疲惫、焦虑、迷茫的时候，"
+              : "whether you're happy, tired, anxious, or confused,"}</p>
+            <p>{isZh
+              ? "我都会在这里陪伴你。"
+              : "I'll be here for you."}</p>
+          </div>
+          <p className="hint">{isZh ? "轻触开始 ✨" : "Tap to start ✨"}</p>
         </div>
       )}
 
-      {/* Select: 情绪选择 */}
-      {step === "select" && (
-        <div className={`select-view ${fadeClass}`}>
-          <div className="question-bubble">
-            <p>你现在感觉怎么样？</p>
-          </div>
-
-          <div className="emotion-row">
-            {emotions.map((emo) => (
-              <button
-                key={emo.id}
-                className="emotion-btn"
-                onClick={() => handleSelect(emo)}
-              >
-                <div className="emotion-circle" style={{ borderColor: emo.color }}>
-                  <img src={emo.image} alt={emo.label} className="emotion-img" />
-                </div>
-                <span className="emotion-label">{emo.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Done: 云云变成对应情绪 */}
-      {step === "done" && selected && (
+      {/* 进入中 */}
+      {step === "done" && (
         <div className={`done-view ${fadeClass}`}>
-          <div className="yunyun-container">
-            <img
-              src={selected.image}
-              alt={selected.label}
-              className="yunyun-img selected-state"
-            />
-            <div className="glow-ring" style={{ borderColor: selected.color }} />
+          <div className="panda-container">
+            <div className="panda-emoji selected-state">🐼</div>
           </div>
           <p className="selected-text">
-            {selected.label === "开心" && "很高兴看到你心情不错 ☀️"}
-            {selected.label === "平静" && "平静是最好的状态 🌿"}
-            {selected.label === "焦虑" && "没关系，我在这里陪你 💜"}
-            {selected.label === "难过" && "想聊聊吗？我听着呢 💙"}
-            {selected.label === "疲惫" && "辛苦了，休息一下吧 🌙"}
+            {isZh ? "正在为你准备..." : "Preparing for you..."}
           </p>
           <div className="loading-dots">
             <span /><span /><span />
@@ -116,7 +100,7 @@ export default function WelcomeScreen({ onStart }) {
 
       {/* 底部安全提示 */}
       <div className="safety-bar">
-        🔒 你的对话完全保密 &nbsp;|&nbsp; 如遇紧急情况请拨打 400-161-9995
+        🔒 {isZh ? "对话完全保密 | 如遇紧急情况请拨打 12356" : "Confidential | In emergency call 988"}
       </div>
 
       <style>{`
@@ -137,8 +121,7 @@ export default function WelcomeScreen({ onStart }) {
           z-index: 0;
         }
 
-        /* === Intro === */
-        .intro-view, .select-view, .done-view {
+        .language-view, .intro-view, .done-view {
           position: relative;
           z-index: 1;
           display: flex;
@@ -146,26 +129,29 @@ export default function WelcomeScreen({ onStart }) {
           align-items: center;
           gap: 16px;
           transition: opacity 0.4s ease, transform 0.4s ease;
-          cursor: pointer;
         }
-        .yunyun-container {
+
+        .panda-icon {
+          font-size: 80px;
+          margin-bottom: 8px;
+        }
+
+        .panda-container {
           position: relative;
-          width: 320px;
-          height: 320px;
+          width: 200px;
+          height: 200px;
         }
-        .yunyun-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 50%;
-          box-shadow: 0 20px 60px rgba(99, 102, 241, 0.3);
+        .panda-emoji {
+          font-size: 120px;
+          line-height: 200px;
+          text-align: center;
         }
         .breathe {
           animation: breathe 3s ease-in-out infinite;
         }
         @keyframes breathe {
           0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.03); }
+          50% { transform: scale(1.05); }
         }
         .glow-ring {
           position: absolute;
@@ -178,6 +164,7 @@ export default function WelcomeScreen({ onStart }) {
           0%, 100% { transform: scale(1); opacity: 0.5; }
           50% { transform: scale(1.05); opacity: 1; }
         }
+
         .title {
           font-size: 48px;
           font-weight: 800;
@@ -187,14 +174,64 @@ export default function WelcomeScreen({ onStart }) {
           margin: 0;
         }
         .subtitle {
-          font-size: 18px;
+          font-size: 16px;
           color: #6b7280;
           margin: 0;
         }
+
+        .lang-row {
+          display: flex;
+          gap: 16px;
+          margin-top: 24px;
+        }
+        .lang-btn {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          padding: 20px 32px;
+          background: white;
+          border: 2px solid #e5e7eb;
+          border-radius: 16px;
+          cursor: pointer;
+          transition: all 0.2s;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .lang-btn:hover {
+          border-color: #8b5cf6;
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+        }
+        .lang-flag {
+          font-size: 36px;
+        }
+        .lang-name {
+          font-size: 16px;
+          font-weight: 600;
+          color: #374151;
+        }
+
+        .intro-text {
+          text-align: center;
+          font-size: 18px;
+          color: #374151;
+          line-height: 1.8;
+          max-width: 400px;
+        }
+        .intro-text p {
+          margin: 0;
+        }
+        .intro-text p:first-child {
+          font-size: 24px;
+          font-weight: 700;
+          color: #1f2937;
+          margin-bottom: 8px;
+        }
+
         .hint {
           font-size: 14px;
           color: #9ca3af;
-          margin-top: 8px;
+          margin-top: 16px;
           animation: float 2s ease-in-out infinite;
         }
         @keyframes float {
@@ -202,58 +239,10 @@ export default function WelcomeScreen({ onStart }) {
           50% { transform: translateY(-5px); }
         }
 
-        /* === Select === */
-        .question-bubble {
-          background: white;
-          padding: 16px 32px;
-          border-radius: 24px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-          font-size: 20px;
-          color: #374151;
-          font-weight: 500;
-        }
-        .emotion-row {
-          display: flex;
-          gap: 20px;
-          margin-top: 12px;
-        }
-        .emotion-btn {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 8px;
-          background: none;
-          border: none;
+        .intro-view {
           cursor: pointer;
-          transition: transform 0.2s;
-        }
-        .emotion-btn:hover {
-          transform: translateY(-8px);
-        }
-        .emotion-circle {
-          width: 100px;
-          height: 100px;
-          border-radius: 50%;
-          border: 3px solid transparent;
-          overflow: hidden;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-          transition: box-shadow 0.2s, border-color 0.2s;
-        }
-        .emotion-btn:hover .emotion-circle {
-          box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        .emotion-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .emotion-label {
-          font-size: 14px;
-          color: #4b5563;
-          font-weight: 500;
         }
 
-        /* === Done === */
         .selected-state {
           animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -265,7 +254,6 @@ export default function WelcomeScreen({ onStart }) {
           font-size: 20px;
           color: #374151;
           font-weight: 500;
-          margin: 8px 0;
         }
         .loading-dots {
           display: flex;
@@ -285,7 +273,6 @@ export default function WelcomeScreen({ onStart }) {
           40% { transform: scale(1); opacity: 1; }
         }
 
-        /* === Safety Bar === */
         .safety-bar {
           position: absolute;
           bottom: 16px;

@@ -1,105 +1,122 @@
-export default function InsightReport({ report }) {
+export default function InsightReport({ report, language }) {
+  const isZh = language === "zh";
+
   if (!report || Object.keys(report).length === 0) return null;
 
   const bearStatus = report.bear_status || {};
   const whatHappened = report.what_happened || {};
   const whyThisHappens = report.why_this_happens || {};
   const whatINeed = report.what_i_need || {};
-  const bearMessage = report.bear_message || "";
-  const trainingRec = report.training_recommendation || "";
 
   return (
-    <div className="mx-4 my-4 space-y-3">
-      {/* 报告标题 */}
-      <div className="text-center py-3">
-        <h3 className="text-lg font-bold text-gray-700">📊 心理情绪洞察报告</h3>
-        <p className="text-xs text-gray-400 mt-1">基于你的咨询数据生成</p>
+    <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 shadow-sm">
+      {/* 标题 */}
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-1">
+          {isZh ? "🪞 你的心理洞察报告" : "🪞 Your Insight Report"}
+        </h2>
+        <p className="text-sm text-gray-500">
+          {isZh ? "基于你的分享，为你生成的专属分析" : "Personalized analysis based on your sharing"}
+        </p>
       </div>
 
-      {/* 模块1: 我的状态 */}
-      <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-2xl">{bearStatus.emoji || "🐻"}</span>
-          <h4 className="font-semibold text-indigo-700 text-sm">{bearStatus.label || "状态"}</h4>
+      {/* 模块1：我的状态 */}
+      <div className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center gap-2">
+          <span>{bearStatus.emoji || "🐻"}</span>
+          {isZh ? "我的状态" : "My Status"}
+        </h3>
+        <div className="flex items-center gap-3 mb-2">
+          <span className="text-3xl">{bearStatus.emoji || "🐻"}</span>
+          <div>
+            <p className="font-medium text-gray-800">{bearStatus.label || (isZh ? "小熊" : "Bear")}</p>
+            <p className="text-sm text-gray-500">{bearStatus.description || ""}</p>
+          </div>
         </div>
-        <p className="text-sm text-gray-600">{bearStatus.description}</p>
       </div>
 
-      {/* 模块2: 我最近发生了什么 */}
+      {/* 模块2：最近发生了什么 */}
       {whatHappened.timeline && whatHappened.timeline.length > 0 && (
-        <div className="rounded-2xl border border-purple-200 bg-purple-50 p-4">
-          <h4 className="font-semibold text-purple-700 text-sm mb-3">📝 我最近发生了什么</h4>
+        <div className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-700 mb-3">
+            📋 {isZh ? "最近发生了什么" : "What Happened"}
+          </h3>
           <div className="space-y-2">
             {whatHappened.timeline.map((event, i) => (
               <div key={i} className="flex items-start gap-2">
-                <div className="w-2 h-2 rounded-full bg-purple-400 mt-1.5 flex-shrink-0"></div>
+                <div className="w-2 h-2 rounded-full bg-indigo-400 mt-2 flex-shrink-0"></div>
                 <p className="text-sm text-gray-600">{event}</p>
               </div>
             ))}
           </div>
           {whatHappened.summary && (
-            <p className="text-xs text-gray-500 mt-3 italic">{whatHappened.summary}</p>
+            <p className="mt-3 text-sm text-gray-500 italic">{whatHappened.summary}</p>
           )}
         </div>
       )}
 
-      {/* 模块3: 我为什么会这样 */}
-      <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4">
-        <h4 className="font-semibold text-cyan-700 text-sm mb-3">🧠 我为什么会这样</h4>
+      {/* 模块3：为什么会这样 */}
+      <div className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-700 mb-3">
+          🧠 {isZh ? "为什么会这样" : "Why This Happens"}
+        </h3>
         {whyThisHappens.psychological_mechanisms && whyThisHappens.psychological_mechanisms.length > 0 && (
           <div className="mb-3">
-            <p className="text-xs text-gray-400 mb-1">心理机制</p>
-            {whyThisHappens.psychological_mechanisms.map((m, i) => (
-              <p key={i} className="text-sm text-gray-600">• {m}</p>
+            <p className="text-xs text-gray-400 mb-1">{isZh ? "心理机制" : "Psychological Mechanisms"}</p>
+            {whyThisHappens.psychological_mechanisms.map((mech, i) => (
+              <p key={i} className="text-sm text-gray-600 mb-1">• {mech}</p>
             ))}
           </div>
         )}
         {whyThisHappens.cultural_influence && (
           <div className="mb-3">
-            <p className="text-xs text-gray-400 mb-1">文化影响</p>
+            <p className="text-xs text-gray-400 mb-1">{isZh ? "文化影响" : "Cultural Influence"}</p>
             <p className="text-sm text-gray-600">{whyThisHappens.cultural_influence}</p>
           </div>
         )}
         {whyThisHappens.explanation && (
-          <p className="text-sm text-gray-700 leading-relaxed">{whyThisHappens.explanation}</p>
+          <p className="text-sm text-gray-500 italic">{whyThisHappens.explanation}</p>
         )}
       </div>
 
-      {/* 模块5: 我真正需要什么 */}
-      <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
-        <h4 className="font-semibold text-green-700 text-sm mb-3">💚 我真正需要什么</h4>
-        {whatINeed.core_needs && whatINeed.core_needs.length > 0 && (
+      {/* 模块4：我真正需要什么 */}
+      {whatINeed.core_needs && whatINeed.core_needs.length > 0 && (
+        <div className="bg-white rounded-xl p-4 mb-4 border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-700 mb-3">
+            💝 {isZh ? "我真正需要什么" : "What I Really Need"}
+          </h3>
           <div className="flex flex-wrap gap-2 mb-3">
             {whatINeed.core_needs.map((need, i) => (
-              <span key={i} className="px-3 py-1 rounded-full bg-green-200 text-green-800 text-xs">
+              <span key={i} className="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm">
                 {need}
               </span>
             ))}
           </div>
-        )}
-        {whatINeed.suggestions && whatINeed.suggestions.map((s, i) => (
-          <p key={i} className="text-sm text-gray-600">• {s}</p>
-        ))}
-      </div>
-
-      {/* 模块6: 小熊寄语 */}
-      {bearMessage && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-          <div className="flex items-start gap-2">
-            <span className="text-2xl">🐻</span>
+          {whatINeed.suggestions && whatINeed.suggestions.length > 0 && (
             <div>
-              <h4 className="font-semibold text-amber-700 text-sm mb-2">小熊寄语</h4>
-              <p className="text-sm text-gray-700 leading-relaxed">{bearMessage}</p>
+              <p className="text-xs text-gray-400 mb-1">{isZh ? "建议" : "Suggestions"}</p>
+              {whatINeed.suggestions.map((sug, i) => (
+                <p key={i} className="text-sm text-gray-600 mb-1">• {sug}</p>
+              ))}
             </div>
-          </div>
+          )}
         </div>
       )}
 
-      {/* 模块7: 训练推荐 */}
-      {trainingRec && (
-        <div className="rounded-2xl border border-pink-200 bg-pink-50 p-4 text-center">
-          <p className="text-sm text-gray-700 mb-2">🧘 {trainingRec}</p>
-          <p className="text-xs text-gray-500">回复"开始训练"即可进入</p>
+      {/* 模块5：小熊寄语 */}
+      {report.bear_message && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">
+            🐻 {isZh ? "小熊寄语" : "Bear's Message"}
+          </h3>
+          <p className="text-sm text-gray-600 leading-relaxed">{report.bear_message}</p>
+        </div>
+      )}
+
+      {/* 训练推荐 */}
+      {report.training_recommendation && (
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-500 mb-2">{report.training_recommendation}</p>
         </div>
       )}
     </div>

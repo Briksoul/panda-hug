@@ -1,4 +1,4 @@
-"""Risk Agent — 危机监测（专业化，基于 Columbia Suicide Scale）"""
+"""Risk Agent V4 — 危机监测（基于 Columbia Suicide Scale）"""
 from .base import (
     BaseAgent, AgentRole, AgentResponse, EmotionLevel, UserProfile,
 )
@@ -34,21 +34,6 @@ SYSTEM_PROMPT = """\
 - 明确表达想死的意图
 - 行动：物理熔断，直接返回危机资源
 
-## 危机响应资源
-
-### 在中国
-- 拨打 110（警方）或 120（急救中心）
-- 全国心理援助热线：12356
-- 北京心理危机研究与干预中心：010-82951332
-
-### 在美国
-- 拨打或发送短信至 988（988 Suicide & Crisis Lifeline）
-- 发送短信 "HOME" 至 741741（Crisis Text Line）
-- 拨打 911 或前往最近的医院急诊室
-
-### 国际
-- International Association for Suicide Prevention: https://www.iasp.info/resources/Crisis_Centres/
-
 ## 输出格式
 ```json
 {
@@ -67,12 +52,10 @@ class RiskAgent(BaseAgent):
     system_prompt = SYSTEM_PROMPT
 
     async def quick_check(self, text: str, profile: UserProfile) -> dict:
-        """快速风险检查（供 Orchestrator 同步调用）"""
-        # 高危关键词已在 Guardrail 层处理
-        # 这里做更细致的 LLM 评估
+        """快速风险检查"""
         try:
             resp = await self.client.chat.completions.create(
-                model=self.client._base_url,  # 使用配置的模型
+                model=self.client._base_url,
                 messages=[
                     {"role": "system", "content": (
                         "你是危机风险评估引擎。分析用户消息的风险等级。\n"
@@ -111,6 +94,6 @@ class RiskAgent(BaseAgent):
             content=raw,
             emotion_level=profile.emotion_level,
             should_transition=(action in ("interrupt", "crisis")),
-            next_agent=AgentRole.CRISIS if action in ("interrupt", "crisis") else None,
+            next_agent=AgentRole.COGNITIVE_ORCHESTRATOR if action in ("interrupt", "crisis") else None,
             metadata={"risk_assessment": data},
         )
