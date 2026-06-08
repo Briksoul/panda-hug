@@ -80,7 +80,11 @@ export default function App() {
 
   // 发送消息（倾诉陪伴用）
   const handleSend = async (text) => {
-    if (!sessionId || !text.trim()) return;
+    if (!sessionId || !text.trim()) {
+      console.log('[onSend] blocked:', { sessionId, text: text.trim() });
+      return;
+    }
+    console.log('[onSend] sending:', text, 'sessionId:', sessionId);
     setLoading(true);
     try {
       const data = await sendMessage(sessionId, text);

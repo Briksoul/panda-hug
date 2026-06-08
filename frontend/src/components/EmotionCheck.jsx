@@ -61,10 +61,16 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
   // 选择情绪
   const handleEmotionSelect = async (emotion) => {
     if (submitting) return;
+    console.log('[EmotionCheck] clicked:', emotion.id, emotion.zh);
     setSelectedEmotion(emotion);
     if (emotion.id === "positive" || emotion.id === "stable") {
       setSubmitting(true);
-      await onSend(isZh ? `我现在感觉${emotion.zh}` : `I'm feeling ${emotion.en}`);
+      try {
+        await onSend(isZh ? `我现在感觉${emotion.zh}` : `I'm feeling ${emotion.en}`);
+        console.log('[EmotionCheck] onSend done');
+      } catch(e) {
+        console.error('[EmotionCheck] onSend error:', e);
+      }
       setBearStatus("happy");
       setStep("science");
       setSubmitting(false);
