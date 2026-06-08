@@ -1,142 +1,151 @@
-import { useState } from "react";
-
-const phases = [
+const features = [
   {
-    id: "emotion_check",
-    emoji: "💭",
-    titleZh: "懂你情绪",
-    titleEn: "Understand Emotions",
-    descZh: "了解你当前的情绪状态",
-    descEn: "Understand your current emotional state",
-    color: "from-blue-400 to-indigo-500",
+    id: "emotion",
+    emoji: "🎭",
+    zh: { title: "情绪识别", desc: "了解你当前的情绪状态" },
+    en: { title: "Emotion Recognition", desc: "Understand your current emotional state" },
+    color: "from-amber-100 to-orange-100",
+    border: "border-amber-200",
   },
   {
     id: "counseling",
     emoji: "💬",
-    titleZh: "陪你倾诉",
-    titleEn: "Talk Together",
-    descZh: "选择舒适的方式，和Panda聊聊",
-    descEn: "Choose a comfortable way to chat with Panda",
-    color: "from-purple-400 to-pink-500",
+    zh: { title: "倾诉陪伴", desc: "选择舒适的方式，和Panda聊聊" },
+    en: { title: "Confiding Company", desc: "Choose a comfortable way to chat with Panda" },
+    color: "from-blue-100 to-indigo-100",
+    border: "border-blue-200",
   },
   {
     id: "insight",
     emoji: "🪞",
-    titleZh: "看见自己",
-    titleEn: "See Yourself",
-    descZh: "生成专属的心理洞察报告",
-    descEn: "Generate your personalized insight report",
-    color: "from-pink-400 to-rose-500",
+    zh: { title: "看见自己", desc: "生成专属的心理洞察报告" },
+    en: { title: "See Yourself", desc: "Generate your personalized insight report" },
+    color: "from-pink-100 to-rose-100",
+    border: "border-pink-200",
   },
   {
-    id: "coaching",
+    id: "training",
     emoji: "🧘",
-    titleZh: "一起练习",
-    titleEn: "Practice Together",
-    descZh: "体验融合东西方智慧的放松训练",
-    descEn: "Experience relaxation training blending East and West",
-    color: "from-teal-400 to-cyan-500",
+    zh: { title: "正念冥想", desc: "体验融合东西方智慧的放松训练" },
+    en: { title: "Mindfulness", desc: "Experience relaxation training" },
+    color: "from-teal-100 to-cyan-100",
+    border: "border-teal-200",
+  },
+  {
+    id: "knowledge",
+    emoji: "📖",
+    zh: { title: "心理知识", desc: "探索心理学知识库" },
+    en: { title: "Knowledge", desc: "Explore psychology knowledge base" },
+    color: "from-purple-100 to-violet-100",
+    border: "border-purple-200",
   },
 ];
 
-export default function HomePage({ onNavigate, state, language }) {
+export default function HomePage({ onStart, onNavigate, language, loading, sessionId }) {
   const isZh = language === "zh";
-  const profile = state?.profile || {};
-  const bearStatus = profile.bear_status || "calm";
 
-  const bearEmoji = {
-    happy: "🐻",
-    calm: "🐻",
-    tired: "🐻",
-  }[bearStatus] || "🐻";
-
-  const bearLabel = {
-    happy: isZh ? "开心小熊" : "Happy Bear",
-    calm: isZh ? "平静小熊" : "Calm Bear",
-    tired: isZh ? "疲惫小熊" : "Tired Bear",
-  }[bearStatus] || (isZh ? "小熊" : "Bear");
+  const handleFeatureClick = (id) => {
+    if (!sessionId) {
+      // 需要先选择语言
+      return;
+    }
+    onNavigate(id);
+  };
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      {/* 顶部欢迎区 */}
-      <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white py-12 px-8">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="text-6xl mb-4">{bearEmoji}</div>
-          <h1 className="text-3xl font-bold mb-2">
+    <div className="min-h-[calc(100vh-64px)]">
+      {/* Hero 区域 */}
+      <section className="relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+          {/* 熊猫形象 */}
+          <div className="relative inline-block mb-8">
+            <div className="text-[120px] animate-bounce-slow">🐼</div>
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-32 h-4 bg-black/5 rounded-full blur-sm"></div>
+          </div>
+
+          {/* 介绍文字 */}
+          <h1 className="text-3xl md:text-4xl font-bold text-[#3a2a1a] mb-4">
             {isZh ? "你好，我是 Panda！" : "Hi, I'm Panda!"}
           </h1>
-          <p className="text-lg opacity-90 mb-4">
+          <p className="text-lg text-[#6a5a4a] max-w-2xl mx-auto mb-2 leading-relaxed">
             {isZh
-              ? "无论你来自哪里，我都会在这里陪伴你。"
-              : "No matter where you're from, I'll be here for you."}
+              ? "在快节奏的世界里，我们常常忽略自己的情绪。我是你的虚拟心理咨询师，陪伴你梳理内心的困惑，为你提供一个安全、温暖的倾诉空间。"
+              : "In a fast-paced world, we often ignore our own emotions. As your virtual counselor, I'm here to help you sort out your confusion and provide a safe, warm space."}
           </p>
-          {profile.name && (
-            <p className="text-sm opacity-75">
-              {isZh ? `欢迎回来，${profile.name}` : `Welcome back, ${profile.name}`}
-              {profile.emotion_level && ` · ${bearLabel}`}
+          <p className="text-sm text-[#8a7a6a] mb-8">
+            {isZh
+              ? "在这里，你可以卸下防备，和我聊聊那些让你焦虑、迷茫、难过的事。我会在这里，默默倾听你的每一句话。"
+              : "Here, you can let your guard down and talk about things that make you anxious, confused, or sad. I'll be here, silently listening."}
+          </p>
+
+          {/* 语言选择 / 开始按钮 */}
+          {!sessionId ? (
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-sm text-[#8a7a6a]">
+                {isZh ? "选择语言开始：" : "Select language to start:"}
+              </p>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => onStart("zh")}
+                  disabled={loading}
+                  className="px-8 py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-400 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50"
+                >
+                  🇨🇳 中文
+                </button>
+                <button
+                  onClick={() => onStart("en")}
+                  disabled={loading}
+                  className="px-8 py-3 rounded-2xl bg-gradient-to-r from-blue-400 to-indigo-400 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50"
+                >
+                  🇺🇸 English
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-[#8a7a6a]">
+              {isZh ? "点击下方功能，开启你的心灵治愈之旅 ✨" : "Start your soul-healing journey by clicking the functions below ✨"}
             </p>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* 功能卡片 */}
-      <div className="max-w-3xl mx-auto py-8 px-4">
-        <h2 className="text-xl font-semibold text-gray-700 mb-6 text-center">
-          {isZh ? "选择一个功能开始" : "Choose a feature to begin"}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {phases.map((phase) => (
-            <button
-              key={phase.id}
-              onClick={() => onNavigate(phase.id)}
-              className="group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-xl bg-white border border-gray-100 shadow-sm"
-            >
-              <div className={`absolute inset-0 bg-gradient-to-br ${phase.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-              <div className="relative z-10">
-                <div className="text-4xl mb-3">{phase.emoji}</div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                  {isZh ? phase.titleZh : phase.titleEn}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  {isZh ? phase.descZh : phase.descEn}
-                </p>
-              </div>
-              <div className="absolute bottom-3 right-3 text-gray-300 group-hover:text-indigo-400 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* 快速状态 */}
-        {state && (
-          <div className="mt-8 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500 mb-4">
-              {isZh ? "你的状态" : "Your Status"}
-            </h3>
-            <div className="flex items-center justify-around">
-              <div className="text-center">
-                <div className="text-2xl mb-1">{bearEmoji}</div>
-                <p className="text-xs text-gray-500">{bearLabel}</p>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-indigo-500">{profile.phq2_score || 0}</div>
-                <p className="text-xs text-gray-500">PHQ-2</p>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-500">{profile.gad2_score || 0}</div>
-                <p className="text-xs text-gray-500">GAD-2</p>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-pink-500">{profile.turns || 0}</div>
-                <p className="text-xs text-gray-500">{isZh ? "对话轮次" : "Turns"}</p>
-              </div>
-            </div>
+      {/* 功能模块 */}
+      {sessionId && (
+        <section className="max-w-4xl mx-auto px-4 pb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {features.map((feat) => (
+              <button
+                key={feat.id}
+                onClick={() => handleFeatureClick(feat.id)}
+                className={`group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:scale-[1.03] hover:shadow-lg bg-gradient-to-br ${feat.color} border ${feat.border}`}
+              >
+                <div className="relative z-10">
+                  <div className="text-4xl mb-3">{feat.emoji}</div>
+                  <h3 className="text-lg font-bold text-[#3a2a1a] mb-1">
+                    {isZh ? feat.zh.title : feat.en.title}
+                  </h3>
+                  <p className="text-sm text-[#6a5a4a]">
+                    {isZh ? feat.zh.desc : feat.en.desc}
+                  </p>
+                </div>
+                <div className="absolute bottom-3 right-3 text-[#8a7a6a] group-hover:text-[#5a4a3a] transition-colors">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </button>
+            ))}
           </div>
-        )}
-      </div>
+        </section>
+      )}
+
+      <style>{`
+        @keyframes bounce-slow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
+      `}</style>
     </div>
   );
 }
