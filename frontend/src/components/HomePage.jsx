@@ -1,3 +1,8 @@
+import { useState } from "react";
+import homePanda from "../assets/home-panda.png";
+import panda1 from "../assets/panda-1.png";
+import panda2 from "../assets/panda-2.png";
+
 const features = [
   {
     id: "emotion",
@@ -44,26 +49,22 @@ const features = [
 export default function HomePage({ onStart, onNavigate, language, loading, sessionId }) {
   const isZh = language === "zh";
 
-  const handleFeatureClick = (id) => {
-    if (!sessionId) {
-      // 需要先选择语言
-      return;
-    }
-    onNavigate(id);
-  };
-
   return (
     <div className="min-h-[calc(100vh-64px)]">
       {/* Hero 区域 */}
       <section className="relative overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-          {/* 熊猫形象 */}
-          <div className="relative inline-block mb-8">
-            <div className="text-[120px] animate-bounce-slow">🐼</div>
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-32 h-4 bg-black/5 rounded-full blur-sm"></div>
+        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+          {/* 熊猫形象 — 使用文档中的设计图 */}
+          <div className="relative inline-block mb-6">
+            <img
+              src={homePanda}
+              alt="Panda"
+              className="w-48 h-48 object-contain mx-auto drop-shadow-lg"
+              style={{ animation: "float 3s ease-in-out infinite" }}
+            />
           </div>
 
-          {/* 介绍文字 */}
+          {/* 中英双语介绍 */}
           <h1 className="text-3xl md:text-4xl font-bold text-[#3a2a1a] mb-4">
             {isZh ? "你好，我是 Panda！" : "Hi, I'm Panda!"}
           </h1>
@@ -72,15 +73,20 @@ export default function HomePage({ onStart, onNavigate, language, loading, sessi
               ? "在快节奏的世界里，我们常常忽略自己的情绪。我是你的虚拟心理咨询师，陪伴你梳理内心的困惑，为你提供一个安全、温暖的倾诉空间。"
               : "In a fast-paced world, we often ignore our own emotions. As your virtual counselor, I'm here to help you sort out your confusion and provide a safe, warm space."}
           </p>
-          <p className="text-sm text-[#8a7a6a] mb-8">
+          <p className="text-sm text-[#8a7a6a] mb-6">
             {isZh
               ? "在这里，你可以卸下防备，和我聊聊那些让你焦虑、迷茫、难过的事。我会在这里，默默倾听你的每一句话。"
               : "Here, you can let your guard down and talk about things that make you anxious, confused, or sad. I'll be here, silently listening."}
           </p>
+          <p className="text-sm text-[#b8a090] font-medium">
+            {isZh
+              ? "点击下方功能，开启你的心灵治愈之旅"
+              : "Start your soul-healing journey by clicking the functions below"}
+          </p>
 
           {/* 语言选择 / 开始按钮 */}
           {!sessionId ? (
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4 mt-6">
               <p className="text-sm text-[#8a7a6a]">
                 {isZh ? "选择语言开始：" : "Select language to start:"}
               </p>
@@ -101,11 +107,7 @@ export default function HomePage({ onStart, onNavigate, language, loading, sessi
                 </button>
               </div>
             </div>
-          ) : (
-            <p className="text-sm text-[#8a7a6a]">
-              {isZh ? "点击下方功能，开启你的心灵治愈之旅 ✨" : "Start your soul-healing journey by clicking the functions below ✨"}
-            </p>
-          )}
+          ) : null}
         </div>
       </section>
 
@@ -116,7 +118,7 @@ export default function HomePage({ onStart, onNavigate, language, loading, sessi
             {features.map((feat) => (
               <button
                 key={feat.id}
-                onClick={() => handleFeatureClick(feat.id)}
+                onClick={() => onNavigate(feat.id)}
                 className={`group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:scale-[1.03] hover:shadow-lg bg-gradient-to-br ${feat.color} border ${feat.border}`}
               >
                 <div className="relative z-10">
@@ -140,11 +142,10 @@ export default function HomePage({ onStart, onNavigate, language, loading, sessi
       )}
 
       <style>{`
-        @keyframes bounce-slow {
+        @keyframes float {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-10px); }
         }
-        .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
       `}</style>
     </div>
   );

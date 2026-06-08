@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { sendMessage } from "../utils/api";
+import trainingBreathing from "../assets/training-breathing.png";
+import trainingMindfulness from "../assets/training-mindfulness.png";
+import trainingEastern from "../assets/training-eastern.png";
+import trainingMusic from "../assets/training-music.png";
 
 const trainings = [
   {
@@ -7,6 +11,8 @@ const trainings = [
     emoji: "🧘",
     zh: { title: "呼吸训练", intro: "通过调节呼吸节奏影响神经系统，帮助身体快速放松。", suitable: "缓解焦虑、降低压力、稳定情绪" },
     en: { title: "Breathing", intro: "Regulate your nervous system through breathing rhythm.", suitable: "Anxiety relief, stress reduction" },
+    image: trainingBreathing,
+    image: trainingBreathing,
     color: "from-teal-200 to-cyan-200",
     border: "border-teal-300",
   },
@@ -15,6 +21,7 @@ const trainings = [
     emoji: "🧠",
     zh: { title: "正念训练", intro: "将注意力带回当下，减少反复担忧和情绪消耗。", suitable: "焦虑、压力过大、思绪停不下" },
     en: { title: "Mindfulness", intro: "Bring attention back to the present moment.", suitable: "Anxiety, overthinking, stress" },
+    image: trainingMindfulness,
     color: "from-blue-200 to-indigo-200",
     border: "border-blue-300",
   },
@@ -23,6 +30,7 @@ const trainings = [
     emoji: "🤸",
     zh: { title: "东方动作", intro: "融合中国传统养生智慧，通过太极拳、八段锦等调节促进心理平衡。", suitable: "身体疲劳、睡眠问题、长期压力、情绪紧绷" },
     en: { title: "Eastern Movement", intro: "Traditional Chinese wellness wisdom for mental balance.", suitable: "Fatigue, sleep issues, chronic stress" },
+    image: trainingEastern,
     color: "from-amber-200 to-orange-200",
     border: "border-amber-300",
   },
@@ -31,6 +39,7 @@ const trainings = [
     emoji: "🎵",
     zh: { title: "音乐放松训练", intro: "利用东西方音乐帮助大脑和身体逐渐进入放松状态。", suitable: "睡前放松、焦虑缓解、学习减压、情绪恢复" },
     en: { title: "Music Relaxation", intro: "Use music to help your brain and body relax.", suitable: "Sleep, anxiety, study stress, recovery" },
+    image: trainingMusic,
     color: "from-purple-200 to-pink-200",
     border: "border-purple-300",
   },
@@ -91,6 +100,7 @@ export default function Training({ sessionId, state, onNavigate, onGoNext, langu
                 className={`flex items-start gap-4 p-6 rounded-2xl bg-gradient-to-br ${t.color} border ${t.border} hover:scale-[1.03] hover:shadow-lg transition-all text-left`}
               >
                 <span className="text-4xl flex-shrink-0">{t.emoji}</span>
+                {t.image && <img src={t.image} alt={isZh ? t.zh.title : t.en.title} className="w-full h-32 object-contain rounded-lg mb-2" />}
                 <div>
                   <h3 className="text-lg font-bold text-[#3a2a1a] mb-1">
                     {isZh ? t.zh.title : t.en.title}
@@ -113,6 +123,9 @@ export default function Training({ sessionId, state, onNavigate, onGoNext, langu
         <div className="text-center">
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#e8ddd0] max-w-lg mx-auto">
             <div className="text-6xl mb-4">{selectedTraining.emoji}</div>
+            {selectedTraining.image && (
+              <img src={selectedTraining.image} alt="" className="w-full max-w-sm mx-auto rounded-2xl mb-4 shadow-md" />
+            )}
             <h3 className="text-2xl font-bold text-[#3a2a1a] mb-2">
               {isZh ? selectedTraining.zh.title : selectedTraining.en.title}
             </h3>

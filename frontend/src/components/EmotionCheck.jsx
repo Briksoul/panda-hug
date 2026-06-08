@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { sendMessage, getSessionState } from "../utils/api";
+import emotionSelectImg from "../assets/emotion-select.png";
 
 const emotions = [
   { id: "positive", emoji: "☀️", zh: "充满活力", en: "Energy High", color: "from-yellow-200 to-amber-200", border: "border-amber-300" },
