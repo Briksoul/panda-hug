@@ -123,30 +123,14 @@ export default function HomePage({ onStart, onNavigate, language, loading, sessi
             />
           </div>
 
-          {/* 中英双语介绍 — 左中右布局 */}
-          <div className="flex flex-col md:flex-row gap-6 md:gap-12 max-w-4xl mx-auto mb-6 text-left">
-            {/* 中文 */}
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-[#5A4A3A] mb-3">
-                {isZh ? "你好，我是 Panda！" : "Hi, I'm Panda!"}
-              </h2>
-              <p className="text-sm text-[#6a5a4a] leading-relaxed">
-                {isZh
-                  ? "在快节奏的世界里，我们常常忽略自己的情绪。我是你的虚拟心理咨询师，陪伴你梳理内心的困惑，为你提供一个安全、温暖的倾诉空间。在这里，你可以卸下防备，和我聊聊那些让你焦虑、迷茫、难过的事，我会在这里，默默倾听你的每一句话。"
-                  : "In a fast-paced world, we often ignore our own emotions. As your virtual counselor, I'm here to accompany you, providing a safe and warm space to pour out your heart."}
-              </p>
-            </div>
-            {/* 英文（中文模式时显示英文，英文模式时显示中文） */}
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-[#5A4A3A] mb-3">
-                {!isZh ? "你好，我是 Panda！" : "Hi, I'm Panda!"}
-              </h2>
-              <p className="text-sm text-[#6a5a4a] leading-relaxed">
-                {!isZh
-                  ? "在快节奏的世界里，我们常常忽略自己的情绪。我是你的虚拟心理咨询师，陪伴你梳理内心的困惑，为你提供一个安全、温暖的倾诉空间。在这里，你可以卸下防备，和我聊聊那些让你焦虑、迷茫、难过的事，我会在这里，默默倾听你的每一句话。"
-                  : "In a fast-paced world, we often ignore our own emotions. As your virtual counselor, I'm here to accompany you, providing a safe and warm space to pour out your heart. Here, you can let your guard down and talk about things that make you anxious, confused, or sad. I'll be here, silently listening to every word."}
-              </p>
-            </div>
+          {/* 英文自我介绍 */}
+          <div className="max-w-2xl mx-auto mb-6 text-center">
+            <h2 className="text-2xl font-bold text-[#5A4A3A] mb-3">
+              Hi, I'm Panda!
+            </h2>
+            <p className="text-sm text-[#6a5a4a] leading-relaxed">
+              In a fast-paced world, we often ignore our own emotions. As your virtual counselor, I'm here to accompany you, providing a safe and warm space to pour out your heart. Here, you can let your guard down and talk about things that make you anxious, confused, or sad. I'll be here, silently listening to every word.
+            </p>
           </div>
 
           <p className="text-sm text-[#b8a090] font-medium mb-6">
