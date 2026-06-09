@@ -139,3 +139,14 @@ panda-harmony/
 | POST | /api/navigate | 导航到指定阶段 |
 | GET | /api/session/{id}/state | 获取会话状态 |
 | GET | /api/session/{id}/history | 获取会话历史 |
+
+## 致谢
+
+感谢所有为 Panda Hug 项目付出努力的成员：
+
+- **指导老师：** 顾小东
+- **队长：** 屈春瑾
+- **成员：** WeiWang、彭伟翰、尚淑慧、吴科科
+- **AI 助手：** KKmimo
+
+本项目是我们五位组员同学和一位指导老师共同努力的成果。
