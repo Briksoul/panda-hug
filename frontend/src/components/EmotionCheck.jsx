@@ -71,21 +71,20 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
   };
 
   // 量表回答
-  const handleAnswer = async (score) => {
+  const handleAnswer = (score) => {
     if (submitting) return;
-    setSubmitting(true);
     const newAnswers = [...answers, score];
     setAnswers(newAnswers);
     const option = scoreOptions.find((o) => o.score === score);
-    await onSend(isZh ? option.zh : option.en);
+    onSend(isZh ? option.zh : option.en); // 异步发送，不阻塞 UI
     if (newAnswers.length >= 4) {
+      setSubmitting(true);
       const total = newAnswers[0] + newAnswers[1] + newAnswers[2] + newAnswers[3];
       if (total <= 1) setBearStatus("happy");
       else if (total <= 5) setBearStatus("calm");
       else setBearStatus("tired");
       setStep("result");
     }
-    setSubmitting(false);
   };
 
   // 跳过量表

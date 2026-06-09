@@ -12,6 +12,7 @@ const trainings = [
     zh: { title: "呼吸训练", intro: "通过调节呼吸节奏影响神经系统，帮助身体快速放松。", suitable: "缓解焦虑、降低压力、稳定情绪" },
     en: { title: "Breathing", intro: "Regulate your nervous system through breathing rhythm.", suitable: "Anxiety relief, stress reduction" },
     image: trainingBreathing,
+    video: "/videos/呼吸训练.mp4",
     color: "from-teal-200 to-cyan-200",
     border: "border-teal-300",
   },
@@ -21,6 +22,7 @@ const trainings = [
     zh: { title: "正念训练", intro: "将注意力带回当下，减少反复担忧和情绪消耗。", suitable: "焦虑、压力过大、思绪停不下" },
     en: { title: "Mindfulness", intro: "Bring attention back to the present moment.", suitable: "Anxiety, overthinking, stress" },
     image: trainingMindfulness,
+    video: "/videos/正念训练.mp4",
     color: "from-blue-200 to-indigo-200",
     border: "border-blue-300",
   },
@@ -30,6 +32,8 @@ const trainings = [
     zh: { title: "东方动作", intro: "融合中国传统养生智慧，通过太极拳、八段锦等调节促进心理平衡。", suitable: "身体疲劳、睡眠问题、长期压力、情绪紧绷" },
     en: { title: "Eastern Movement", intro: "Traditional Chinese wellness wisdom for mental balance.", suitable: "Fatigue, sleep issues, chronic stress" },
     image: trainingEastern,
+    video: "/videos/东方动作.mp4",
+    color: "from-amber-200 to-orange-200",
     border: "border-amber-300",
   },
   {
@@ -38,6 +42,7 @@ const trainings = [
     zh: { title: "音乐放松训练", intro: "利用东西方音乐帮助大脑和身体逐渐进入放松状态。", suitable: "睡前放松、焦虑缓解、学习减压、情绪恢复" },
     en: { title: "Music Relaxation", intro: "Use music to help your brain and body relax.", suitable: "Sleep, anxiety, study stress, recovery" },
     image: trainingMusic,
+    video: "/videos/音乐放松训练.mp4",
     color: "from-purple-200 to-pink-200",
     border: "border-purple-300",
   },
@@ -126,15 +131,19 @@ export default function Training({ sessionId, state, onNavigate, onGoNext, langu
               <img src={selectedTraining.image} alt="" className="w-full max-w-sm mx-auto rounded-2xl mb-4 shadow-md" />
             )}
 
-            {/* 视频播放器预留位置 */}
-            <div className="bg-gray-100 rounded-2xl mb-4 flex items-center justify-center" style={{ minHeight: "200px" }}>
-              <div className="text-center text-gray-400">
-                <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p className="text-sm">{isZh ? "视频加载区域" : "Video area"}</p>
-              </div>
+            {/* 训练视频区域 */}
+            <div className="bg-[#faf6f0] rounded-xl p-4 mb-6 border border-[#e8ddd0]">
+              {selectedTraining.video ? (
+                <video
+                  key={selectedTraining.id}
+                  src={selectedTraining.video}
+                  controls
+                  autoPlay
+                  className="w-full max-w-md mx-auto rounded-xl shadow-md"
+                />
+              ) : (
+                <p className="text-[#8a7a6a] text-sm">{isZh ? "暂无视频" : "No video available"}</p>
+              )}
             </div>
             <h3 className="text-2xl font-bold text-[#3a2a1a] mb-2">
               {isZh ? selectedTraining.zh.title : selectedTraining.en.title}

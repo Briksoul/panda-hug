@@ -314,15 +314,17 @@ class CognitiveOrchestrator:
         history_text = " ".join(m["content"] for m in session.history if m["role"] == "user")
         can_generate = counseling_turns >= 5 and len(history_text) >= 20
 
-        # 不足条件，继续对话
-        if not can_generate and not response.should_transition:
+        # 不足条件，继续对话（忽略 counselor 的 should_transition，必须满足轮次+字数）
+        if not can_generate:
+            response.should_transition = False
+            response.next_phase = None
+            response.action_links = []
             self._save_session(session)
             return response
 
         # 达到条件，生成报告
-        if can_generate or response.should_transition:
-            if can_generate and not response.should_transition:
-                response.content += ("\n\n" + (is_zh and "谢谢你的分享，让我为你生成一份心理洞察报告吧。" or "Thank you for sharing. Let me generate an insight report for you."))
+        if can_generate:
+            pass  # 不追加过渡文案，让用户自然看到「看见自己」按钮
 
             # 用对话历史作为信息来源
             session.counseling_data["history_text"] = history_text

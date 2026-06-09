@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 3000,
-    allowedHosts: ["pandahug.ngrok-free.app"],
+    allowedHosts: ["pandahug.ngrok-free.app", "pandahug-tek2-co.ngrok-free.app"],
     proxy: {
       "/api": {
         target: "http://localhost:8000",

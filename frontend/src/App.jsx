@@ -66,6 +66,10 @@ export default function App() {
       // 需要先创建会话
       return;
     }
+    // 进入倾诉陪伴时清空消息，显示欢迎语
+    if (page === "counseling") {
+      setMessages([]);
+    }
     setCurrentPage(page);
     if (sessionId) {
       try {
@@ -75,6 +79,18 @@ export default function App() {
       } catch (e) {
         console.error(e);
       }
+    }
+  };
+
+  // 情绪识别专用：只通知后端，不污染聊天记录
+  const handleEmotionSend = async (text) => {
+    if (!sessionId || !text.trim()) return;
+    try {
+      await sendMessage(sessionId, text);
+      const state = await getSessionState(sessionId);
+      setSessionState(state);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -146,7 +162,7 @@ export default function App() {
             onNavigate={navigate}
             onGoNext={() => goNext("emotion")}
             language={language}
-            onSend={handleSend}
+            onSend={handleEmotionSend}
           />
         )}
         {currentPage === "counseling" && (
