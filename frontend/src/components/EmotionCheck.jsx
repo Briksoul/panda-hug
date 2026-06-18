@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const emotions = [
   { id: "positive", emoji: "☀️", zh: "充满活力", en: "Energy High", color: "from-yellow-200 to-amber-200", border: "border-amber-300" },
@@ -23,9 +23,9 @@ const scoreOptions = [
 ];
 
 const bearResults = {
-  happy: { emoji: "🐻", zh: "开心小熊", en: "Happy Bear", zhDesc: "当前未发现明显心理情绪风险", enDesc: "No significant emotional risk detected" },
+  happy: { emoji: "😊", zh: "开心小熊", en: "Happy Bear", zhDesc: "当前未发现明显心理情绪风险", enDesc: "No significant emotional risk detected" },
   calm: { emoji: "🐻", zh: "平静小熊", en: "Calm Bear", zhDesc: "存在轻度心理情绪困扰", enDesc: "Mild emotional distress detected" },
-  tired: { emoji: "🐻", zh: "疲惫小熊", en: "Tired Bear", zhDesc: "心理情绪风险较高", enDesc: "Higher emotional risk detected" },
+  tired: { emoji: "🐻‍❄️", zh: "疲惫小熊", en: "Tired Bear", zhDesc: "心理情绪风险较高", enDesc: "Higher emotional risk detected" },
 };
 
 export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, language, onSend }) {
@@ -34,10 +34,13 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [bearStatus, setBearStatus] = useState(null);
-  const [submitting, setSubmitting] = useState(false); // 防抖
+  const [submitting, setSubmitting] = useState(false);
   const [greeting, setGreeting] = useState("");
+  // V5: 防抖 — 用 ref 追踪最新状态，避免闭包陷阱
+  const debounceRef = useRef(null);
+  const submittingRef = useRef(false);
+  const answersRef = useRef([]);
 
-  // 根据时间设置问候
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) setGreeting(isZh ? "早上好" : "Good morning");
@@ -45,7 +48,7 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
     else setGreeting(isZh ? "晚上好" : "Good evening");
   }, [isZh]);
 
-  // 恢复状态 - 仅在评估已完成时跳到结果页
+  // 恢复状态
   useEffect(() => {
     if (state?.emotion_assessment_done && state?.profile?.bear_status) {
       setBearStatus(state.profile.bear_status);
@@ -53,49 +56,67 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
     }
   }, [state]);
 
-  // 选择情绪
-  const handleEmotionSelect = async (emotion) => {
-    if (submitting) return;
-    setSelectedEmotion(emotion);
-    if (emotion.id === "positive" || emotion.id === "stable") {
-      setSubmitting(true);
-      try {
-        await onSend(isZh ? `我现在感觉${emotion.zh}` : `I'm feeling ${emotion.en}`);
-      } catch(e) { /* ignore */ }
-      setBearStatus("happy");
-      setStep("science");
-      setSubmitting(false);
-    } else {
-      setStep("assess");
-    }
-  };
+  // V5: 防抖选择情绪
+  const handleEmotionSelect = useCallback((emotion) => {
+    if (submittingRef.current) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      if (submittingRef.current) return; // 二次检查
+      setSelectedEmotion(emotion);
+      if (emotion.id === "positive" || emotion.id === "stable") {
+        submittingRef.current = true;
+        setSubmitting(true);
+        try {
+          await onSend(isZh ? `我现在感觉${emotion.zh}` : `I'm feeling ${emotion.en}`);
+        } catch(e) { /* ignore */ }
+        setBearStatus("happy");
+        setStep("science");
+        submittingRef.current = false;
+        setSubmitting(false);
+      } else {
+        setStep("assess");
+      }
+    }, 300);
+  }, [isZh, onSend]);
 
-  // 量表回答
-  const handleAnswer = (score) => {
-    if (submitting) return;
-    const newAnswers = [...answers, score];
-    setAnswers(newAnswers);
-    const option = scoreOptions.find((o) => o.score === score);
-    onSend(isZh ? option.zh : option.en); // 异步发送，不阻塞 UI
-    if (newAnswers.length >= 4) {
-      setSubmitting(true);
-      const total = newAnswers[0] + newAnswers[1] + newAnswers[2] + newAnswers[3];
-      if (total <= 1) setBearStatus("happy");
-      else if (total <= 5) setBearStatus("calm");
-      else setBearStatus("tired");
-      setStep("result");
-    }
-  };
+  // V5: 防抖量表回答
+  const handleAnswer = useCallback((score) => {
+    if (submittingRef.current) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      if (submittingRef.current) return;
+      const newAnswers = [...answersRef.current, score];
+      answersRef.current = newAnswers;
+      setAnswers(newAnswers);
+      const option = scoreOptions.find((o) => o.score === score);
+      onSend(isZh ? option.zh : option.en);
+      if (newAnswers.length >= 4) {
+        submittingRef.current = true;
+        setSubmitting(true);
+        const total = newAnswers[0] + newAnswers[1] + newAnswers[2] + newAnswers[3];
+        if (total <= 1) setBearStatus("happy");
+        else if (total <= 5) setBearStatus("calm");
+        else setBearStatus("tired");
+        setStep("result");
+        submittingRef.current = false;
+      }
+    }, 200);
+  }, [isZh, onSend]);
 
-  // 跳过量表
-  const handleSkipAssessment = async () => {
-    if (submitting) return;
+  // V5: 跳过量表
+  const handleSkipAssessment = useCallback(async () => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
-    await onSend("跳过测试");
-    setBearStatus("calm");
-    setStep("result");
-    setSubmitting(false);
-  };
+    try {
+      await onSend("跳过测试");
+      setBearStatus("calm");
+      setStep("result");
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
+    }
+  }, [onSend]);
 
   const bear = bearResults[bearStatus] || bearResults.calm;
   const currentQuestion = answers.length;
@@ -105,9 +126,7 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
       {/* 步骤1：选择情绪 */}
       {step === "select" && (
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-[#3a2a1a] mb-2">
-            {greeting}！
-          </h2>
+          <h2 className="text-2xl font-bold text-[#3a2a1a] mb-2">{greeting}！</h2>
           <p className="text-lg text-[#6a5a4a] mb-8">
             {isZh ? "你现在感觉怎么样？" : "How are you feeling right now?"}
           </p>
@@ -116,12 +135,11 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
               <button
                 key={emo.id}
                 onClick={() => handleEmotionSelect(emo)}
-                className={`flex flex-col items-center gap-3 p-6 rounded-2xl bg-gradient-to-br ${emo.color} border ${emo.border} hover:scale-105 hover:shadow-lg transition-all`}
+                disabled={submitting}
+                className={`flex flex-col items-center gap-3 p-6 rounded-2xl bg-gradient-to-br ${emo.color} border ${emo.border} hover:scale-105 hover:shadow-lg transition-all disabled:opacity-50`}
               >
                 <span className="text-5xl">{emo.emoji}</span>
-                <span className="text-sm font-semibold text-[#3a2a1a]">
-                  {isZh ? emo.zh : emo.en}
-                </span>
+                <span className="text-sm font-semibold text-[#3a2a1a]">{isZh ? emo.zh : emo.en}</span>
               </button>
             ))}
           </div>
@@ -136,9 +154,7 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
               {isZh ? "情绪小测试" : "Emotion Assessment"}
             </h3>
             <p className="text-sm text-[#8a7a6a] mb-6">
-              {isZh
-                ? "为了更好地了解您的情绪状况，请回答以下问题："
-                : "To better understand your emotional state, please answer:"}
+              {isZh ? "为了更好地了解您的情绪状况，请回答以下问题：" : "To better understand your emotional state:"}
             </p>
 
             {/* 进度条 */}
@@ -148,17 +164,11 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
               ))}
             </div>
 
-            {/* 当前问题 */}
             <div className="mb-6">
-              <p className="text-lg font-medium text-[#3a2a1a] mb-1">
-                {currentQuestion + 1}/4
-              </p>
-              <p className="text-[#5a4a3a]">
-                {isZh ? questions[currentQuestion].zh : questions[currentQuestion].en}
-              </p>
+              <p className="text-lg font-medium text-[#3a2a1a] mb-1">{currentQuestion + 1}/4</p>
+              <p className="text-[#5a4a3a]">{isZh ? questions[currentQuestion].zh : questions[currentQuestion].en}</p>
             </div>
 
-            {/* 选项 */}
             <div className="grid grid-cols-2 gap-3">
               {scoreOptions.map((opt) => (
                 <button
@@ -171,7 +181,8 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
                 </button>
               ))}
             </div>
-            {/* 跳过按钮 */}
+
+            {/* V5: 跳过按钮 */}
             <button
               onClick={handleSkipAssessment}
               disabled={submitting}
@@ -183,7 +194,7 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
         </div>
       )}
 
-      {/* 步骤2b：科普文案（积极情绪） */}
+      {/* 步骤2b：科普文案 */}
       {step === "science" && (
         <div className="text-center">
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#e8ddd0] max-w-lg mx-auto">
@@ -195,23 +206,15 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
               <p className="text-[#5a4a3a] leading-relaxed">
                 {isZh
                   ? "心理健康需要关注日常情绪调节和心理自我照护，这是每个人都可以实践的小技巧。保持积极心态的同时，也别忘了给自己留一些放松和反思的时间。"
-                  : "Mental health requires daily emotional regulation and self-care. These are small practices everyone can do. While maintaining a positive attitude, remember to set aside time for relaxation and reflection."}
+                  : "Mental health requires daily emotional regulation and self-care. These are small practices everyone can do."}
               </p>
             </div>
-            <p className="text-[#6a5a4a] mb-4">
-              {isZh ? "要进一步和我聊聊吗？" : "Would you like to chat more?"}
-            </p>
+            <p className="text-[#6a5a4a] mb-4">{isZh ? "要进一步和我聊聊吗？" : "Would you like to chat more?"}</p>
             <div className="flex gap-3 justify-center">
-              <button
-                onClick={onGoNext}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold hover:shadow-lg transition-all"
-              >
+              <button onClick={onGoNext} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold hover:shadow-lg transition-all">
                 {isZh ? "陪你倾诉 →" : "Confide →"}
               </button>
-              <button
-                onClick={() => onNavigate("home")}
-                className="px-6 py-2.5 rounded-xl bg-[#faf6f0] border border-[#e8ddd0] text-[#5a4a3a] font-medium hover:bg-[#f0e6d8] transition-all"
-              >
+              <button onClick={() => onNavigate("home")} className="px-6 py-2.5 rounded-xl bg-[#faf6f0] border border-[#e8ddd0] text-[#5a4a3a] font-medium hover:bg-[#f0e6d8] transition-all">
                 {isZh ? "返回主页" : "Home"}
               </button>
             </div>
@@ -224,24 +227,16 @@ export default function EmotionCheck({ sessionId, state, onNavigate, onGoNext, l
         <div className="text-center">
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#e8ddd0] max-w-lg mx-auto">
             <div className="text-8xl mb-4">{bear.emoji}</div>
-            <h3 className="text-2xl font-bold text-[#3a2a1a] mb-2">
-              {isZh ? bear.zh : bear.en}
-            </h3>
-            <p className="text-[#6a5a4a] mb-6">
-              {isZh ? bear.zhDesc : bear.enDesc}
-            </p>
+            <h3 className="text-2xl font-bold text-[#3a2a1a] mb-2">{isZh ? bear.zh : bear.en}</h3>
+            <p className="text-[#6a5a4a] mb-6">{isZh ? bear.zhDesc : bear.enDesc}</p>
 
-            {/* 超链接引导 */}
             <div className="bg-[#faf6f0] rounded-xl p-4 border border-[#e8ddd0]">
               <p className="text-[#5a4a3a] mb-3">
                 {isZh
-                  ? "要进一步和我聊聊吗？我可以陪你一起梳理困扰、理解情绪，并为你生成专属的心理情绪洞察报告。"
-                  : "Would you like to chat more? I can help you sort out your feelings and generate a personalized insight report."}
+                  ? "要进一步和我聊聊吗？我可以陪你一起梳理困扰、理解情绪，并为你生成专属的心理洞察报告。"
+                  : "Would you like to chat more? I can help you generate a personalized insight report."}
               </p>
-              <button
-                onClick={onGoNext}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold hover:shadow-lg hover:scale-105 transition-all"
-              >
+              <button onClick={onGoNext} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold hover:shadow-lg hover:scale-105 transition-all">
                 {isZh ? "点击「陪你倾诉」，我们开始吧！" : "Click 'Confide' to begin!"}
               </button>
             </div>

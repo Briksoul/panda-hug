@@ -15,9 +15,9 @@ from api.emotion import router as emotion_router
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="Panda Hug V4",
-        description="跨文化智能心理伴侣 — 7 Agent + 6 知识库 RAG 系统",
-        version="4.0.0",
+        title="Panda Hug V5",
+        description="跨文化智能心理伴侣 — 8 Agent + U型曲线 + 双视角报告 + 虚拟社交演练",
+        version="5.0.0",
     )
 
     # CORS

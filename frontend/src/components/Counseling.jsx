@@ -1,20 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import panda3 from "../assets/panda-3.png";
 
 const commModes = [
-  { id: "video", zh: "视频通话", en: "Video Call", gradient: "linear-gradient(135deg, #D0F0E8, #A0E0D0)", shadow: "rgba(72,187,120,0.2)",
-    icon: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" stroke="#38A169" strokeWidth="2" strokeLinecap="round"><rect x="6" y="12" width="28" height="24" rx="4" /><path d="M34 20 L44 14 V34 L34 28" /></svg> },
-  { id: "voice", zh: "语音通话", en: "Voice Call", gradient: "linear-gradient(135deg, #FFF3D4, #FFE8B0)", shadow: "rgba(232,184,75,0.2)",
-    icon: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" stroke="#B7791F" strokeWidth="2" strokeLinecap="round"><rect x="16" y="6" width="16" height="28" rx="8" /><path d="M10 24 C10 32 16 38 24 38 C32 38 38 32 38 24" /><path d="M24 38 V44" /><path d="M16 44 H32" /></svg> },
-  { id: "text", zh: "文字聊天", en: "Text Chat", gradient: "linear-gradient(135deg, #E8D8F5, #D0B8E8)", shadow: "rgba(159,122,234,0.2)",
-    icon: <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" stroke="#805AD5" strokeWidth="2" strokeLinecap="round"><rect x="6" y="8" width="36" height="26" rx="5" /><circle cx="18" cy="21" r="2" fill="#805AD5" /><circle cx="25" cy="21" r="2" fill="#805AD5" /><circle cx="32" cy="21" r="2" fill="#805AD5" /><path d="M14 34 L22 40 L30 34" /></svg> },
+  { id: "video", zh: "视频通话", en: "Video Call", emoji: "📹" },
+  { id: "voice", zh: "语音通话", en: "Voice Call", emoji: "🎤" },
+  { id: "text", zh: "文字聊天", en: "Text Chat", emoji: "💬" },
 ];
 
 export default function Counseling({ sessionId, messages, onSend, loading, state, onNavigate, onGoNext, language }) {
   const isZh = language === "zh";
   const [mode, setMode] = useState(null);
   const [input, setInput] = useState("");
-  const [mediaError, setMediaError] = useState(null); // #1 多模态权限降级
+  const [mediaError, setMediaError] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -23,7 +19,7 @@ export default function Counseling({ sessionId, messages, onSend, loading, state
 
   const handleSubmit = (e) => { e.preventDefault(); if (!input.trim() || loading) return; onSend(input); setInput(""); };
 
-  // #1 多模态权限请求 + 降级处理
+  // V5: 多模态权限请求 + 静默降级
   const requestMedia = async (type) => {
     try {
       if (type === "video") {
@@ -51,19 +47,16 @@ export default function Counseling({ sessionId, messages, onSend, loading, state
         </h2>
         <p className="text-[#6a5a4a] mb-8">{isZh ? "我会在这里倾听你的每一句话" : "I'll be here listening"}</p>
         {mediaError && (
-          <div className="mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-sm">
-            {mediaError}
-          </div>
+          <div className="mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-sm">{mediaError}</div>
         )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {commModes.map((m) => (
             <button key={m.id} onClick={() => {
-              if (m.id === "text") { setMode("text"); }
-              else { requestMedia(m.id); }
+              if (m.id === "text") setMode("text");
+              else requestMedia(m.id);
             }}
-              className="flex flex-col items-center gap-4 p-8 rounded-2xl border border-white/60 hover:scale-105 hover:-translate-y-1 transition-all duration-300"
-              style={{ background: m.gradient, boxShadow: `0 8px 30px ${m.shadow}` }}>
-              {m.icon}
+              className="flex flex-col items-center gap-4 p-8 rounded-2xl border border-white/60 bg-white/80 hover:scale-105 hover:-translate-y-1 transition-all duration-300 shadow-sm">
+              <span className="text-4xl">{m.emoji}</span>
               <span className="text-lg font-bold text-[#3a2a1a]">{isZh ? m.zh : m.en}</span>
             </button>
           ))}
@@ -72,18 +65,10 @@ export default function Counseling({ sessionId, messages, onSend, loading, state
     );
   }
 
-  // #2 骨架屏组件
-  const SkeletonBubble = () => (
-    <div className="flex gap-3 animate-pulse">
-      <div className="w-10 h-10 rounded-full bg-amber-100" />
-      <div className="space-y-2">
-        <div className="h-4 w-48 bg-gray-200 rounded" />
-        <div className="h-4 w-32 bg-gray-200 rounded" />
-      </div>
-    </div>
-  );
+  // V5: 检测社交演练状态
+  const isSocialRehearsal = state?.social_rehearsal_active;
+  const socialRole = state?.profile?.social_role;
 
-  // 对话界面
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col h-[calc(100vh-120px)]">
       {/* 头部 */}
@@ -91,8 +76,16 @@ export default function Counseling({ sessionId, messages, onSend, loading, state
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center text-xl">🐼</div>
           <div>
-            <h3 className="font-bold text-[#3a2a1a]">{isZh ? "Panda 心理咨询师" : "Panda Counselor"}</h3>
-            <p className="text-xs text-[#8a7a6a]">{mode === "video" ? "📹" : mode === "voice" ? "🎤" : "💬"} {isZh ? commModes.find(c=>c.id===mode)?.zh : commModes.find(c=>c.id===mode)?.en}</p>
+            <h3 className="font-bold text-[#3a2a1a]">
+              {isSocialRehearsal
+                ? (isZh ? `演练模式 · ${socialRole}` : `Rehearsal · ${socialRole}`)
+                : (isZh ? "Panda 心理咨询师" : "Panda Counselor")}
+            </h3>
+            <p className="text-xs text-[#8a7a6a]">
+              {isSocialRehearsal
+                ? (isZh ? "说「结束演练」回到正常聊天" : "Say 'end rehearsal' to return")
+                : `${mode === "video" ? "📹" : mode === "voice" ? "🎤" : "💬"} ${isZh ? commModes.find(c=>c.id===mode)?.zh : commModes.find(c=>c.id===mode)?.en}`}
+            </p>
           </div>
         </div>
         <button onClick={() => { setMode(null); setMediaError(null); }} className="px-3 py-1.5 rounded-lg text-xs text-[#8a7a6a] hover:text-[#5a4a3a] hover:bg-[#f5efe6] border border-[#e8ddd0]">
@@ -100,7 +93,14 @@ export default function Counseling({ sessionId, messages, onSend, loading, state
         </button>
       </div>
 
-      {/* 消息区 */}
+      {/* V5: 社交演练提示条 */}
+      {isSocialRehearsal && (
+        <div className="mb-3 p-3 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 text-sm text-center">
+          {isZh ? `🎭 演练进行中 — Panda 正在扮演你的${socialRole}` : `🎭 Rehearsal active — Panda is playing your ${socialRole}`}
+        </div>
+      )}
+
+      {/* 消息区 — V5: 气泡布局（用户居右，Panda 居左） */}
       <div className="flex-1 overflow-y-auto space-y-4 mb-4">
         {messages.length === 0 && (
           <div className="flex gap-3">
@@ -114,18 +114,19 @@ export default function Counseling({ sessionId, messages, onSend, loading, state
         )}
         {messages.map((msg, i) => (
           <div key={i} className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-            {/* 头像始终在前：Panda左，用户右 */}
+            {/* 头像：Panda 左，用户右 */}
             {msg.role === "user" ? (
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-400 flex items-center justify-center text-white text-sm">👤</div>
             ) : (
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center text-xl">🐼</div>
             )}
-            <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === "user" ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-br-md" : "bg-white border border-[#e8ddd0] text-[#5a4a3a] rounded-bl-md shadow-sm"}`}>
+            <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.role === "user"
+              ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-br-md"
+              : "bg-white border border-[#e8ddd0] text-[#5a4a3a] rounded-bl-md shadow-sm"}`}>
               <p className="whitespace-pre-wrap">{msg.content}</p>
             </div>
           </div>
         ))}
-        {/* #2 加载动画 */}
         {loading && (
           <div className="flex gap-3">
             <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center text-xl">🐼</div>

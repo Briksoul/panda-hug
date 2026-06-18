@@ -14,14 +14,16 @@ from config import config
 
 # ─── 枚举 ────────────────────────────────────────────────────────────
 class AgentRole(str, Enum):
-    """V4 七大智能体"""
+    """V5 八大智能体"""
     COGNITIVE_ORCHESTRATOR = "cognitive_orchestrator"  # 大脑：调度全局
-    COUNSELOR = "counselor"                            # 前台：心理咨询
+    TRIAGE = "triage"                                  # 分诊：情绪分级与量表评估
+    COUNSELOR = "counselor"                            # 前台：心理咨询 + 虚拟社交演练
     SENSING = "sensing"                                # 分析员：情感分析
     RISK = "risk"                                      # 守门员：危机监测
     CASE_FORMULATION = "case_formulation"              # 侦探：心理模型构建
-    INSIGHT_REPORT = "insight_report"                  # 报告员：洞察报告
-    COACH = "coach"                                    # 教练：放松训练
+    INSIGHT_REPORT = "insight_report"                  # 报告员：双视角洞察报告
+    COACH = "coach"                                    # 教练：PERMA 积极心理养成
+    FOLLOW_UP = "follow_up"                            # 追踪：U 型曲线长期记录
 
 
 class Phase(str, Enum):
@@ -48,6 +50,15 @@ class BearStatus(str, Enum):
     TIRED = "tired"       # 疲惫小熊
 
 
+class UCurveStage(str, Enum):
+    """V5 U 型文化适应曲线阶段"""
+    HONEYMOON = "honeymoon"      # 蜜月期
+    CRISIS = "crisis"            # 危机期
+    RECOVERY = "recovery"        # 恢复期
+    INTEGRATION = "integration"  # 融入期
+    UNKNOWN = "unknown"
+
+
 class CulturalBackground(str, Enum):
     CHINA = "china"              # 在中国生活
     ABROAD = "abroad"            # 在海外生活
@@ -67,6 +78,15 @@ class CommunicationMode(str, Enum):
     VIDEO = "video"
 
 
+class SocialRole(str, Enum):
+    """V5 虚拟社交演练角色"""
+    PROFESSOR = "professor"      # 教授
+    ROOMMATE = "roommate"        # 室友
+    EMPLOYER = "employer"        # 雇主
+    FRIEND = "friend"            # 朋友
+    NONE = "none"
+
+
 # ─── 数据结构 ──────────────────────────────────────────────────────────
 @dataclass
 class UserProfile:
@@ -83,6 +103,12 @@ class UserProfile:
     crisis_triggered: bool = False
     communication_mode: CommunicationMode = CommunicationMode.TEXT
     tags: list[str] = field(default_factory=list)
+    # V5 新增
+    study_abroad_months: int = 0           # 留学时长（月）
+    u_curve_stage: UCurveStage = UCurveStage.UNKNOWN  # U 型曲线阶段
+    social_role: SocialRole = SocialRole.NONE         # 社交演练角色
+    perma_energy: float = 0.5             # PERMA 能量值 0-1
+    culture_framework_score: float = 0.5  # 文化框架转换分数 0-1
 
 
 @dataclass
@@ -220,6 +246,6 @@ class BaseAgent(ABC):
         """从回复中移除 JSON 块，只保留自然语言部分"""
         # 移除 ```json ... ``` 块
         content = re.sub(r"```json\s*.*?\s*```", "", content, flags=re.DOTALL).strip()
-        # 移除独立的 JSON 对象
-        content = re.sub(r"\{[^{}]*\}", "", content).strip()
+        # 移除独立的 JSON 对象（贪婪匹配嵌套花括号）
+        content = re.sub(r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}", "", content).strip()
         return content if content else content

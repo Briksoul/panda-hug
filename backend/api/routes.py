@@ -1,6 +1,9 @@
-"""API 路由 V4"""
+"""API 路由 V5 — SSE 流式报告 + 虚拟社交演练 + 双语"""
 from __future__ import annotations
+import json
+import asyncio
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Optional
 from guardrail import check_guardrail, build_crisis_response
@@ -48,6 +51,12 @@ class ChatResp(BaseModel):
 class NavigateReq(BaseModel):
     session_id: str
     target_phase: str
+
+
+class UpdateProfileReq(BaseModel):
+    session_id: str
+    study_abroad_months: Optional[int] = None
+    cultural_bg: Optional[str] = None
 
 
 @router.post("/session/create", response_model=CreateSessionResp)
@@ -130,14 +139,14 @@ async def get_history(session_id: str):
 
 @router.post("/session/{session_id}/generate_report")
 async def generate_report(session_id: str):
-    """按需生成洞察报告"""
+    """按需生成洞察报告（兜底：即使数据不完整也生成）"""
     orch = get_orchestrator()
     session = orch.get_session(session_id)
     if not session:
         raise HTTPException(404, "session not found")
-    
+
     profile = session.profile
-    
+
     # 用已有数据生成报告（即使数据不完整）
     cf = await orch.agents[AgentRole.CASE_FORMULATION].build(session.counseling_data, profile)
     session.case_formulation = {
@@ -151,9 +160,62 @@ async def generate_report(session_id: str):
         case_formulation=session.case_formulation,
         cultural_analysis={},
         profile=profile,
+        history_text=session.counseling_data.get("history_text", ""),
     )
     orch._save_session(session)
     return {"status": "ok", "report": session.insight_report}
+
+
+@router.get("/session/{session_id}/generate_report_stream")
+async def generate_report_stream(session_id: str):
+    """V5: SSE 流式生成洞察报告"""
+    orch = get_orchestrator()
+    session = orch.get_session(session_id)
+    if not session:
+        raise HTTPException(404, "session not found")
+
+    profile = session.profile
+    session.report_generation_in_progress = True
+
+    async def event_generator():
+        try:
+            # 先构建案例概念化
+            cf = await orch.agents[AgentRole.CASE_FORMULATION].build(session.counseling_data, profile)
+            session.case_formulation = {
+                "core_event": cf.core_event,
+                "core_emotions": cf.core_emotions,
+                "auto_thoughts": cf.auto_thoughts,
+                "behavior_pattern": cf.behavior_pattern,
+                "social_support": cf.social_support,
+            }
+
+            # 流式生成报告
+            async for chunk in orch.agents[AgentRole.INSIGHT_REPORT].generate_stream(
+                case_formulation=session.case_formulation,
+                cultural_analysis={},
+                profile=profile,
+                history_text=session.counseling_data.get("history_text", ""),
+            ):
+                yield f"data: {json.dumps(chunk, ensure_ascii=False)}\n\n"
+
+                if chunk.get("type") == "complete":
+                    session.insight_report = chunk.get("report", {})
+                    orch._save_session(session)
+
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'message': str(e)}, ensure_ascii=False)}\n\n"
+        finally:
+            session.report_generation_in_progress = False
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @router.get("/knowledge/{layer_name}")
@@ -163,3 +225,24 @@ async def get_knowledge(layer_name: str):
     kb = orch.kb
     items = kb.layers.get(layer_name, [])
     return {"layer": layer_name, "count": len(items), "items": items}
+
+
+@router.post("/session/{session_id}/update_profile")
+async def update_profile(session_id: str, req: UpdateProfileReq):
+    """V5: 更新用户档案（留学时长、文化背景等）"""
+    orch = get_orchestrator()
+    session = orch.get_session(session_id)
+    if not session:
+        raise HTTPException(404, "session not found")
+
+    if req.study_abroad_months is not None:
+        session.profile.study_abroad_months = req.study_abroad_months
+    if req.cultural_bg is not None:
+        from agents.base import CulturalBackground
+        try:
+            session.profile.cultural_bg = CulturalBackground(req.cultural_bg)
+        except ValueError:
+            pass
+
+    orch._save_session(session)
+    return {"status": "ok", "profile": orch.get_state(session_id)["profile"]}
