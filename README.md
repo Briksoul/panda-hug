@@ -2,6 +2,11 @@
 
 多 Agent 网页版心理咨询系统，支持跨文化心理分析和智能干预。
 
+## 文档
+
+- [启动与部署说明](docs/deployment.md)
+- [系统架构、记忆管理与语音处理设计说明](docs/architecture-memory-voice.md)
+
 ## 架构
 
 ```

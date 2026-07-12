@@ -1,4 +1,4 @@
-export default function CrisisAlert({ message }) {
+export default function CrisisAlert({ message, onSelect }) {
   if (!message) return null;
 
   return (
@@ -22,6 +22,7 @@ export default function CrisisAlert({ message }) {
               {message.suggestions.map((text, i) => (
                 <button
                   key={i}
+                  onClick={() => onSelect?.(text)}
                   className="px-4 py-2 rounded-full text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm"
                 >
                   {text}

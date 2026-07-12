@@ -19,11 +19,24 @@ class Config:
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     OPENAI_BASE_URL: str = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
     LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-4o-mini")
+    LLM_FAST_MODEL: str = os.getenv("LLM_FAST_MODEL", "gemini-3.5-flash")
     LLM_TEMPERATURE: float = 0.7
-    LLM_MAX_TOKENS: int = 1024
+    LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "4096"))
+
+    # Hume EVI
+    HUME_API_KEY: str = os.getenv("HUME_API_KEY", "")
+    HUME_SECRET_KEY: str = os.getenv("HUME_SECRET_KEY", "")
+    HUME_CONFIG_ID: str = os.getenv("HUME_CONFIG_ID", "")
 
     # 向量数据库
-    CHROMA_PERSIST_DIR: str = os.getenv("CHROMA_PERSIST_DIR", "./data/chromadb")
+    CHROMA_PERSIST_DIR: str = os.getenv(
+        "CHROMA_PERSIST_DIR",
+        str(Path(__file__).parent / "data" / "chromadb"),
+    )
+    KNOWLEDGE_BASE_DIR: str = os.getenv("KNOWLEDGE_BASE_DIR", "")
+    USE_CHROMA: bool = os.getenv("USE_CHROMA", "true").lower() in (
+        "1", "true", "yes", "on",
+    )
     EMBEDDING_MODEL: str = "text-embedding-3-small"
 
     # 服务器

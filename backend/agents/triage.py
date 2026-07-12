@@ -52,9 +52,10 @@ SYSTEM_PROMPT = """\
 当评估完成时，用 JSON 块输出：
 ```json
 {
+  "reply": "面向用户的温暖总结，并说明接下来会继续了解具体经历",
   "phq2_score": 0,
   "gad2_score": 0,
-  "cultural_bg": "chinese_student",
+  "cultural_bg": "china|abroad|unknown",
   "emotion_level": "mild",
   "summary": "评估摘要"
 }
@@ -66,6 +67,7 @@ SYSTEM_PROMPT = """\
 class TriageAgent(BaseAgent):
     role = AgentRole.TRIAGE
     system_prompt = SYSTEM_PROMPT
+    model_tier = "fast"
 
     def _parse_response(self, raw: str, profile: UserProfile) -> AgentResponse:
         data = self._json_parse(raw)
@@ -93,33 +95,25 @@ class TriageAgent(BaseAgent):
             except ValueError:
                 pass
 
-            # 判断是否需要转介
-            next_agent = None
-            should_transition = False
+            content = data.get("reply") or data.get("summary") or "谢谢你的分享。接下来，我想继续了解最近发生的事情和你的感受。"
             if profile.emotion_level == EmotionLevel.CRISIS:
-                next_agent = AgentRole.CRISIS
-                should_transition = True
-            elif profile.phq2_score + profile.gad2_score > 0:
-                # 有任何症状 → 进入文化分析
-                suggestions = [
-                    "视频咨询", "语音咨询", "文字咨询", "已解决，不需要"
-                ]
                 return AgentResponse(
                     agent=self.role,
-                    content=raw,
+                    content=content,
                     emotion_level=profile.emotion_level,
-                    suggestions=suggestions,
-                    should_transition=False,  # 等用户选择后再切换
+                    should_transition=True,
+                    next_agent=AgentRole.CRISIS,
                     metadata={"phase": "assessment_complete"},
                 )
 
             return AgentResponse(
                 agent=self.role,
-                content=raw,
+                content=content,
                 emotion_level=profile.emotion_level,
-                should_transition=should_transition,
-                next_agent=next_agent,
-                metadata={"phase": "assessing"},
+                suggestions=["继续聊聊"],
+                should_transition=True,
+                next_agent=AgentRole.COUNSELOR,
+                metadata={"phase": "assessment_complete"},
             )
 
         # 普通对话

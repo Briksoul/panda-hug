@@ -7,7 +7,11 @@ echo "🐼 PANDA Harmony — 跨文化智能心理伴侣"
 echo "========================================"
 
 # 检查 API key
-if [ -z "$OPENAI_API_KEY" ]; then
+HAS_ENV_KEY=false
+if [ -f "backend/.env" ] && awk -F= '$1 == "OPENAI_API_KEY" && length($2) > 0 { found=1 } END { exit !found }' "backend/.env"; then
+    HAS_ENV_KEY=true
+fi
+if [ -z "$OPENAI_API_KEY" ] && [ "$HAS_ENV_KEY" = false ]; then
     echo "⚠️  请设置 OPENAI_API_KEY 环境变量"
     echo "   export OPENAI_API_KEY=sk-your-key-here"
     echo ""

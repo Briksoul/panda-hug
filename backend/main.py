@@ -30,7 +30,10 @@ def create_app() -> FastAPI:
     )
 
     # 初始化知识库和调度器
-    kb = KnowledgeBase(use_chroma=False)  # Phase 1: 关键词匹配
+    kb = KnowledgeBase(
+        use_chroma=config.USE_CHROMA,
+        source_dir=config.KNOWLEDGE_BASE_DIR or None,
+    )
     orch = Orchestrator(knowledge_base=kb)
     set_orchestrator(orch)
 

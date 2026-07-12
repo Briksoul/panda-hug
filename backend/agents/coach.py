@@ -1,6 +1,7 @@
 """Coach Agent — 双元实操干预（第四阶段）"""
 from .base import (
-    BaseAgent, AgentRole, AgentResponse, EmotionLevel, UserProfile,
+    BaseAgent, AgentRole, AgentResponse, EmotionLevel, CulturalBackground,
+    UserProfile,
 )
 
 SYSTEM_PROMPT = """\
@@ -51,6 +52,7 @@ SYSTEM_PROMPT = """\
 训练完成时：
 ```json
 {
+  "reply": "面向用户的训练总结和鼓励",
   "training_complete": true,
   "technique": "使用的训练技术",
   "user_feedback": "用户反馈摘要",
@@ -63,6 +65,7 @@ SYSTEM_PROMPT = """\
 class CoachAgent(BaseAgent):
     role = AgentRole.COACH
     system_prompt = SYSTEM_PROMPT
+    model_tier = "fast"
 
     def _build_system_prompt(self, profile: UserProfile, knowledge_context: str) -> str:
         base = super()._build_system_prompt(profile, knowledge_context)
@@ -89,21 +92,22 @@ class CoachAgent(BaseAgent):
         should_transition = False
 
         if data.get("training_complete"):
-            suggestions = ["再来一次", "换个训练", "感觉好多了", "还需要帮助"]
-            should_transition = True  # 可以回到文化分析或结束
+            suggestions = ["感觉好多了", "还需要帮助", "换个训练"]
+            should_transition = True
+
+        content = data.get("reply", raw) if data else raw
 
         return AgentResponse(
             agent=self.role,
-            content=raw,
+            content=content,
             emotion_level=profile.emotion_level,
             suggestions=suggestions,
             should_transition=should_transition,
-            next_agent=AgentRole.CULTURAL if should_transition else None,
+            next_agent=AgentRole.COUNSELOR if should_transition else None,
             metadata={
+                "training_complete": bool(data.get("training_complete")),
                 "technique": data.get("technique", ""),
+                "user_feedback": data.get("user_feedback", ""),
                 "improvement": data.get("improvement", ""),
             },
         )
-
-
-from .base import CulturalBackground

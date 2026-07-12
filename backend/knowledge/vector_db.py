@@ -1,7 +1,11 @@
 """知识库系统 — 4层向量数据库"""
 from __future__ import annotations
-import os
-from typing import Optional
+import hashlib
+import math
+import re
+from collections import Counter
+
+from .document_loader import load_markdown_knowledge
 
 # 知识库初始数据
 PSYCHOLOGICAL_MECHANISMS = [
@@ -155,29 +159,39 @@ SUPERVISION_RULES = [
 
 
 class KnowledgeBase:
-    """4层知识库（Phase 1: 内存关键词匹配，Phase 2: ChromaDB 向量检索）"""
+    """Curated knowledge retrieval with keyword and optional vector search."""
 
-    def __init__(self, use_chroma: bool = False):
+    def __init__(self, use_chroma: bool = False, source_dir: str | None = None):
         self.use_chroma = use_chroma
+        self.source_dir = source_dir
+        self.document_count = 0
+        self.chroma_error = ""
         self._init_data()
 
     def _init_data(self):
         """初始化知识库数据"""
         self.layers = {
-            "psychological": PSYCHOLOGICAL_MECHANISMS,
-            "cultural": CULTURAL_FEATURES,
-            "events": EVENT_PATTERNS,
-            "interpretations": CULTURAL_INTERPRETATIONS,
-            "counseling_techniques": COUNSELING_TECHNIQUES,
-            "crisis_intervention": CRISIS_INTERVENTION,
-            "supervision_rules": SUPERVISION_RULES,
+            "psychological": [dict(item) for item in PSYCHOLOGICAL_MECHANISMS],
+            "cultural": [dict(item) for item in CULTURAL_FEATURES],
+            "events": [dict(item) for item in EVENT_PATTERNS],
+            "interpretations": [dict(item) for item in CULTURAL_INTERPRETATIONS],
+            "counseling_techniques": [
+                dict(item) for item in COUNSELING_TECHNIQUES
+            ],
+            "crisis_intervention": [dict(item) for item in CRISIS_INTERVENTION],
+            "supervision_rules": [dict(item) for item in SUPERVISION_RULES],
         }
+
+        document_layers = load_markdown_knowledge(self.source_dir)
+        for layer_name, items in document_layers.items():
+            self.layers.setdefault(layer_name, []).extend(items)
+            self.document_count += len(items)
 
         if self.use_chroma:
             self._init_chroma()
 
     def _init_chroma(self):
-        """初始化 ChromaDB（Phase 2）"""
+        """Initialize persistent Chroma collections with local embeddings."""
         try:
             import chromadb
             from config import config
@@ -185,17 +199,34 @@ class KnowledgeBase:
             client = chromadb.PersistentClient(path=config.CHROMA_PERSIST_DIR)
             self.collections = {}
             for layer_name, data in self.layers.items():
-                col = client.get_or_create_collection(name=f"panda_{layer_name}")
-                # 如果集合为空，添加初始数据
-                if col.count() == 0:
-                    for item in data:
-                        col.add(
-                            ids=[item["id"]],
-                            documents=[item["content"]],
-                            metadatas=[{"tags": ",".join(item["tags"])}],
-                        )
+                col = client.get_or_create_collection(
+                    name=f"panda_{layer_name}",
+                    metadata={"hnsw:space": "cosine"},
+                )
+                if data:
+                    col.upsert(
+                        ids=[item["id"] for item in data],
+                        documents=[item["content"] for item in data],
+                        embeddings=[
+                            self._hash_embedding(item["content"])
+                            for item in data
+                        ],
+                        metadatas=[
+                            {
+                                "layer": layer_name,
+                                "tags": ",".join(item["tags"]),
+                                "source": item.get("source", ""),
+                                "library": item.get("library", layer_name),
+                                "culture_scope": item.get("culture_scope", "all"),
+                                "agent_roles": ",".join(item.get("agent_roles", [])),
+                            }
+                            for item in data
+                        ],
+                    )
                 self.collections[layer_name] = col
-        except ImportError:
+        except Exception as exc:
+            self.chroma_error = str(exc)
+            print(f"[KnowledgeBase] Chroma unavailable, using keyword search: {exc}")
             self.use_chroma = False
 
     async def search(
@@ -206,57 +237,237 @@ class KnowledgeBase:
         top_k: int = 3,
     ) -> str:
         """跨层搜索知识库"""
-        results = []
-
         if self.use_chroma:
-            results = self._chroma_search(query, top_k)
+            vector_results = self._chroma_search(
+                query=query,
+                top_k=max(top_k * 3, 6),
+                cultural_bg=cultural_bg,
+                agent_role=agent_role,
+            )
+            keyword_results = self._keyword_search(
+                query=query,
+                top_k=max(top_k * 3, 6),
+                cultural_bg=cultural_bg,
+                agent_role=agent_role,
+            )
+            results = self._merge_results(
+                vector_results,
+                keyword_results,
+                top_k,
+            )
         else:
-            results = self._keyword_search(query, top_k)
+            results = self._keyword_search(
+                query=query,
+                top_k=top_k,
+                cultural_bg=cultural_bg,
+                agent_role=agent_role,
+            )
 
         if not results:
             return ""
 
         parts = []
         for r in results:
-            parts.append(f"[{r['layer']}] {r['content']}")
+            source = r.get("source", r["layer"])
+            library = r.get("library", r["layer"])
+            parts.append(f"[{library} | {source}] {r['content']}")
         return "\n\n".join(parts)
 
-    def _keyword_search(self, query: str, top_k: int) -> list[dict]:
+    def _keyword_search(
+        self,
+        query: str,
+        top_k: int,
+        cultural_bg: str = "",
+        agent_role: str = "",
+    ) -> list[dict]:
         """关键词匹配搜索"""
         query_lower = query.lower()
+        query_terms = self._query_terms(query_lower)
+        allowed_layers = self._allowed_layers(agent_role)
         scored = []
 
         for layer_name, items in self.layers.items():
+            if allowed_layers and layer_name not in allowed_layers:
+                continue
             for item in items:
-                score = 0
-                # 标签匹配
+                item_roles = item.get("agent_roles", [])
+                if item_roles and agent_role and agent_role not in item_roles:
+                    continue
+
+                culture_scope = item.get("culture_scope", "all")
+                if layer_name == "case_events":
+                    if cultural_bg == "china" and culture_scope == "abroad":
+                        continue
+                    if cultural_bg == "abroad" and culture_scope == "china":
+                        continue
+
+                score = 0.0
                 for tag in item["tags"]:
-                    if tag in query_lower:
-                        score += 2
-                # 内容关键词匹配
+                    tag_lower = tag.lower()
+                    if tag_lower in query_lower or query_lower in tag_lower:
+                        score += 4
+
                 content_lower = item["content"].lower()
-                for word in query_lower.split():
-                    if len(word) > 1 and word in content_lower:
-                        score += 1
+                if len(query_lower) > 1 and query_lower in content_lower:
+                    score += 8
+                for term in query_terms:
+                    if term in content_lower:
+                        score += min(3.0, 0.5 + len(term) * 0.35)
+
+                if culture_scope == "cross_cultural":
+                    score += 0.75
+                elif cultural_bg == "china" and culture_scope == "china":
+                    score += 1.5
+                elif cultural_bg == "abroad" and culture_scope in ("abroad", "us"):
+                    score += 1.5
+
                 if score > 0:
                     scored.append({
                         "layer": layer_name,
                         "content": item["content"],
                         "score": score,
+                        "source": item.get("source", ""),
+                        "library": item.get("library", layer_name),
+                        "id": item.get("id", ""),
                     })
 
         scored.sort(key=lambda x: x["score"], reverse=True)
         return scored[:top_k]
 
-    def _chroma_search(self, query: str, top_k: int) -> list[dict]:
+    def _chroma_search(
+        self,
+        query: str,
+        top_k: int,
+        cultural_bg: str = "",
+        agent_role: str = "",
+    ) -> list[dict]:
         """向量搜索"""
         results = []
+        allowed_layers = self._allowed_layers(agent_role)
         for layer_name, col in self.collections.items():
-            res = col.query(query_texts=[query], n_results=top_k)
-            if res["documents"] and res["documents"][0]:
-                for doc in res["documents"][0]:
-                    results.append({"layer": layer_name, "content": doc})
+            if allowed_layers and layer_name not in allowed_layers:
+                continue
+            collection_count = col.count()
+            if collection_count == 0:
+                continue
+            res = col.query(
+                query_embeddings=[self._hash_embedding(query)],
+                n_results=min(top_k, collection_count),
+                include=["documents", "metadatas", "distances"],
+            )
+            documents = res.get("documents", [[]])[0]
+            metadatas = res.get("metadatas", [[]])[0]
+            distances = res.get("distances", [[]])[0]
+            ids = res.get("ids", [[]])[0]
+            for item_id, document, metadata, distance in zip(
+                ids, documents, metadatas, distances
+            ):
+                metadata = metadata or {}
+                culture_scope = metadata.get("culture_scope", "all")
+                if layer_name == "case_events":
+                    if cultural_bg == "china" and culture_scope == "abroad":
+                        continue
+                    if cultural_bg == "abroad" and culture_scope == "china":
+                        continue
+                results.append({
+                    "id": item_id,
+                    "layer": layer_name,
+                    "content": document,
+                    "source": metadata.get("source", ""),
+                    "library": metadata.get("library", layer_name),
+                    "score": 1.0 - float(distance),
+                })
+        results.sort(key=lambda item: item["score"], reverse=True)
         return results[:top_k]
+
+    @staticmethod
+    def _merge_results(
+        vector_results: list[dict],
+        keyword_results: list[dict],
+        top_k: int,
+    ) -> list[dict]:
+        merged: dict[str, dict] = {}
+        for weight, ranked_results in (
+            (0.65, vector_results),
+            (0.35, keyword_results),
+        ):
+            for rank, result in enumerate(ranked_results):
+                key = result.get("id") or hashlib.sha1(
+                    result["content"].encode("utf-8")
+                ).hexdigest()
+                if key not in merged:
+                    merged[key] = {**result, "hybrid_score": 0.0}
+                merged[key]["hybrid_score"] += weight / (rank + 1)
+        return sorted(
+            merged.values(),
+            key=lambda item: item["hybrid_score"],
+            reverse=True,
+        )[:top_k]
+
+    @staticmethod
+    def _hash_embedding(text: str, dimensions: int = 384) -> list[float]:
+        normalized = text.lower()
+        features = Counter(re.findall(r"[a-z0-9][a-z0-9_-]+", normalized))
+        for segment in re.findall(r"[\u4e00-\u9fff]+", normalized):
+            for size in (2, 3, 4):
+                features.update(
+                    segment[index:index + size]
+                    for index in range(max(0, len(segment) - size + 1))
+                )
+
+        vector = [0.0] * dimensions
+        for feature, count in features.items():
+            digest = hashlib.sha256(feature.encode("utf-8")).digest()
+            index = int.from_bytes(digest[:4], "big") % dimensions
+            sign = 1.0 if digest[4] & 1 else -1.0
+            vector[index] += sign * (1.0 + math.log(count))
+
+        norm = math.sqrt(sum(value * value for value in vector))
+        if norm:
+            return [value / norm for value in vector]
+        return vector
+
+    @staticmethod
+    def _query_terms(query: str) -> set[str]:
+        terms = set(re.findall(r"[a-z0-9][a-z0-9_-]+", query))
+        for segment in re.findall(r"[\u4e00-\u9fff]+", query):
+            if 2 <= len(segment) <= 12:
+                terms.add(segment)
+            for size in (2, 3, 4):
+                terms.update(
+                    segment[index:index + size]
+                    for index in range(max(0, len(segment) - size + 1))
+                )
+        return terms
+
+    @staticmethod
+    def _allowed_layers(agent_role: str) -> set[str]:
+        common_counseling = {
+            "psychology_education",
+            "counseling_techniques",
+            "psychological_mechanisms",
+            "cultural_features",
+            "case_events",
+            "psychological",
+            "cultural",
+            "events",
+            "interpretations",
+        }
+        role_layers = {
+            "triage": {"psychology_education", "crisis_referral", "crisis_intervention"},
+            "counselor": common_counseling,
+            "cultural": common_counseling - {"psychology_education"},
+            "coach": {
+                "counseling_techniques",
+                "psychological_mechanisms",
+                "psychological",
+                "interpretations",
+            },
+            "crisis": {"crisis_referral", "crisis_intervention"},
+            "risk": {"crisis_referral", "crisis_intervention"},
+            "sensing": {"crisis_referral", "crisis_intervention"},
+        }
+        return role_layers.get(agent_role, set())
 
     def add_knowledge(self, layer: str, content: str, tags: list[str]):
         """动态添加知识"""
@@ -268,8 +479,9 @@ class KnowledgeBase:
         self.layers[layer].append(item)
 
         if self.use_chroma and layer in self.collections:
-            self.collections[layer].add(
+            self.collections[layer].upsert(
                 ids=[item_id],
                 documents=[content],
+                embeddings=[self._hash_embedding(content)],
                 metadatas=[{"tags": ",".join(tags)}],
             )

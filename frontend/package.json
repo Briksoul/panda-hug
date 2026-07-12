@@ -9,15 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "@humeai/voice-react": "^0.3.0-beta.5",
     "framer-motion": "^12.11.0",
-    "lucide-react": "^0.511.0"
+    "hume": "^0.16.0",
+    "lucide-react": "^0.511.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.7",
     "@vitejs/plugin-react": "^4.5.2",
-    "vite": "^6.3.5",
     "tailwindcss": "^4.1.7",
-    "@tailwindcss/vite": "^4.1.7"
+    "vite": "^6.3.5"
   }
 }

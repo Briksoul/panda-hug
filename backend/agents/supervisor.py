@@ -52,15 +52,17 @@ class SupervisorAgent:
 
         try:
             resp = await self.client.chat.completions.create(
-                model=config.LLM_MODEL,
+                model=config.LLM_FAST_MODEL,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.2,
-                max_tokens=500,
+                max_tokens=2048,
             )
             raw = resp.choices[0].message.content or "{}"
             m = re.search(r"\{.*\}", raw, re.DOTALL)
             if m:
-                return json.loads(m.group(0))
+                result = json.loads(m.group(0))
+                result["model"] = config.LLM_FAST_MODEL
+                return result
         except Exception:
             pass
 
@@ -73,4 +75,5 @@ class SupervisorAgent:
             "overall_score": 0.7,
             "suggestions": [],
             "approved": True,
+            "model": config.LLM_FAST_MODEL,
         }

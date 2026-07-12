@@ -9,6 +9,7 @@ const agentLabels = {
   supervisor: { name: "Supervisor Agent", desc: "咨询督导", emoji: "👁️", color: "slate" },
   cultural: { name: "Cultural Agent", desc: "跨文化分析", emoji: "🧠", color: "purple" },
   insight_report: { name: "InsightReport", desc: "洞察报告", emoji: "📊", color: "pink" },
+  memory: { name: "Memory Agent", desc: "长期记忆", emoji: "💾", color: "emerald" },
   coach: { name: "Coach Agent", desc: "干预训练", emoji: "🧘", color: "cyan" },
   crisis: { name: "Crisis Agent", desc: "危机守护", emoji: "🛡️", color: "red" },
   knowledge: { name: "Knowledge Base", desc: "知识检索", emoji: "📚", color: "emerald" },
@@ -41,9 +42,35 @@ const phases = [
   { key: "counseling", label: "心理咨询" },
   { key: "insight_report", label: "洞察报告" },
   { key: "coaching", label: "干预训练" },
+  { key: "follow_up", label: "训练回访" },
 ];
 
-export default function Sidebar({ state, agentTrace, onNewSession }) {
+const culturalIdentityLabels = {
+  chinese_in_us: "在美中国学生",
+  american_in_china: "在华美国学生",
+  other: "其他文化身份",
+  unknown: "待确认",
+};
+
+const adaptationStageLabels = {
+  honeymoon: "文化适应·蜜月期",
+  culture_shock: "文化适应·休克期",
+  recovery: "文化适应·恢复期",
+  adjustment: "文化适应·稳定期",
+  unknown: "适应阶段待评估",
+};
+
+export default function Sidebar({
+  state,
+  agentTrace,
+  activeView,
+  onShowChat,
+  onShowReport,
+  onShowTraining,
+  onOpenGrowth,
+  onNewSession,
+  language = "zh",
+}) {
   const [animatedTrace, setAnimatedTrace] = useState([]);
 
   // 逐条动画显示 agent trace
@@ -63,16 +90,19 @@ export default function Sidebar({ state, agentTrace, onNewSession }) {
   const profile = state.profile || {};
   const emotion = emotionColors[profile.emotion_level] || emotionColors.mild;
   const currentPhaseIdx = phases.findIndex((p) => p.key === state.phase);
+  const isEnglish = language === "en";
 
   return (
-    <div className="w-80 h-screen bg-white/90 backdrop-blur-sm border-r border-gray-100 flex flex-col overflow-hidden">
+    <div className="w-80 h-screen bg-white/90 backdrop-blur-sm border-r border-gray-100 flex flex-col overflow-y-auto">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <span className="text-2xl">🐼</span>
           <span className="font-bold text-gray-700 text-lg">Panda Hug</span>
         </div>
-        <p className="text-xs text-gray-400 mt-1">跨文化智能心理伴侣</p>
+        <p className="text-xs text-gray-400 mt-1">
+          {isEnglish ? "Cross-cultural mental wellness companion" : "跨文化智能心理伴侣"}
+        </p>
       </div>
 
       {/* Agent 思考状态监视器 */}
@@ -161,7 +191,18 @@ export default function Sidebar({ state, agentTrace, onNewSession }) {
           </div>
           <div>
             <p className="font-medium text-gray-700 text-sm">{profile.name || "匿名用户"}</p>
-            <p className="text-xs text-gray-400">{profile.cultural_bg || "待确认"}</p>
+            <p className="text-xs text-gray-400">
+              {culturalIdentityLabels[profile.cultural_identity] || culturalIdentityLabels.unknown}
+            </p>
+            <p className="text-[10px] text-gray-400 mt-0.5">
+              {adaptationStageLabels[profile.adaptation_stage] || adaptationStageLabels.unknown}
+            </p>
+            <p className="text-[10px] text-gray-400 mt-0.5">
+              {profile.language === "en" ? "English" : "中文"}
+              {profile.study_abroad_months > 0
+                ? ` · 跨文化生活约 ${profile.study_abroad_months} 个月`
+                : ""}
+            </p>
           </div>
         </div>
       </div>
@@ -194,6 +235,15 @@ export default function Sidebar({ state, agentTrace, onNewSession }) {
           </div>
         </div>
       </div>
+
+      {profile.memory_summary && (
+        <div className="px-5 py-4 border-b border-gray-100">
+          <p className="text-xs text-gray-400 mb-2 font-medium">长期记忆</p>
+          <p className="text-xs text-gray-500 leading-relaxed line-clamp-4">
+            {profile.memory_summary}
+          </p>
+        </div>
+      )}
 
       {/* 流程进度 */}
       <div className="px-5 py-4 border-b border-gray-100">
@@ -228,10 +278,50 @@ export default function Sidebar({ state, agentTrace, onNewSession }) {
         <p className="text-xs text-gray-400 mt-2">对话轮次：{profile.turns || 0}</p>
       </div>
 
-      {/* 新建会话 */}
-      <div className="mt-auto px-5 py-4 border-t border-gray-100">
+      <div className="mt-auto space-y-2 border-t border-gray-100 px-5 py-4">
+        <button
+          onClick={onShowChat}
+          className={`w-full rounded-xl px-3 py-2.5 text-left text-sm transition-all ${
+            activeView === "chat"
+              ? "bg-indigo-50 text-indigo-600"
+              : "text-gray-500 hover:bg-gray-50"
+          }`}
+        >
+          💬 {isEnglish ? "Chat" : "看见自己"}
+        </button>
+        <button
+          onClick={onShowReport}
+          disabled={!state.insight_report || Object.keys(state.insight_report).length === 0}
+          className={`w-full rounded-xl px-3 py-2.5 text-left text-sm transition-all disabled:cursor-not-allowed disabled:opacity-35 ${
+            activeView === "report"
+              ? "bg-indigo-50 text-indigo-600"
+              : "text-gray-500 hover:bg-gray-50"
+          }`}
+        >
+          🪞 {isEnglish ? "Insight Report" : "洞察报告"}
+        </button>
+        <button
+          onClick={onShowTraining}
+          className={`w-full rounded-xl px-3 py-2.5 text-left text-sm transition-all ${
+            activeView === "training"
+              ? "bg-indigo-50 text-indigo-600"
+              : "text-gray-500 hover:bg-gray-50"
+          }`}
+        >
+          🧘 {isEnglish ? "Practice" : "一起练习"}
+        </button>
+        <button
+          onClick={onOpenGrowth}
+          className={`w-full rounded-xl px-3 py-2.5 text-left text-sm transition-all ${
+            activeView === "growth"
+              ? "bg-indigo-50 text-indigo-600"
+              : "text-gray-500 hover:bg-gray-50"
+          }`}
+        >
+          📈 {isEnglish ? "Growth Record" : "成长记录"}
+        </button>
         <button onClick={onNewSession} className="w-full py-2.5 rounded-xl text-sm text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-200 transition-all">
-          ➕ 新建会话
+          ➕ {isEnglish ? "New Session" : "新建会话"}
         </button>
       </div>
     </div>

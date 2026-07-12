@@ -21,6 +21,7 @@ class CaseFormulation:
     mechanism_chain: str = ""  # 事件→认知→情绪→行为→结果
     risk_level: str = "low"
     completeness: float = 0.0  # 0-1，信息收集完整度
+    model: str = ""
 
 
 class CaseFormulationAgent:
@@ -56,10 +57,10 @@ class CaseFormulationAgent:
 
         try:
             resp = await self.client.chat.completions.create(
-                model=config.LLM_MODEL,
+                model=config.LLM_FAST_MODEL,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.3,
-                max_tokens=800,
+                max_tokens=2048,
             )
             raw = resp.choices[0].message.content or "{}"
             m = re.search(r"\{.*\}", raw, re.DOTALL)
@@ -75,6 +76,7 @@ class CaseFormulationAgent:
                     mechanism_chain=data.get("mechanism_chain", ""),
                     risk_level=data.get("risk_level", "low"),
                     completeness=data.get("completeness", 0.0),
+                    model=config.LLM_FAST_MODEL,
                 )
         except Exception:
             pass
@@ -88,4 +90,5 @@ class CaseFormulationAgent:
             social_support=counseling_data.get("social_support", ""),
             risk_level=counseling_data.get("risk_level", "low"),
             completeness=0.5,
+            model=config.LLM_FAST_MODEL,
         )

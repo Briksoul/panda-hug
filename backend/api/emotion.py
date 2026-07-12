@@ -55,7 +55,7 @@ async def analyze_emotion(req: EmotionRequest):
             model=config.LLM_MODEL,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
-            max_tokens=200,
+            max_tokens=1024,
         )
         raw = response.choices[0].message.content.strip()
         # 提取 JSON

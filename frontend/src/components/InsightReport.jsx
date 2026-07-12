@@ -4,9 +4,13 @@ export default function InsightReport({ report }) {
   const bearStatus = report.bear_status || {};
   const whatHappened = report.what_happened || {};
   const whyThisHappens = report.why_this_happens || {};
+  const culturalAdaptation = report.cultural_adaptation || {};
   const whatINeed = report.what_i_need || {};
+  const interventionPlan = report.intervention_plan || {};
   const bearMessage = report.bear_message || "";
-  const trainingRec = report.training_recommendation || "";
+  const trainingRec = interventionPlan.training_recommendation
+    || report.training_recommendation
+    || "";
 
   return (
     <div className="mx-4 my-4 space-y-3">
@@ -65,6 +69,23 @@ export default function InsightReport({ report }) {
         )}
       </div>
 
+      {culturalAdaptation.label && (
+        <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4">
+          <h4 className="font-semibold text-violet-700 text-sm mb-2">🌏 我的文化适应阶段</h4>
+          <p className="text-sm text-gray-700">{culturalAdaptation.label}</p>
+          {culturalAdaptation.evidence?.length > 0 && (
+            <div className="mt-2">
+              {culturalAdaptation.evidence.map((item, index) => (
+                <p key={index} className="text-xs text-gray-500">• {item}</p>
+              ))}
+            </div>
+          )}
+          {culturalAdaptation.support && (
+            <p className="text-xs text-violet-600 mt-3">{culturalAdaptation.support}</p>
+          )}
+        </div>
+      )}
+
       {/* 模块5: 我真正需要什么 */}
       <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
         <h4 className="font-semibold text-green-700 text-sm mb-3">💚 我真正需要什么</h4>
@@ -81,6 +102,18 @@ export default function InsightReport({ report }) {
           <p key={i} className="text-sm text-gray-600">• {s}</p>
         ))}
       </div>
+
+      {(interventionPlan.long_term?.length > 0 || interventionPlan.immediate?.length > 0) && (
+        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+          <h4 className="font-semibold text-blue-700 text-sm mb-3">🧭 我的干预建议</h4>
+          {interventionPlan.immediate?.map((item, index) => (
+            <p key={`immediate-${index}`} className="text-sm text-gray-600">• 现在：{item}</p>
+          ))}
+          {interventionPlan.long_term?.map((item, index) => (
+            <p key={`long-${index}`} className="text-sm text-gray-600">• 长期：{item}</p>
+          ))}
+        </div>
+      )}
 
       {/* 模块6: 小熊寄语 */}
       {bearMessage && (

@@ -47,6 +47,7 @@ SYSTEM_PROMPT = """\
 ## 输出格式
 ```json
 {
+  "reply": "面向用户的稳定、关怀回复，优先确认安全并提供适当资源",
   "risk_level": "high|medium|low",
   "crisis_type": "suicidal|self_harm|acute_distress|other",
   "stabilized": true|false,
@@ -78,7 +79,7 @@ class CrisisAgent(BaseAgent):
 
         return AgentResponse(
             agent=self.role,
-            content=raw,
+            content=data.get("reply", raw) if data else raw,
             emotion_level=EmotionLevel.CRISIS,
             suggestions=suggestions,
             should_transition=False,  # 危机模式不自动切换

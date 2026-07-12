@@ -2,6 +2,7 @@
 from .base import (
     BaseAgent, AgentRole, AgentResponse, EmotionLevel, UserProfile,
 )
+from config import config
 
 SYSTEM_PROMPT = """\
 你是 Panda Hug 的危机监测 Agent（Risk Agent）。
@@ -72,7 +73,7 @@ class RiskAgent(BaseAgent):
         # 这里做更细致的 LLM 评估
         try:
             resp = await self.client.chat.completions.create(
-                model=self.client._base_url,  # 使用配置的模型
+                model=config.LLM_MODEL,
                 messages=[
                     {"role": "system", "content": (
                         "你是危机风险评估引擎。分析用户消息的风险等级。\n"
@@ -85,7 +86,7 @@ class RiskAgent(BaseAgent):
                     {"role": "user", "content": text},
                 ],
                 temperature=0.1,
-                max_tokens=300,
+                max_tokens=1024,
             )
             import json, re
             raw = resp.choices[0].message.content or "{}"

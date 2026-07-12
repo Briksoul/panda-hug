@@ -4,11 +4,20 @@ import SuggestionChips from "./SuggestionChips";
 import TypingIndicator from "./TypingIndicator";
 import CrisisAlert from "./CrisisAlert";
 import InsightReport from "./InsightReport";
+import VoicePanel from "./VoicePanel";
 
-export default function ChatWindow({ messages, onSend, loading, insightReport }) {
+export default function ChatWindow({
+  sessionId,
+  messages,
+  onSend,
+  loading,
+  insightReport,
+  language = "zh",
+}) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const isEnglish = language === "en";
 
   // 自动滚动到底部
   useEffect(() => {
@@ -27,13 +36,16 @@ export default function ChatWindow({ messages, onSend, loading, insightReport })
     setInput("");
   };
 
-  const handleSuggestion = (text) => {
-    onSend(text);
+  const handleSuggestion = (text, options) => {
+    return onSend(text, options);
   };
 
   // 获取最后一条助手消息的建议
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
   const suggestions = lastAssistant?.suggestions || [];
+  const hasVisibleStream = Boolean(
+    lastAssistant?.streaming && lastAssistant?.content
+  );
 
   return (
     <div className="flex-1 flex flex-col h-screen">
@@ -43,12 +55,14 @@ export default function ChatWindow({ messages, onSend, loading, insightReport })
           <span className="text-2xl">🐼</span>
           <div>
             <h2 className="font-semibold text-gray-800">Panda Hug</h2>
-            <p className="text-xs text-gray-400">你的心理陪伴助手</p>
+            <p className="text-xs text-gray-400">
+              {isEnglish ? "Your mental wellness companion" : "你的心理陪伴助手"}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-green-400"></div>
-          <span className="text-xs text-gray-400">在线</span>
+          <span className="text-xs text-gray-400">{isEnglish ? "Online" : "在线"}</span>
         </div>
       </div>
 
@@ -56,15 +70,16 @@ export default function ChatWindow({ messages, onSend, loading, insightReport })
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
         {messages.map((msg, i) => {
           if (msg.metadata?.guardrail_triggered) {
-            return <CrisisAlert key={i} message={msg} />;
+            return <CrisisAlert key={msg.id || i} message={msg} onSelect={handleSuggestion} />;
           }
-          return <MessageBubble key={i} message={msg} />;
+          if (msg.streaming && !msg.content) return null;
+          return <MessageBubble key={msg.id || i} message={msg} />;
         })}
         {/* 心理洞察报告 */}
         {insightReport && Object.keys(insightReport).length > 0 && (
           <InsightReport report={insightReport} />
         )}
-        {loading && <TypingIndicator />}
+        {loading && !hasVisibleStream && <TypingIndicator />}
         <div ref={messagesEndRef} />
       </div>
 
@@ -73,10 +88,18 @@ export default function ChatWindow({ messages, onSend, loading, insightReport })
         <SuggestionChips suggestions={suggestions} onSelect={handleSuggestion} />
       )}
 
+      <VoicePanel
+        sessionId={sessionId}
+        onSendMessage={handleSuggestion}
+        messages={messages}
+        loading={loading}
+        preferredLanguage={language}
+      />
+
       {/* 输入区 */}
       <form
         onSubmit={handleSubmit}
-        className="px-4 pb-4 pt-2"
+        className="px-4 pb-20 pt-2 lg:pb-4"
       >
         <div className="flex items-center gap-2 bg-white rounded-2xl border border-gray-200 shadow-sm px-4 py-2 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
           <input
@@ -84,7 +107,7 @@ export default function ChatWindow({ messages, onSend, loading, insightReport })
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="说说你的感受..."
+            placeholder={isEnglish ? "Share what you're feeling..." : "说说你的感受..."}
             disabled={loading}
             className="flex-1 outline-none text-gray-700 placeholder-gray-400 bg-transparent py-1"
           />
@@ -99,7 +122,9 @@ export default function ChatWindow({ messages, onSend, loading, insightReport })
           </button>
         </div>
         <p className="text-center text-xs text-gray-300 mt-2">
-          🔒 对话内容保密 · 如遇紧急情况请拨打 400-161-9995
+          {isEnglish
+            ? "🔒 Your conversation is private · Call local emergency services if you are in immediate danger"
+            : "🔒 对话内容保密 · 如遇紧急情况请拨打 400-161-9995"}
         </p>
       </form>
     </div>

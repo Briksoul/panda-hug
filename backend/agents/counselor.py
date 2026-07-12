@@ -68,6 +68,7 @@ SYSTEM_PROMPT = """\
 当收集充分、准备过渡时：
 ```json
 {
+  "reply": "面向用户的共情总结，并说明接下来会从心理和文化角度进一步理解",
   "counseling_complete": true,
   "core_event": "核心事件描述",
   "core_emotion": "主要情绪",
@@ -96,16 +97,19 @@ class CounselorAgent(BaseAgent):
             next_agent = AgentRole.CULTURAL
             suggestions = ["好的，继续", "我还想多聊聊"]
 
+        content = data.get("reply", raw) if data else raw
+
         return AgentResponse(
             agent=self.role,
-            content=raw,
+            content=content,
             emotion_level=profile.emotion_level,
             suggestions=suggestions,
             should_transition=should_transition,
             next_agent=next_agent,
             metadata={
                 "counseling_data": {
-                    k: v for k, v in data.items() if k != "counseling_complete"
+                    k: v for k, v in data.items()
+                    if k not in ("counseling_complete", "reply")
                 } if data else {},
             },
         )

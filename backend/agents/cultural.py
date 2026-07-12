@@ -1,6 +1,6 @@
 """Cultural Analyst Agent — 跨文化心理剖析（第三阶段）"""
 from .base import (
-    BaseAgent, AgentRole, AgentResponse, EmotionLevel,
+    AdaptationStage, BaseAgent, AgentRole, AgentResponse, EmotionLevel,
     CulturalBackground, UserProfile,
 )
 
@@ -57,9 +57,11 @@ SYSTEM_PROMPT = """\
 当分析完成、用户情绪缓和时：
 ```json
 {
+  "reply": "面向用户的文化适配洞察，并邀请用户进入练习阶段",
   "analysis_complete": true,
   "core_issue": "核心问题描述",
   "cultural_insight": "文化视角分析",
+  "adaptation_stage": "honeymoon|culture_shock|recovery|adjustment|unknown",
   "readiness_for_coach": true
 }
 ```
@@ -97,9 +99,18 @@ class CulturalAnalystAgent(BaseAgent):
             next_agent = AgentRole.COACH
             suggestions = ["开始心理训练", "继续聊聊", "不需要了"]
 
+        try:
+            profile.adaptation_stage = AdaptationStage(
+                data.get("adaptation_stage", profile.adaptation_stage.value)
+            )
+        except ValueError:
+            pass
+
+        content = data.get("reply", raw) if data else raw
+
         return AgentResponse(
             agent=self.role,
-            content=raw,
+            content=content,
             emotion_level=profile.emotion_level,
             suggestions=suggestions,
             should_transition=should_transition,
@@ -107,5 +118,7 @@ class CulturalAnalystAgent(BaseAgent):
             metadata={
                 "core_issue": data.get("core_issue", ""),
                 "cultural_insight": data.get("cultural_insight", ""),
+                "adaptation_stage": profile.adaptation_stage.value,
+                "analysis_complete": bool(data.get("analysis_complete")),
             },
         )
