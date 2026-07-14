@@ -8,7 +8,8 @@ const exercises = [
     titleEn: "Diaphragmatic Breathing",
     description: "通过缓慢呼吸帮助身体从紧张状态中稳定下来。",
     descriptionEn: "Use slow breathing to help your body settle from tension.",
-    duration: 180,
+    duration: 36,
+    video: "/videos/呼吸训练.mp4",
     guidance: ["吸气 4 秒", "停留 2 秒", "呼气 6 秒"],
     guidanceEn: ["Inhale for 4 seconds", "Hold for 2 seconds", "Exhale for 6 seconds"],
   },
@@ -18,7 +19,8 @@ const exercises = [
     titleEn: "Five-Senses Mindfulness",
     description: "将注意力带回当下，减少反复担忧和思绪消耗。",
     descriptionEn: "Return attention to the present and reduce repetitive worry.",
-    duration: 300,
+    duration: 97,
+    video: "/videos/正念训练.mp4",
     guidance: ["观察五样看到的事物", "感受四种身体触觉", "聆听三种声音", "觉察两种气味", "留意一种味道"],
     guidanceEn: ["Notice five things you see", "Feel four physical sensations", "Hear three sounds", "Notice two scents", "Notice one taste"],
   },
@@ -38,9 +40,21 @@ const exercises = [
     titleEn: "Eastern-Inspired Stretching",
     description: "结合缓慢伸展与重心觉察，恢复身体的稳定感。",
     descriptionEn: "Combine gentle stretching and balance awareness to regain stability.",
-    duration: 240,
+    duration: 148,
+    video: "/videos/东方动作.mp4",
     guidance: ["双脚稳定站立", "缓慢抬起双臂", "跟随呼吸舒展身体", "轻轻转移身体重心", "回到自然站姿"],
     guidanceEn: ["Stand with both feet grounded", "Raise your arms slowly", "Stretch with your breath", "Shift your weight gently", "Return to a natural stance"],
+  },
+  {
+    id: "music_relaxation",
+    title: "音乐放松",
+    titleEn: "Music Relaxation",
+    description: "跟随舒缓音乐放慢节奏，让注意力和身体逐渐安定。",
+    descriptionEn: "Slow down with calming music and let your attention and body settle.",
+    duration: 171,
+    video: "/videos/音乐放松训练.mp4",
+    guidance: ["找到舒适姿势", "放松肩膀和下颌", "把注意力带到音乐", "允许呼吸自然流动"],
+    guidanceEn: ["Find a comfortable posture", "Relax your shoulders and jaw", "Bring attention to the music", "Let your breath flow naturally"],
   },
 ];
 
@@ -68,6 +82,7 @@ export default function TrainingCenter({
 
   useEffect(() => {
     if (!running || !selected) return undefined;
+    if (selected.video) return undefined;
     const intervalId = window.setInterval(() => {
       setElapsed((value) => {
         const next = value + 1;
@@ -208,13 +223,40 @@ export default function TrainingCenter({
             <p className="text-sm text-gray-400">
               {isEnglish ? selected.titleEn : selected.title}
             </p>
-            <div
-              className={`mx-auto my-8 flex h-44 w-44 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 transition-transform duration-[2000ms] ${
-                selected.id === "breathing" && elapsed % 12 < 4 ? "scale-110" : "scale-90"
-              }`}
-            >
-              <span className="text-3xl font-semibold">{formatTime(elapsed)}</span>
-            </div>
+            {selected.video ? (
+              <video
+                key={selected.id}
+                src={selected.video}
+                controls
+                autoPlay
+                playsInline
+                onPlay={() => setRunning(true)}
+                onPause={() => setRunning(false)}
+                onTimeUpdate={(event) => {
+                  setElapsed(Math.min(
+                    selected.duration,
+                    Math.floor(event.currentTarget.currentTime),
+                  ));
+                }}
+                onEnded={() => {
+                  setElapsed(selected.duration);
+                  finishExercise();
+                }}
+                className="mx-auto my-6 w-full rounded-2xl bg-black shadow-sm"
+              >
+                {isEnglish
+                  ? "Your browser does not support video playback."
+                  : "当前浏览器不支持视频播放。"}
+              </video>
+            ) : (
+              <div
+                className={`mx-auto my-8 flex h-44 w-44 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 transition-transform duration-[2000ms] ${
+                  selected.id === "breathing" && elapsed % 12 < 4 ? "scale-110" : "scale-90"
+                }`}
+              >
+                <span className="text-3xl font-semibold">{formatTime(elapsed)}</span>
+              </div>
+            )}
             <p className="min-h-8 text-lg font-medium text-gray-700">{currentGuidance}</p>
             <p className="mt-2 text-xs text-gray-400">
               {formatTime(Math.max(0, selected.duration - elapsed))} {isEnglish ? "remaining" : "剩余"}

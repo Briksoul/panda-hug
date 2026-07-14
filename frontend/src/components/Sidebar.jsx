@@ -236,49 +236,7 @@ export default function Sidebar({
         </div>
       </div>
 
-      {profile.memory_summary && (
-        <div className="px-5 py-4 border-b border-gray-100">
-          <p className="text-xs text-gray-400 mb-2 font-medium">长期记忆</p>
-          <p className="text-xs text-gray-500 leading-relaxed line-clamp-4">
-            {profile.memory_summary}
-          </p>
-        </div>
-      )}
-
-      {/* 流程进度 */}
-      <div className="px-5 py-4 border-b border-gray-100">
-        <p className="text-xs text-gray-400 mb-3 font-medium">咨询流程</p>
-        <div className="space-y-3">
-          {phases.map((phase, i) => {
-            const isActive = i === currentPhaseIdx;
-            const isDone = i < currentPhaseIdx;
-            return (
-              <div key={phase.key} className="flex items-center gap-2.5">
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${isActive ? "bg-indigo-500 text-white" : isDone ? "bg-green-400 text-white" : "bg-gray-200 text-gray-400"}`}>
-                  {isDone ? "✓" : i + 1}
-                </div>
-                <span className={`text-sm ${isActive ? "text-indigo-600 font-medium" : isDone ? "text-green-600" : "text-gray-400"}`}>
-                  {phase.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 当前 Agent */}
-      <div className="px-5 py-4">
-        <p className="text-xs text-gray-400 mb-2 font-medium">当前对话</p>
-        <div className="flex items-center gap-2">
-          <span className="text-lg">{(agentLabels[state.current_agent] || agentLabels.triage).emoji}</span>
-          <span className={`text-sm font-medium text-${(agentLabels[state.current_agent] || agentLabels.triage).color}-500`}>
-            {(agentLabels[state.current_agent] || agentLabels.triage).name}
-          </span>
-        </div>
-        <p className="text-xs text-gray-400 mt-2">对话轮次：{profile.turns || 0}</p>
-      </div>
-
-      <div className="mt-auto space-y-2 border-t border-gray-100 px-5 py-4">
+      <div className="space-y-2 border-b border-gray-100 px-5 py-4">
         <button
           onClick={onShowChat}
           className={`w-full rounded-xl px-3 py-2.5 text-left text-sm transition-all ${
@@ -323,6 +281,48 @@ export default function Sidebar({
         <button onClick={onNewSession} className="w-full py-2.5 rounded-xl text-sm text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-200 transition-all">
           ➕ {isEnglish ? "New Session" : "新建会话"}
         </button>
+      </div>
+
+      {profile.memory_summary && (
+        <div className="px-5 py-4 border-b border-gray-100">
+          <p className="text-xs text-gray-400 mb-2 font-medium">长期记忆</p>
+          <p className="text-xs text-gray-500 leading-relaxed line-clamp-4">
+            {profile.memory_summary}
+          </p>
+        </div>
+      )}
+
+      {/* 流程进度 */}
+      <div className="px-5 py-4 border-b border-gray-100">
+        <p className="text-xs text-gray-400 mb-3 font-medium">咨询流程</p>
+        <div className="space-y-3">
+          {phases.map((phase, i) => {
+            const isActive = i === currentPhaseIdx;
+            const isDone = i < currentPhaseIdx;
+            return (
+              <div key={phase.key} className="flex items-center gap-2.5">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs ${isActive ? "bg-indigo-500 text-white" : isDone ? "bg-green-400 text-white" : "bg-gray-200 text-gray-400"}`}>
+                  {isDone ? "✓" : i + 1}
+                </div>
+                <span className={`text-sm ${isActive ? "text-indigo-600 font-medium" : isDone ? "text-green-600" : "text-gray-400"}`}>
+                  {phase.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 当前 Agent */}
+      <div className="px-5 py-4">
+        <p className="text-xs text-gray-400 mb-2 font-medium">当前对话</p>
+        <div className="flex items-center gap-2">
+          <span className="text-lg">{(agentLabels[state.current_agent] || agentLabels.triage).emoji}</span>
+          <span className={`text-sm font-medium text-${(agentLabels[state.current_agent] || agentLabels.triage).color}-500`}>
+            {(agentLabels[state.current_agent] || agentLabels.triage).name}
+          </span>
+        </div>
+        <p className="text-xs text-gray-400 mt-2">对话轮次：{profile.turns || 0}</p>
       </div>
     </div>
   );

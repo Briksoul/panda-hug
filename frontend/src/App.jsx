@@ -168,7 +168,7 @@ export default function App() {
                 : message
             )));
           },
-          options.voiceAnalysis || null,
+          null,
         );
         setMessages((prev) => prev.map((message) => (
           message.id === streamId
@@ -236,6 +236,7 @@ export default function App() {
                 : message
             )));
           },
+          options.voiceAnalysis || null,
         );
         setMessages((prev) => prev.map((message) => (
           message.id === streamId
