@@ -281,12 +281,25 @@ async def get_history(session_id: str):
 
 @router.get("/session/{session_id}/memory")
 async def get_memory(session_id: str):
-    """获取当前用户的跨会话记忆"""
+    """Return a user-facing view of remembered preferences and aggregate counts."""
     orch = get_orchestrator()
     session = orch.get_session(session_id)
     if not session:
         raise HTTPException(404, "session not found")
-    return orch.get_user_memory(session.profile.user_id)
+    memory = orch.get_user_memory(session.profile.user_id)
+    stored_profile = memory.get("profile", {})
+    return {
+        "preferences": {
+            "cultural_identity": stored_profile.get("cultural_identity", "unknown"),
+            "language": stored_profile.get("language", "zh"),
+            "study_abroad_months": stored_profile.get("study_abroad_months", 0),
+        },
+        "metrics": {
+            "session_count": len(memory.get("sessions", [])),
+            "interaction_count": len(memory.get("observations", [])),
+            "training_count": len(memory.get("training_records", [])),
+        },
+    }
 
 
 @router.post("/session/{session_id}/voice-analysis")

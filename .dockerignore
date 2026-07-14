@@ -1,0 +1,12 @@
+**/.DS_Store
+**/.env
+**/*.env
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/node_modules/
+**/dist/
+**/data/
+**/.git/
+knowledge_base/**/*.doc
+knowledge_base/**/*.docx

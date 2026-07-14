@@ -333,7 +333,6 @@ class MemoryAgent:
 
         return {
             "user_id": user_id,
-            "summary": memory.get("dynamic_summary", ""),
             "metrics": {
                 "session_count": len(memory.get("sessions", [])),
                 "interaction_count": len(memory.get("observations", [])),

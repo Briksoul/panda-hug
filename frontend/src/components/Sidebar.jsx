@@ -48,16 +48,14 @@ const phases = [
 const culturalIdentityLabels = {
   chinese_in_us: "在美中国学生",
   american_in_china: "在华美国学生",
-  other: "其他文化身份",
+  other: "多元文化背景",
   unknown: "待确认",
 };
 
-const adaptationStageLabels = {
-  honeymoon: "文化适应·蜜月期",
-  culture_shock: "文化适应·休克期",
-  recovery: "文化适应·恢复期",
-  adjustment: "文化适应·稳定期",
-  unknown: "适应阶段待评估",
+const culturalIdentityLabelsEn = {
+  chinese_in_us: "Chinese student in the US",
+  american_in_china: "American student in China",
+  other: "Personal cultural context",
 };
 
 export default function Sidebar({
@@ -91,6 +89,28 @@ export default function Sidebar({
   const emotion = emotionColors[profile.emotion_level] || emotionColors.mild;
   const currentPhaseIdx = phases.findIndex((p) => p.key === state.phase);
   const isEnglish = language === "en";
+  const rememberedPreferences = [
+    {
+      label: isEnglish ? "Language" : "沟通语言",
+      value: profile.language === "en" ? "English" : "中文",
+    },
+    profile.cultural_identity && profile.cultural_identity !== "unknown"
+      ? {
+          label: isEnglish ? "Cultural context" : "文化背景",
+          value: isEnglish
+            ? culturalIdentityLabelsEn[profile.cultural_identity]
+            : culturalIdentityLabels[profile.cultural_identity],
+        }
+      : null,
+    profile.study_abroad_months > 0
+      ? {
+          label: isEnglish ? "Cross-cultural experience" : "跨文化经历",
+          value: isEnglish
+            ? `About ${profile.study_abroad_months} months`
+            : `约 ${profile.study_abroad_months} 个月`,
+        }
+      : null,
+  ].filter((item) => item?.value);
 
   return (
     <div className="w-80 h-screen bg-white/90 backdrop-blur-sm border-r border-gray-100 flex flex-col overflow-y-auto">
@@ -191,17 +211,8 @@ export default function Sidebar({
           </div>
           <div>
             <p className="font-medium text-gray-700 text-sm">{profile.name || "匿名用户"}</p>
-            <p className="text-xs text-gray-400">
-              {culturalIdentityLabels[profile.cultural_identity] || culturalIdentityLabels.unknown}
-            </p>
-            <p className="text-[10px] text-gray-400 mt-0.5">
-              {adaptationStageLabels[profile.adaptation_stage] || adaptationStageLabels.unknown}
-            </p>
-            <p className="text-[10px] text-gray-400 mt-0.5">
-              {profile.language === "en" ? "English" : "中文"}
-              {profile.study_abroad_months > 0
-                ? ` · 跨文化生活约 ${profile.study_abroad_months} 个月`
-                : ""}
+            <p className="mt-0.5 text-xs text-gray-400">
+              {isEnglish ? "Your support space" : "你的陪伴空间"}
             </p>
           </div>
         </div>
@@ -283,11 +294,33 @@ export default function Sidebar({
         </button>
       </div>
 
-      {profile.memory_summary && (
+      {rememberedPreferences.length > 0 && (
         <div className="px-5 py-4 border-b border-gray-100">
-          <p className="text-xs text-gray-400 mb-2 font-medium">长期记忆</p>
-          <p className="text-xs text-gray-500 leading-relaxed line-clamp-4">
-            {profile.memory_summary}
+          <p className="text-xs font-medium text-gray-500">
+            {isEnglish ? "Support preferences" : "陪伴偏好"}
+          </p>
+          <p className="mt-1 text-[10px] leading-relaxed text-gray-400">
+            {isEnglish
+              ? "Only information you chose to share is shown here."
+              : "这里只展示你主动提供、用于延续对话的信息。"}
+          </p>
+          <div className="mt-3 space-y-2">
+            {rememberedPreferences.map((item) => (
+              <div
+                key={item.label}
+                className="flex items-start justify-between gap-3 rounded-lg bg-gray-50 px-3 py-2"
+              >
+                <span className="text-[10px] text-gray-400">{item.label}</span>
+                <span className="text-right text-xs font-medium text-gray-600">
+                  {item.value}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-[10px] leading-relaxed text-gray-400">
+            {isEnglish
+              ? "Emotional trends and growth insights are available in Growth."
+              : "情绪趋势和成长洞察请在“成长记录”中查看。"}
           </p>
         </div>
       )}

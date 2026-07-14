@@ -277,7 +277,11 @@ export default function WelcomeScreen({ onStart }) {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          overflow: hidden;
+          min-height: 100dvh;
+          padding: 24px 16px 64px;
+          box-sizing: border-box;
+          overflow-x: hidden;
+          overflow-y: auto;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
         .bg-gradient {
@@ -294,14 +298,15 @@ export default function WelcomeScreen({ onStart }) {
           display: flex;
           flex-direction: column;
           align-items: center;
+          width: 100%;
           gap: 16px;
           transition: opacity 0.4s ease, transform 0.4s ease;
           cursor: pointer;
         }
         .yunyun-container {
           position: relative;
-          width: 320px;
-          height: 320px;
+          width: min(320px, calc(100vw - 64px));
+          height: min(320px, calc(100vw - 64px));
         }
         .yunyun-img {
           width: 100%;
@@ -312,7 +317,7 @@ export default function WelcomeScreen({ onStart }) {
           justify-content: center;
           position: relative;
           background: rgba(255, 255, 255, 0.86);
-          font-size: 180px;
+          font-size: clamp(116px, 48vw, 180px);
           box-shadow: 0 20px 60px rgba(99, 102, 241, 0.3);
         }
         .breathe {
@@ -359,6 +364,8 @@ export default function WelcomeScreen({ onStart }) {
 
         /* === Select === */
         .question-bubble {
+          width: min(520px, calc(100vw - 32px));
+          box-sizing: border-box;
           background: white;
           padding: 16px 32px;
           border-radius: 24px;
@@ -366,10 +373,17 @@ export default function WelcomeScreen({ onStart }) {
           font-size: 20px;
           color: #374151;
           font-weight: 500;
+          text-align: center;
+        }
+        .question-bubble p {
+          margin: 0;
         }
         .emotion-row {
           display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
           gap: 20px;
+          width: min(620px, calc(100vw - 32px));
           margin-top: 12px;
         }
         .identity-list {
@@ -381,9 +395,11 @@ export default function WelcomeScreen({ onStart }) {
         .language-list {
           display: flex;
           gap: 14px;
+          width: min(380px, calc(100vw - 32px));
         }
         .language-btn {
-          min-width: 150px;
+          min-width: 0;
+          flex: 1;
           padding: 14px 24px;
           border: 1px solid rgba(99, 102, 241, 0.22);
           border-radius: 16px;
@@ -451,6 +467,9 @@ export default function WelcomeScreen({ onStart }) {
           display: flex;
           flex-direction: column;
           align-items: center;
+          width: 100px;
+          min-width: 0;
+          padding: 0;
           gap: 8px;
           background: none;
           border: none;
@@ -506,6 +525,8 @@ export default function WelcomeScreen({ onStart }) {
           color: #374151;
           font-weight: 500;
           margin: 8px 0;
+          max-width: calc(100vw - 32px);
+          text-align: center;
         }
         .loading-dots {
           display: flex;
@@ -527,11 +548,74 @@ export default function WelcomeScreen({ onStart }) {
 
         /* === Safety Bar === */
         .safety-bar {
-          position: absolute;
-          bottom: 16px;
+          position: fixed;
+          right: 16px;
+          bottom: max(12px, env(safe-area-inset-bottom));
+          left: 16px;
           font-size: 12px;
           color: #9ca3af;
+          line-height: 1.5;
+          text-align: center;
           z-index: 2;
+        }
+        @media (max-width: 640px) {
+          .welcome-screen {
+            justify-content: flex-start;
+            padding-top: max(28px, env(safe-area-inset-top));
+          }
+          .intro-view, .language-view, .identity-view, .duration-view, .select-view, .done-view {
+            margin: auto 0;
+          }
+          .title {
+            font-size: 38px;
+          }
+          .question-bubble {
+            padding: 13px 18px;
+            border-radius: 18px;
+            font-size: 17px;
+          }
+          .emotion-row {
+            gap: 16px 12px;
+          }
+          .emotion-btn {
+            width: 76px;
+          }
+          .emotion-circle {
+            width: 76px;
+            height: 76px;
+          }
+          .emotion-img {
+            font-size: 34px;
+          }
+          .emotion-btn:hover {
+            transform: none;
+          }
+          .selected-emotion {
+            right: 24px;
+            top: 24px;
+            font-size: 42px;
+          }
+          .duration-list {
+            width: min(460px, calc(100vw - 32px));
+          }
+        }
+        @media (max-width: 380px) {
+          .emotion-row {
+            gap: 14px 8px;
+          }
+          .emotion-btn {
+            width: 70px;
+          }
+          .emotion-circle {
+            width: 70px;
+            height: 70px;
+          }
+          .emotion-label {
+            font-size: 13px;
+          }
+          .duration-list {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
     </div>

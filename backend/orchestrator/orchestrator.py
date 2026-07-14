@@ -746,7 +746,6 @@ class CognitiveOrchestrator:
                 "emotion_level": session.profile.emotion_level.value,
                 "turns": session.profile.session_turns,
                 "crisis_triggered": session.profile.crisis_triggered,
-                "memory_summary": session.profile.memory_summary,
                 "language": session.profile.language,
                 "study_abroad_months": session.profile.study_abroad_months,
             },

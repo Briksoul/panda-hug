@@ -426,12 +426,15 @@ function VoicePanelContent({
 
       <style>{`
         .voice-panel {
+          min-width: 0;
           border-top: 1px solid #e5e7eb;
           padding: 12px;
           background: #fafafa;
         }
         .mode-switch, .engine-switch {
           display: flex;
+          min-width: 0;
+          box-sizing: border-box;
           gap: 4px;
           background: #f3f4f6;
           border-radius: 8px;
@@ -440,6 +443,7 @@ function VoicePanelContent({
         .mode-switch { margin-bottom: 12px; }
         .mode-btn, .engine-switch button {
           flex: 1;
+          min-width: 0;
           padding: 6px 12px;
           border: none;
           border-radius: 6px;
@@ -458,6 +462,8 @@ function VoicePanelContent({
           display: flex;
           flex-direction: column;
           align-items: center;
+          width: 100%;
+          min-width: 0;
           gap: 10px;
         }
         .engine-switch { width: min(100%, 360px); }
@@ -522,6 +528,8 @@ function VoicePanelContent({
         .status-text.user { color: #6366f1; }
         .status-text.idle { color: #9ca3af; }
         .interim-text, .hume-transcript {
+          width: 100%;
+          overflow-wrap: anywhere;
           font-size: 13px;
           color: #6b7280;
           max-width: 520px;
@@ -545,12 +553,15 @@ function VoicePanelContent({
         }
         .hume-transcript.assistant { color: #374151; }
         .voice-error {
+          max-width: 100%;
+          overflow-wrap: anywhere;
           color: #b91c1c;
           font-size: 12px;
           text-align: center;
         }
         .emotion-panel {
           width: min(100%, 520px);
+          box-sizing: border-box;
           padding: 10px;
           border-radius: 10px;
           background: #f5f3ff;
@@ -576,6 +587,14 @@ function VoicePanelContent({
           font-size: 12px;
         }
         .record-status.saved { color: #059669; }
+        @media (max-width: 640px) {
+          .voice-controls {
+            max-height: min(40dvh, 360px);
+            padding: 2px 4px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+          }
+        }
       `}</style>
     </div>
   );

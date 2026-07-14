@@ -154,7 +154,7 @@ export default function TrainingCenter({
   };
 
   return (
-    <div className="flex-1 h-screen overflow-y-auto px-4 py-8 pb-24 lg:px-8 lg:pb-8">
+    <div className="h-dvh flex-1 overflow-y-auto px-4 py-8 pb-24 lg:px-8 lg:pb-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-400">
@@ -219,7 +219,7 @@ export default function TrainingCenter({
         )}
 
         {step === "active" && selected && (
-          <div className="mx-auto max-w-xl rounded-3xl border border-gray-100 bg-white p-8 text-center">
+          <div className="mx-auto max-w-xl rounded-3xl border border-gray-100 bg-white p-4 text-center sm:p-8">
             <p className="text-sm text-gray-400">
               {isEnglish ? selected.titleEn : selected.title}
             </p>
@@ -242,7 +242,7 @@ export default function TrainingCenter({
                   setElapsed(selected.duration);
                   finishExercise();
                 }}
-                className="mx-auto my-6 w-full rounded-2xl bg-black shadow-sm"
+                className="mx-auto my-6 max-h-[50dvh] w-full rounded-2xl bg-black object-contain shadow-sm"
               >
                 {isEnglish
                   ? "Your browser does not support video playback."

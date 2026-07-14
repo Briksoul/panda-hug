@@ -14,6 +14,8 @@ dist/
 # 数据
 data/
 *.db
+knowledge_base/**/*.doc
+knowledge_base/**/*.docx
 
 # IDE
 .vscode/

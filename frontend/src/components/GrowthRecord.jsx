@@ -94,10 +94,12 @@ function EmotionTrend({ data }) {
           </circle>
         ))}
       </svg>
-      <div className="flex items-center justify-between text-xs text-gray-400">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-400">
         <span>{formatDate(data[0].date)}</span>
-        <span>困扰指数越低，表示整体状态越平稳</span>
-        <span>{formatDate(data[data.length - 1].date)}</span>
+        <span className="text-right">{formatDate(data[data.length - 1].date)}</span>
+        <span className="col-span-2 text-center text-[10px] sm:text-xs">
+          困扰指数越低，表示整体状态越平稳
+        </span>
       </div>
     </div>
   );
@@ -132,7 +134,12 @@ function PermaRadar({ dimensions }) {
 
   return (
     <div className="grid items-center gap-4 sm:grid-cols-[260px_1fr]">
-      <svg viewBox="0 0 240 240" className="mx-auto h-64 w-64" role="img" aria-label="PERMA 五维幸福感信号">
+      <svg
+        viewBox="0 0 240 240"
+        className="mx-auto aspect-square h-auto w-full max-w-64"
+        role="img"
+        aria-label="PERMA 五维幸福感信号"
+      >
         {[25, 50, 75, 100].map((level) => (
           <polygon
             key={level}
@@ -282,13 +289,15 @@ export default function GrowthRecord({ data, loading, onRefresh }) {
   const maxIssueCount = Math.max(1, ...issues.map((item) => item.count));
 
   return (
-    <main className="h-screen flex-1 overflow-y-auto bg-gray-50/60">
-      <div className="mx-auto max-w-6xl px-6 py-8 pb-24 lg:pb-8">
+    <main className="h-dvh flex-1 overflow-y-auto bg-gray-50/60">
+      <div className="mx-auto max-w-6xl break-words px-4 py-8 pb-24 [overflow-wrap:anywhere] sm:px-6 lg:pb-8">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-medium uppercase tracking-wider text-indigo-500">Growth Record</p>
             <h1 className="mt-1 text-2xl font-bold text-gray-800">我的成长记录</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-gray-500">{data.summary}</p>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-gray-500">
+              查看对话、训练与跨文化适应中逐步形成的长期变化。
+            </p>
           </div>
           <button
             onClick={onRefresh}
@@ -340,7 +349,7 @@ export default function GrowthRecord({ data, loading, onRefresh }) {
 
         <section className="mt-6 grid gap-6 lg:grid-cols-[1.7fr_1fr]">
           <div className="rounded-2xl border border-gray-100 bg-white p-5">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h2 className="font-semibold text-gray-700">对话情绪变化趋势</h2>
                 <p className="mt-1 text-xs text-gray-400">

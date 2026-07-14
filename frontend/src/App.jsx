@@ -312,7 +312,7 @@ export default function App() {
   // 加载中
   if (restoring) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
+      <div className="flex h-dvh items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
         <div className="text-center">
           <div className="text-6xl mb-4 breathe-animation">🐼</div>
           <p className="text-gray-500">正在恢复会话...</p>
@@ -326,7 +326,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="flex h-dvh bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <div className="hidden lg:block">
         <Sidebar
           state={sessionState}
@@ -340,7 +340,7 @@ export default function App() {
           language={sessionState?.profile?.language || "zh"}
         />
       </div>
-      <div className="min-w-0 flex-1">
+      <div className="min-h-0 min-w-0 flex-1">
         {activeView === "growth" ? (
           <GrowthRecord
             data={growthRecord}
@@ -355,7 +355,7 @@ export default function App() {
             onGoChat={() => setActiveView("chat")}
           />
         ) : activeView === "report" ? (
-          <div className="h-screen overflow-y-auto px-4 py-8 pb-24 lg:px-8 lg:pb-8">
+          <div className="h-dvh overflow-y-auto px-4 py-8 pb-24 lg:px-8 lg:pb-8">
             <div className="mx-auto max-w-3xl">
               <InsightReport report={sessionState?.insight_report} />
             </div>
@@ -379,7 +379,9 @@ export default function App() {
           && Object.keys(sessionState.insight_report).length > 0
         )}
         onNavigate={(view) => {
-          if (view === "growth") {
+          if (view === "new") {
+            handleNewSession();
+          } else if (view === "growth") {
             handleOpenGrowth();
           } else {
             setActiveView(view);

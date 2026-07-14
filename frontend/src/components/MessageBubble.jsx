@@ -41,7 +41,7 @@ export default function MessageBubble({ message }) {
   const config = agentConfig[message.agent] || agentConfig.system;
 
   return (
-    <div className={`flex gap-3 message-bubble ${isUser ? "flex-row-reverse" : ""}`}>
+    <div className={`message-bubble flex min-w-0 gap-3 ${isUser ? "flex-row-reverse" : ""}`}>
       {/* 头像 */}
       {!isUser && (
         <div className="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-lg shadow-sm">
@@ -51,7 +51,7 @@ export default function MessageBubble({ message }) {
 
       {/* 气泡 */}
       <div
-        className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
+        className={`min-w-0 max-w-[82%] overflow-hidden rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm sm:max-w-[75%] ${
           isUser
             ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-tr-md"
             : "bg-white text-gray-700 border border-gray-100 rounded-tl-md"
@@ -63,7 +63,9 @@ export default function MessageBubble({ message }) {
             <span className="text-xs text-gray-400 font-medium">{config.name}</span>
           </div>
         )}
-        <div className="whitespace-pre-wrap">{renderText(message.content)}</div>
+        <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+          {renderText(message.content)}
+        </div>
       </div>
     </div>
   );

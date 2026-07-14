@@ -13,7 +13,7 @@ export default function InsightReport({ report }) {
     || "";
 
   return (
-    <div className="mx-4 my-4 space-y-3">
+    <div className="my-4 max-w-full space-y-3 break-words [overflow-wrap:anywhere]">
       {/* 报告标题 */}
       <div className="text-center py-3">
         <h3 className="text-lg font-bold text-gray-700">📊 心理情绪洞察报告</h3>
