@@ -1,0 +1,58 @@
+{
+  "user_id": "005da263-7761-4b4c-910d-052d83017b32",
+  "profile": {
+    "name": "科科",
+    "cultural_bg": "unknown",
+    "cultural_identity": "unknown",
+    "adaptation_stage": "unknown",
+    "phq2_score": 0,
+    "gad2_score": 0,
+    "emotion_level": "mild",
+    "crisis_triggered": false,
+    "tags": [],
+    "language": "zh",
+    "study_abroad_months": 0
+  },
+  "sessions": [
+    "9b6175a8"
+  ],
+  "observations": [
+    {
+      "timestamp": 1784183793.935654,
+      "session_id": "9b6175a8",
+      "agent": "triage",
+      "user_message": "你好，我最近考试压力很大，经常失眠",
+      "assistant_response": "你好呀～🐼 先给你一个温暖的熊抱！考试压力真的不容易，尤其是睡不好觉会更让人疲惫呢。  \n\n我想先了解一下你最近的状态，可以吗？  \n\n**过去两周里，你有没有感觉做事情缺乏兴趣或乐趣？**  \n比如以前喜欢打游戏、看剧或者和朋友聊天，现在觉得没什么动力了？"
+    }
+  ],
+  "emotion_history": [
+    {
+      "timestamp": 1784183793.935654,
+      "session_id": "9b6175a8",
+      "sentiment": "negative",
+      "emotion_tags": [
+        "压力",
+        "疲惫"
+      ],
+      "intensity": 0.7500000000000001,
+      "emotion_level": "mild",
+      "source": "text"
+    }
+  ],
+  "voice_analyses": [],
+  "latest_case_formulation": {},
+  "latest_cultural_analysis": {},
+  "insight_reports": [],
+  "training_records": [],
+  "perma": {
+    "positive_emotion": 50.0,
+    "engagement": 50.0,
+    "relationships": 50.0,
+    "meaning": 50.0,
+    "accomplishment": 50.0
+  },
+  "perma_history": [],
+  "dynamic_summary": "累计会话 1 次，记录互动 1 轮；近期主要情绪倾向：negative，高频情绪：压力、疲惫；最近核心议题：暂无；文化身份：unknown，文化适应阶段：unknown；已完成训练 0 次。",
+  "created_at": 1784183791.813131,
+  "last_active": 1784183793.935654
+}

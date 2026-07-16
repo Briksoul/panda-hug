@@ -1,0 +1,33 @@
+{
+  "session_id": "b3b47aa9",
+  "current_agent": "triage",
+  "phase": "triage",
+  "history": [],
+  "counseling_data": {},
+  "case_formulation": {},
+  "cultural_analysis": {},
+  "insight_report": {},
+  "report_status": "idle",
+  "latest_supervision": {},
+  "training_records": [],
+  "training_baseline": {},
+  "latest_voice_analysis": {},
+  "created_at": 1784183772.0372381,
+  "last_active": 1784183772.0372381,
+  "profile": {
+    "user_id": "ecf6b641-8428-4a47-b65a-198e2d8f4349",
+    "name": "科科",
+    "cultural_bg": "unknown",
+    "cultural_identity": "unknown",
+    "adaptation_stage": "unknown",
+    "phq2_score": 0,
+    "gad2_score": 0,
+    "emotion_level": "mild",
+    "session_turns": 0,
+    "crisis_triggered": false,
+    "tags": [],
+    "memory_summary": "累计会话 1 次，记录互动 0 轮；近期主要情绪倾向：暂无，高频情绪：暂无；最近核心议题：暂无；文化身份：unknown，文化适应阶段：unknown；已完成训练 0 次。",
+    "language": "zh",
+    "study_abroad_months": 0
+  }
+}

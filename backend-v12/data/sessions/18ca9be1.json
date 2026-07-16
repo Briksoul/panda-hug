@@ -1,0 +1,43 @@
+{
+  "session_id": "18ca9be1",
+  "current_agent": "triage",
+  "phase": "triage",
+  "history": [
+    {
+      "role": "user",
+      "content": "你好，我最近考试压力很大"
+    },
+    {
+      "role": "assistant",
+      "content": "抱歉，系统暂时遇到了问题，请稍后再试。",
+      "agent": "triage"
+    }
+  ],
+  "counseling_data": {},
+  "case_formulation": {},
+  "cultural_analysis": {},
+  "insight_report": {},
+  "report_status": "idle",
+  "latest_supervision": {},
+  "training_records": [],
+  "training_baseline": {},
+  "latest_voice_analysis": {},
+  "created_at": 1784183665.7060502,
+  "last_active": 1784183699.6808152,
+  "profile": {
+    "user_id": "c84162c2-9b5f-4a38-9596-98f426ddf916",
+    "name": "测试",
+    "cultural_bg": "unknown",
+    "cultural_identity": "unknown",
+    "adaptation_stage": "unknown",
+    "phq2_score": 0,
+    "gad2_score": 0,
+    "emotion_level": "mild",
+    "session_turns": 1,
+    "crisis_triggered": false,
+    "tags": [],
+    "memory_summary": "累计会话 1 次，记录互动 1 轮；近期主要情绪倾向：negative，高频情绪：压力；最近核心议题：暂无；文化身份：unknown，文化适应阶段：unknown；已完成训练 0 次。",
+    "language": "zh",
+    "study_abroad_months": 0
+  }
+}
