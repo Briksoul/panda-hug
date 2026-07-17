@@ -170,7 +170,7 @@ export default function TrainingPage() {
         <div className="px-6 mt-6 mb-6">
           <div className="card bg-gradient-to-r from-panda-light to-orange-50">
             <div className="flex items-start gap-3">
-              <img src={`${import.meta.env.BASE_URL}/panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 48, height: 48, objectFit: 'cover' }} />
+              <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 48, height: 48, objectFit: 'cover' }} />
               <div>
                 <p className="text-sm text-gray-700">
                   谢谢你愿意和我分享这些。我能感受到你在异国他乡的不容易，也看到了你一直在努力适应和坚持。现在，是时候照顾一下自己了。
@@ -197,7 +197,7 @@ export default function TrainingPage() {
         <p className="text-gray-500 mb-6">{training.name} · {Math.floor(training.duration / 60)} 分钟</p>
 
         <div className="card w-full mb-6">
-          <img src={`${import.meta.env.BASE_URL}/panda-happy.jpg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 48, height: 48, objectFit: 'cover' }} />
+          <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 48, height: 48, objectFit: 'cover' }} />
           <p className="text-center text-gray-700 font-medium mb-4">现在感觉如何？</p>
           <div className="grid grid-cols-3 gap-3">
             {['好多了😊', '差不多😌', '还是不好😔'].map(label => (

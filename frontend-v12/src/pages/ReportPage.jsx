@@ -113,7 +113,7 @@ export default function ReportPage() {
                   {mod.key === 'status' && (
                     <div>
                       <div className="flex items-center gap-3 mb-3">
-                        <img src={report.bearMood === 'happy' ? `${import.meta.env.BASE_URL}/panda-happy.jpg` : report.bearMood === 'calm' ? `${import.meta.env.BASE_URL}/panda-calm.jpg` : `${import.meta.env.BASE_URL}/panda-tired.jpg`} alt="Panda" className="rounded-full" style={{ width: 48, height: 48, objectFit: 'cover' }} />
+                        <img src={report.bearMood === 'happy' ? `${import.meta.env.BASE_URL}panda-happy.jpg` : report.bearMood === 'calm' ? `${import.meta.env.BASE_URL}panda-calm.jpg` : `${import.meta.env.BASE_URL}panda-tired.jpg`} alt="Panda" className="rounded-full" style={{ width: 48, height: 48, objectFit: 'cover' }} />
                         <div>
                           <p className="font-medium">情绪指数：{report.emotionIndex}/100</p>
                           <p className="text-sm text-gray-500">语音情绪 + 面部表情综合分析</p>
@@ -188,7 +188,7 @@ export default function ReportPage() {
 
                   {mod.key === 'message' && (
                     <div className="bg-panda-light/50 rounded-xl p-4">
-                      <img src={`${import.meta.env.BASE_URL}/panda-happy.jpg`} alt="Panda" className="rounded-full mb-2" style={{ width: 40, height: 40, objectFit: 'cover' }} />
+                      <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full mb-2" style={{ width: 40, height: 40, objectFit: 'cover' }} />
                       <p className="text-sm text-gray-700 leading-relaxed">{report.pandaMessage}</p>
                     </div>
                   )}

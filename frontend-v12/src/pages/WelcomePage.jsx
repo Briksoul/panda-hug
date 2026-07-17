@@ -54,7 +54,7 @@ export default function WelcomePage() {
       >
         <div className="animate-float">
           <img
-            src={`${import.meta.env.BASE_URL}/panda-happy.jpg`}
+            src={`${import.meta.env.BASE_URL}panda-happy.jpg`}
             alt="Panda Hug"
             className="rounded-full"
             style={{

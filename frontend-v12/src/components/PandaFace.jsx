@@ -1,12 +1,12 @@
 import React from 'react'
 
 const MOOD_IMAGES = {
-  happy: `${import.meta.env.BASE_URL}/panda-happy.jpg`,
-  calm: `${import.meta.env.BASE_URL}/panda-calm.jpg`,
-  tired: `${import.meta.env.BASE_URL}/panda-tired.jpg`,
-  sad: `${import.meta.env.BASE_URL}/panda-tired.jpg`,
-  anxious: `${import.meta.env.BASE_URL}/panda-anxious.jpg`,
-  thinking: `${import.meta.env.BASE_URL}/panda-calm.jpg`,
+  happy: `${import.meta.env.BASE_URL}panda-happy.jpg`,
+  calm: `${import.meta.env.BASE_URL}panda-calm.jpg`,
+  tired: `${import.meta.env.BASE_URL}panda-tired.jpg`,
+  sad: `${import.meta.env.BASE_URL}panda-tired.jpg`,
+  anxious: `${import.meta.env.BASE_URL}panda-anxious.jpg`,
+  thinking: `${import.meta.env.BASE_URL}panda-calm.jpg`,
 }
 
 export function PandaFace({ mood = 'happy', size = 120, className = '' }) {

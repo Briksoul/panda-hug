@@ -82,7 +82,7 @@ export default function EmotionPage() {
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center gap-4">
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
-            <img src={`${import.meta.env.BASE_URL}/panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 52, height: 52, objectFit: 'cover', border: '3px solid white', boxShadow: '0 4px 12px rgba(255,140,66,0.2)' }} />
+            <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 52, height: 52, objectFit: 'cover', border: '3px solid white', boxShadow: '0 4px 12px rgba(255,140,66,0.2)' }} />
           </motion.div>
           <div>
             <h1 className="text-lg font-bold">{getGreeting()}，{user.name || '朋友'} 👋</h1>
@@ -204,7 +204,7 @@ export default function EmotionPage() {
 
             <div className="card w-full mb-6 text-center">
               <img
-                src={bearResult.mood === 'happy' ? `${import.meta.env.BASE_URL}/panda-happy.jpg` : bearResult.mood === 'calm' ? `${import.meta.env.BASE_URL}/panda-calm.jpg` : `${import.meta.env.BASE_URL}/panda-tired.jpg`}
+                src={bearResult.mood === 'happy' ? `${import.meta.env.BASE_URL}panda-happy.jpg` : bearResult.mood === 'calm' ? `${import.meta.env.BASE_URL}panda-calm.jpg` : `${import.meta.env.BASE_URL}panda-tired.jpg`}
                 alt="Panda"
                 className="rounded-full mx-auto mb-3"
                 style={{ width: 64, height: 64, objectFit: 'cover' }}

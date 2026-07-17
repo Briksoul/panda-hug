@@ -1,75 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUser } from '../hooks/useUser'
-import { Heart, MessageCircle, UserPlus, Send, X, Plus, Award, Clock, Search } from 'lucide-react'
+import { Heart, MessageCircle, UserPlus, Send, X, Plus, Award, Search, ChevronDown } from 'lucide-react'
 
-const MOCK_POSTS = [
-  {
-    id: 1,
-    author: '小林',
-    avatar: '🧑‍🎓',
-    cultureTag: 'china_in_us',
-    type: 'experience',
-    title: '如何在美国大学交到真正的朋友',
-    content: '来美国第一年真的很孤独，后来我加入了学校的国际学生俱乐部，认识了很多和我有同样经历的朋友。分享三个我觉得最有用的方法...',
-    likes: 42,
-    comments: 15,
-    time: '2小时前',
-    tags: ['社交', '经验'],
-  },
-  {
-    id: 2,
-    author: 'Sarah',
-    avatar: '👩‍🎓',
-    cultureTag: 'us_in_china',
-    type: 'help',
-    title: 'Language barrier in daily life - 日常生活中的语言障碍',
-    content: 'I\'ve been in Shanghai for 3 months now. Sometimes I feel frustrated because I can\'t express myself well in Chinese. Does anyone have tips for managing this frustration?',
-    likes: 28,
-    comments: 23,
-    time: '5小时前',
-    tags: ['语言', '求助'],
-  },
-  {
-    id: 3,
-    author: '阿杰',
-    avatar: '👨‍💻',
-    cultureTag: 'china_in_us',
-    type: 'experience',
-    title: '期末考试压力大？试试这个方法',
-    content: '美国大学的考试方式和国内很不一样，我一开始也很不适应。后来我找到了一套适合自己的学习方法，GPA从2.8提升到了3.5...',
-    likes: 56,
-    comments: 31,
-    time: '1天前',
-    tags: ['学业', '经验'],
-  },
-  {
-    id: 4,
-    author: 'Emily',
-    avatar: '👩‍🔬',
-    cultureTag: 'us_in_china',
-    type: 'help',
-    title: 'Feeling homesick during holidays',
-    content: '春节快到了，看到同学们都回家团聚，我一个人在宿舍真的很想家。在美国的时候从来没有这么强烈的感觉...',
-    likes: 35,
-    comments: 18,
-    time: '2天前',
-    tags: ['思乡', '求助'],
-  },
-  {
-    id: 5,
-    author: '小王',
-    avatar: '🧑‍🎨',
-    cultureTag: 'china_in_us',
-    type: 'experience',
-    title: '我是如何克服文化冲击的',
-    content: '刚来美国的时候，我觉得什么都格格不入。但慢慢地，我学会了在两种文化之间找到平衡。关键是要保持开放的心态...',
-    likes: 67,
-    comments: 42,
-    time: '3天前',
-    tags: ['文化适应', '经验'],
-  },
-]
+const API_BASE = '/pandahug/api'
 
 const BADGES = [
   { id: 'light', name: '同行微光', desc: '5篇经验贴', emoji: '✨', threshold: 5 },
@@ -83,50 +17,152 @@ export default function CommunityPage() {
   const [activeTab, setActiveTab] = useState('all')
   const [showCompose, setShowCompose] = useState(false)
   const [newPost, setNewPost] = useState({ title: '', content: '', type: 'experience' })
-  const [posts, setPosts] = useState(MOCK_POSTS)
+  const [posts, setPosts] = useState([])
   const [likedPosts, setLikedPosts] = useState(new Set())
   const [showBadges, setShowBadges] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [expandedPost, setExpandedPost] = useState(null)
+  const [comments, setComments] = useState([])
+  const [newComment, setNewComment] = useState('')
+  const [commentLoading, setCommentLoading] = useState(false)
 
-  const isWednesday = new Date().getDay() === 3
+  // ─── 加载帖子 ────────────────────────────────────────────────────
+  const fetchPosts = useCallback(async (p = 1, append = false) => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams({ page: p, size: 20 })
+      if (activeTab !== 'all') params.set('type', activeTab)
+      if (searchQuery) params.set('q', searchQuery)
 
-  const filteredPosts = posts.filter(p => {
-    if (activeTab !== 'all' && p.type !== activeTab) return false
-    if (searchQuery && !p.title.includes(searchQuery) && !p.content.includes(searchQuery)) return false
-    return true
-  })
+      const res = await fetch(`${API_BASE}/community/posts?${params}`)
+      if (!res.ok) throw new Error('Failed to load posts')
+      const data = await res.json()
 
-  const toggleLike = (postId) => {
-    setLikedPosts(prev => {
-      const next = new Set(prev)
-      if (next.has(postId)) next.delete(postId)
-      else next.add(postId)
-      return next
-    })
-    setPosts(prev => prev.map(p => {
-      if (p.id === postId) return { ...p, likes: p.likes + (likedPosts.has(postId) ? -1 : 1) }
-      return p
-    }))
+      setPosts(prev => append ? [...prev, ...data.posts] : data.posts)
+      setTotal(data.total)
+      setPage(p)
+    } catch (err) {
+      console.error('Load posts error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [activeTab, searchQuery])
+
+  useEffect(() => {
+    fetchPosts(1)
+  }, [fetchPosts])
+
+  // ─── 点赞 ────────────────────────────────────────────────────────
+  const toggleLike = async (postId) => {
+    const userId = user.id || 'anonymous_' + (localStorage.getItem('ph_uid') || (() => {
+      const id = 'u_' + Date.now()
+      localStorage.setItem('ph_uid', id)
+      return id
+    })())
+
+    try {
+      const res = await fetch(`${API_BASE}/community/posts/${postId}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId }),
+      })
+      if (!res.ok) throw new Error('Like failed')
+      const data = await res.json()
+
+      setLikedPosts(prev => {
+        const next = new Set(prev)
+        if (data.liked) next.add(postId)
+        else next.delete(postId)
+        return next
+      })
+      setPosts(prev => prev.map(p =>
+        p.id === postId ? { ...p, likes: data.likes } : p
+      ))
+    } catch (err) {
+      console.error('Like error:', err)
+    }
   }
 
-  const handlePost = () => {
+  // ─── 发帖 ────────────────────────────────────────────────────────
+  const handlePost = async () => {
     if (!newPost.title || !newPost.content) return
-    const post = {
-      id: Date.now(),
-      author: user.name || '匿名',
-      avatar: '🐼',
-      cultureTag: user.cultureTag,
-      type: newPost.type,
-      title: newPost.title,
-      content: newPost.content,
-      likes: 0,
-      comments: 0,
-      time: '刚刚',
-      tags: [newPost.type === 'experience' ? '经验' : '求助'],
+    try {
+      const res = await fetch(`${API_BASE}/community/posts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          author: user.name || '匿名',
+          avatar: '🐼',
+          culture_tag: user.cultureTag || 'unknown',
+          type: newPost.type,
+          title: newPost.title,
+          content: newPost.content,
+        }),
+      })
+      if (!res.ok) throw new Error('Post failed')
+      const post = await res.json()
+
+      setPosts(prev => [post, ...prev])
+      setTotal(prev => prev + 1)
+      setNewPost({ title: '', content: '', type: 'experience' })
+      setShowCompose(false)
+    } catch (err) {
+      console.error('Post error:', err)
     }
-    setPosts(prev => [post, ...prev])
-    setNewPost({ title: '', content: '', type: 'experience' })
-    setShowCompose(false)
+  }
+
+  // ─── 加载评论 ────────────────────────────────────────────────────
+  const loadComments = async (postId) => {
+    if (expandedPost === postId) {
+      setExpandedPost(null)
+      return
+    }
+    setExpandedPost(postId)
+    setCommentLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/community/posts/${postId}`)
+      if (!res.ok) throw new Error('Failed to load post')
+      const data = await res.json()
+      setComments(data.comment_list || [])
+    } catch (err) {
+      console.error('Load comments error:', err)
+      setComments([])
+    } finally {
+      setCommentLoading(false)
+    }
+  }
+
+  // ─── 发评论 ────────────────────────────────────────────────────────
+  const handleComment = async (postId) => {
+    if (!newComment.trim()) return
+    try {
+      const res = await fetch(`${API_BASE}/community/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          author: user.name || '匿名',
+          content: newComment.trim(),
+        }),
+      })
+      if (!res.ok) throw new Error('Comment failed')
+      const comment = await res.json()
+
+      setComments(prev => [...prev, {
+        id: comment.id,
+        author: comment.author,
+        content: comment.content,
+        time: comment.time,
+      }])
+      setPosts(prev => prev.map(p =>
+        p.id === postId ? { ...p, comments: comment.comment_count } : p
+      ))
+      setNewComment('')
+    } catch (err) {
+      console.error('Comment error:', err)
+    }
   }
 
   const cultureLabel = (tag) => {
@@ -135,8 +171,16 @@ export default function CommunityPage() {
     return '🌍'
   }
 
+  // ─── 搜索防抖 ────────────────────────────────────────────────────
+  const [searchInput, setSearchInput] = useState('')
+  useEffect(() => {
+    const t = setTimeout(() => setSearchQuery(searchInput), 400)
+    return () => clearTimeout(t)
+  }, [searchInput])
+
   return (
     <div className="h-full flex flex-col pb-20">
+      {/* ─── Header ─── */}
       <div className="px-6 pt-6 pb-2">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-xl font-bold">互助社区</h1>
@@ -155,27 +199,23 @@ export default function CommunityPage() {
             </button>
           </div>
         </div>
-        {!isWednesday && (
-          <div className="bg-orange-50 rounded-xl p-3 flex items-center gap-2 mb-3">
-            <Clock size={16} className="text-orange-500" />
-            <p className="text-xs text-orange-700">社区每周三 00:00-24:00 开放</p>
-          </div>
-        )}
       </div>
 
+      {/* ─── Search ─── */}
       <div className="px-6 mb-3">
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
             placeholder="搜索帖子..."
             className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white border border-gray-200 text-sm focus:outline-none focus:border-panda-primary"
           />
         </div>
       </div>
 
+      {/* ─── Tabs ─── */}
       <div className="px-6 flex gap-2 mb-3">
         {[
           { id: 'all', label: '全部' },
@@ -194,6 +234,7 @@ export default function CommunityPage() {
         ))}
       </div>
 
+      {/* ─── Badges ─── */}
       <AnimatePresence>
         {showBadges && (
           <motion.div
@@ -220,13 +261,21 @@ export default function CommunityPage() {
         )}
       </AnimatePresence>
 
+      {/* ─── Posts ─── */}
       <div className="flex-1 overflow-y-auto px-6 space-y-3">
-        {filteredPosts.map((post, i) => (
+        {posts.length === 0 && !loading && (
+          <div className="text-center py-12 text-gray-400">
+            <p className="text-4xl mb-3">🐼</p>
+            <p className="text-sm">还没有帖子，来发第一条吧！</p>
+          </div>
+        )}
+
+        {posts.map((post, i) => (
           <motion.div
             key={post.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
+            transition={{ delay: Math.min(i * 0.05, 0.5) }}
             className="card"
           >
             <div className="flex items-center gap-2 mb-2">
@@ -234,7 +283,7 @@ export default function CommunityPage() {
               <div>
                 <div className="flex items-center gap-1">
                   <span className="font-medium text-sm">{post.author}</span>
-                  <span className="text-xs">{cultureLabel(post.cultureTag)}</span>
+                  <span className="text-xs">{cultureLabel(post.culture_tag)}</span>
                 </div>
                 <span className="text-xs text-gray-400">{post.time}</span>
               </div>
@@ -246,6 +295,7 @@ export default function CommunityPage() {
             </div>
             <h3 className="font-bold text-sm mb-1">{post.title}</h3>
             <p className="text-sm text-gray-600 line-clamp-3 mb-3">{post.content}</p>
+
             <div className="flex items-center gap-4">
               <button
                 onClick={() => toggleLike(post.id)}
@@ -256,7 +306,12 @@ export default function CommunityPage() {
                 <Heart size={16} fill={likedPosts.has(post.id) ? 'currentColor' : 'none'} />
                 {post.likes}
               </button>
-              <button className="flex items-center gap-1 text-sm text-gray-400">
+              <button
+                onClick={() => loadComments(post.id)}
+                className={`flex items-center gap-1 text-sm ${
+                  expandedPost === post.id ? 'text-panda-primary' : 'text-gray-400'
+                }`}
+              >
                 <MessageCircle size={16} />
                 {post.comments}
               </button>
@@ -265,10 +320,74 @@ export default function CommunityPage() {
                 关注
               </button>
             </div>
+
+            {/* ─── Comments Section ─── */}
+            <AnimatePresence>
+              {expandedPost === post.id && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    {commentLoading ? (
+                      <p className="text-xs text-gray-400 py-2">加载中...</p>
+                    ) : comments.length === 0 ? (
+                      <p className="text-xs text-gray-400 py-2">暂无评论，来说两句吧 💬</p>
+                    ) : (
+                      <div className="space-y-2 mb-3">
+                        {comments.map(c => (
+                          <div key={c.id} className="flex gap-2">
+                            <span className="text-xs text-gray-400 mt-0.5">💬</span>
+                            <div>
+                              <span className="text-xs font-medium text-gray-700">{c.author}</span>
+                              <span className="text-xs text-gray-400 ml-2">{c.time}</span>
+                              <p className="text-xs text-gray-600 mt-0.5">{c.content}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Comment input */}
+                    <div className="flex gap-2 mt-2">
+                      <input
+                        type="text"
+                        value={expandedPost === post.id ? newComment : ''}
+                        onChange={e => setNewComment(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleComment(post.id)}
+                        placeholder="写评论..."
+                        className="flex-1 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-xs focus:outline-none focus:border-panda-primary"
+                      />
+                      <button
+                        onClick={() => handleComment(post.id)}
+                        disabled={!newComment.trim()}
+                        className="px-3 py-2 rounded-lg bg-panda-primary text-white text-xs disabled:opacity-40"
+                      >
+                        <Send size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         ))}
+
+        {/* Load more */}
+        {posts.length < total && (
+          <button
+            onClick={() => fetchPosts(page + 1, true)}
+            disabled={loading}
+            className="w-full py-3 text-sm text-gray-400 hover:text-panda-primary transition"
+          >
+            {loading ? '加载中...' : '加载更多 ↓'}
+          </button>
+        )}
       </div>
 
+      {/* ─── Compose Modal ─── */}
       <AnimatePresence>
         {showCompose && (
           <motion.div

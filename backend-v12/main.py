@@ -11,6 +11,7 @@ from knowledge import KnowledgeBase
 from api.routes import router, set_orchestrator
 from api.voice import router as voice_router
 from api.emotion import router as emotion_router
+from api.community import router as community_router, init_db as init_community_db
 
 
 def create_app() -> FastAPI:
@@ -41,6 +42,10 @@ def create_app() -> FastAPI:
     app.include_router(router)
     app.include_router(voice_router, prefix="/api")
     app.include_router(emotion_router, prefix="/api")
+    app.include_router(community_router, prefix="/api")
+
+    # 初始化社区数据库
+    init_community_db()
 
     # 静态文件（前端构建产物）
     frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")

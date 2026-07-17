@@ -1,4 +1,4 @@
-const API_BASE = "/api";
+const API_BASE = "/pandahug/api";
 
 export async function createSession(
   userName = "",

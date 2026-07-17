@@ -104,7 +104,7 @@ export default function ChatPage() {
         <button onClick={() => navigate(-1)} className="p-1">
           <ArrowLeft size={22} className="text-gray-500" />
         </button>
-        <img src={`${import.meta.env.BASE_URL}/panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 8px rgba(255,140,66,0.2)' }} />
+        <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 8px rgba(255,140,66,0.2)' }} />
         <div className="flex-1">
           <h2 className="font-bold text-sm">Panda 陪你倾诉</h2>
           <p className="text-xs text-green-500 flex items-center gap-1">
@@ -146,7 +146,7 @@ export default function ChatPage() {
       {isCallActive && (
         <div className="p-6 flex flex-col items-center" style={{ background: 'linear-gradient(180deg, #2D3436, #4a5568)' }}>
           <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
-            <img src={`${import.meta.env.BASE_URL}/panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 80, height: 80, objectFit: 'cover' }} />
+            <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 80, height: 80, objectFit: 'cover' }} />
           </motion.div>
           <p className="text-white text-sm mt-3">通话中...</p>
         </div>
@@ -163,7 +163,7 @@ export default function ChatPage() {
             className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.role === 'panda' && (
-              <img src={`${import.meta.env.BASE_URL}/panda-happy.jpg`} alt="Panda" className="rounded-full flex-shrink-0" style={{ width: 32, height: 32, objectFit: 'cover' }} />
+              <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full flex-shrink-0" style={{ width: 32, height: 32, objectFit: 'cover' }} />
             )}
             <div className={msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-panda'}>
               {msg.text}
@@ -173,7 +173,7 @@ export default function ChatPage() {
 
         {isTyping && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-end gap-2">
-            <img src={`${import.meta.env.BASE_URL}/panda-calm.jpg`} alt="Panda" className="rounded-full flex-shrink-0" style={{ width: 32, height: 32, objectFit: 'cover' }} />
+            <img src={`${import.meta.env.BASE_URL}panda-calm.jpg`} alt="Panda" className="rounded-full flex-shrink-0" style={{ width: 32, height: 32, objectFit: 'cover' }} />
             <div className="chat-bubble-panda flex gap-1.5 py-4 px-5">
               <span className="typing-dot" />
               <span className="typing-dot" />
