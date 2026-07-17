@@ -497,8 +497,9 @@ function VoicePanelContent({
             )}
 
             {(humeError || humeSdkError) && (
-              <div style={{ color: '#b91c1c', fontSize: '12px', textAlign: 'center', overflowWrap: 'anywhere' }}>
-                {humeError || humeSdkError?.message || humeSdkError?.reason || "Hume EVI connection failed"}
+              <div style={{ color: '#b91c1c', fontSize: '12px', textAlign: 'center', overflowWrap: 'anywhere', padding: '8px', background: '#fef2f2', borderRadius: '8px' }}>
+                <div>{humeError === 'Failed to fetch' ? 'Hume EVI 服务暂不可用（网络受限）' : humeError || humeSdkError?.message || humeSdkError?.reason || 'Hume EVI 连接失败'}</div>
+                <div style={{ color: '#6b7280', fontSize: '11px', marginTop: '4px' }}>请切换到「浏览器语音」使用语音功能</div>
               </div>
             )}
           </>
