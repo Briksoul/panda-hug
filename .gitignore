@@ -5,3 +5,10 @@ __pycache__/
 .DS_Store
 .env
 *.log
+
+# Runtime data (ChromaDB, sessions, user data)
+backend/data/
+v12/backend/data/
+
+# Large images (keep small versions only)
+emotion_all.png

@@ -62,7 +62,7 @@ export default function RegisterPage() {
             className="flex-1 flex flex-col"
           >
             <div className="text-center mb-8">
-              <PandaFace mood="happy" size={80} className="mx-auto mb-3" />
+              <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(255,140,66,0.2)' }} />
               <h2 className="text-xl font-bold">创建你的账号</h2>
               <p className="text-sm text-gray-500 mt-1">让 Panda 认识你</p>
             </div>
@@ -129,7 +129,7 @@ export default function RegisterPage() {
             className="flex-1 flex flex-col"
           >
             <div className="text-center mb-8">
-              <PandaFace mood="thinking" size={80} className="mx-auto mb-3" />
+              <img src={`${import.meta.env.BASE_URL}panda-calm.jpg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(78,205,196,0.2)' }} />
               <h2 className="text-xl font-bold">你是？</h2>
               <p className="text-sm text-gray-500 mt-1">帮助 Panda 了解你的文化背景</p>
             </div>

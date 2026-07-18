@@ -2,12 +2,34 @@
 Sensing Agent - 分析员
 监测文本、语音、视频的情绪数据
 计算焦虑/抑郁指数、干预效果评估
-识别自伤、自杀、危机词汇，触发紧急干预模式
+接入 DeepSeek LLM 做更精准的情绪分析
 """
 
-import re
+import json
+from services.llm import chat_json
 
-# Emotion keywords for detection
+SYSTEM_PROMPT = """你是一个情绪分析专家。分析用户输入，返回严格的 JSON 格式。
+
+输出格式：
+{
+  "dominant_emotion": "sad|anxious|angry|happy|calm|tired|neutral",
+  "emotion_scores": {"sad": 0, "anxious": 0, "angry": 0, "happy": 0, "calm": 0, "tired": 0},
+  "risk_level": 0,
+  "crisis_detected": false,
+  "detected_event": "描述用户提到的核心事件，没有则null",
+  "reasoning": "简短分析理由"
+}
+
+risk_level 说明：
+- 0: 安全，无明显负面情绪
+- 1: 轻度困扰，需要关注
+- 2: 高风险，需要干预（出现自伤/自杀意念、极端绝望等）
+
+emotion_scores 中每个值 0-3，表示该情绪的强度。
+
+只输出 JSON，不要其他文字。"""
+
+# Fallback keyword detection
 EMOTION_KEYWORDS = {
     'sad': ['难过', '伤心', '沮丧', '失落', '哭', '悲伤', 'sad', 'depressed', 'down', 'lonely', 'miss'],
     'anxious': ['焦虑', '紧张', '担心', '不安', '烦躁', 'anxious', 'worried', 'nervous', 'stressed', 'panic'],
@@ -23,19 +45,31 @@ CRISIS_KEYWORDS = [
     '不想存在', '活着没意思', '没有意义',
 ]
 
-CRISIS_RESPONSE_MAP = {
-    0: 'safe',      # No crisis detected
-    1: 'monitor',   # Mild concern
-    2: 'alert',     # High concern - trigger intervention
-}
-
 
 class SensingAgent:
     def __init__(self):
         self.emotion_scores = {}
 
     def analyze(self, message, mode='text'):
-        """分析用户输入的情绪数据"""
+        """分析用户输入的情绪数据（LLM + 关键词双保险）"""
+        # Try LLM analysis first
+        try:
+            result = chat_json(SYSTEM_PROMPT, f"用户输入：{message}")
+            # Ensure all required fields
+            result.setdefault('mode', mode)
+            result.setdefault('dominant_emotion', 'neutral')
+            result.setdefault('emotion_scores', {})
+            result.setdefault('risk_level', 0)
+            result.setdefault('crisis_detected', False)
+            result.setdefault('detected_event', None)
+            result.setdefault('keywords_found', [])
+            return result
+        except Exception:
+            # Fallback to keyword-based analysis
+            return self._keyword_analyze(message, mode)
+
+    def _keyword_analyze(self, message, mode='text'):
+        """关键词兜底分析"""
         result = {
             'mode': mode,
             'dominant_emotion': 'neutral',
@@ -46,7 +80,6 @@ class SensingAgent:
             'keywords_found': [],
         }
 
-        # Analyze text emotions
         emotion_counts = {}
         for emotion, keywords in EMOTION_KEYWORDS.items():
             count = sum(1 for kw in keywords if kw in message.lower())
@@ -58,7 +91,6 @@ class SensingAgent:
             result['dominant_emotion'] = max(emotion_counts, key=emotion_counts.get)
             result['emotion_scores'] = emotion_counts
 
-        # Crisis detection
         crisis_found = [kw for kw in CRISIS_KEYWORDS if kw in message.lower()]
         if crisis_found:
             result['crisis_detected'] = True
@@ -66,20 +98,6 @@ class SensingAgent:
             result['keywords_found'].extend(crisis_found)
         elif result['dominant_emotion'] in ['sad', 'anxious']:
             result['risk_level'] = 1
-
-        # Event detection (simple pattern matching)
-        event_patterns = [
-            r'考试|exam|test|grade',
-            r'和.{0,5}吵架|fight|argument|conflict',
-            r'分手|break.?up|relationship',
-            r'家|home|family|parent',
-            r'工作|job|work|intern',
-            r'钱|money|tuition|rent',
-        ]
-        for pattern in event_patterns:
-            if re.search(pattern, message, re.IGNORECASE):
-                result['detected_event'] = re.search(pattern, message, re.IGNORECASE).group()
-                break
 
         return result
 

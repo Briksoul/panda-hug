@@ -288,7 +288,7 @@ export default function GrowthPage() {
       <div className="px-6 mt-6 mb-6">
         <div className="card bg-gradient-to-r from-panda-light to-orange-50">
           <div className="flex items-center gap-3">
-            <PandaFace mood="happy" size={40} />
+            <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 40, height: 40, objectFit: 'cover' }} />
             <div>
               <p className="text-sm font-medium">📬 每 7 天提醒</p>
               <p className="text-xs text-gray-500">"{user.name || '朋友'}，我又长大了一点，更了解你了。点击【成长记录】可以查看你的成长记录哦"</p>
