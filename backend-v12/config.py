@@ -27,6 +27,23 @@ class Config:
     HUME_API_KEY: str = os.getenv("HUME_API_KEY", "")
     HUME_SECRET_KEY: str = os.getenv("HUME_SECRET_KEY", "")
     HUME_CONFIG_ID: str = os.getenv("HUME_CONFIG_ID", "")
+    HUME_TOKEN_PROXY_URL: str = os.getenv("HUME_TOKEN_PROXY_URL", "")
+    HUME_TOKEN_PROXY_SECRET: str = os.getenv("HUME_TOKEN_PROXY_SECRET", "")
+
+    # Database and authentication
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL",
+        f"sqlite:///{Path(__file__).parent / 'data' / 'pandahug.db'}",
+    )
+    JWT_SECRET: str = os.getenv(
+        "JWT_SECRET",
+        "development-only-change-this-secret",
+    )
+    JWT_EXPIRE_HOURS: int = int(os.getenv("JWT_EXPIRE_HOURS", "168"))
+    AUTH_COOKIE_SECURE: bool = os.getenv(
+        "AUTH_COOKIE_SECURE",
+        "false",
+    ).lower() in ("1", "true", "yes", "on")
 
     # 向量数据库
     CHROMA_PERSIST_DIR: str = os.getenv(

@@ -105,7 +105,11 @@ def build_crisis_response(lang: str = "zh") -> dict:
     return {
         "agent": "crisis",
         "content": content,
-        "suggestions": ["我现在安全了", "我会联系热线", "我需要继续聊聊"],
+        "suggestions": (
+            ["I am safe right now", "I have called for help", "Other"]
+            if lang == "en"
+            else ["我现在安全了", "我已经拨打电话", "其他"]
+        ),
         "emotion_level": "crisis",
         "metadata": {
             "guardrail_triggered": True,

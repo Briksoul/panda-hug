@@ -1,9 +1,11 @@
 """文本情绪分析 API — 替代 Hume prosody，用 Gemini 分析对话情绪"""
 import json
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from openai import AsyncOpenAI
 from config import config
+from auth import get_current_user
+from database import User
 
 router = APIRouter()
 
@@ -39,7 +41,10 @@ class EmotionResponse(BaseModel):
 
 
 @router.post("/analyze-emotion", response_model=EmotionResponse)
-async def analyze_emotion(req: EmotionRequest):
+async def analyze_emotion(
+    req: EmotionRequest,
+    _user: User = Depends(get_current_user),
+):
     """分析文本情绪，返回情绪分数和风险等级"""
     client = AsyncOpenAI(
         api_key=config.OPENAI_API_KEY,

@@ -1,66 +1,63 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useUser } from '../hooks/useUser'
-import { Send, ArrowLeft, Mic, MicOff, Video, VideoOff, Phone, PhoneOff, MessageCircle } from 'lucide-react'
+import { ArrowLeft, Send } from 'lucide-react'
 import VoicePanel from '../components/VoicePanel'
-import { sendMessage, createSession } from '../utils/api'
-
-function getGreeting() {
-  const h = new Date().getHours()
-  if (h < 12) return '早上好'
-  if (h < 18) return '下午好'
-  return '晚上好'
-}
+import {
+  createSession,
+  sendMessage,
+} from '../utils/api'
 
 export default function ChatPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useUser()
+  const isEnglish = user.language === 'en'
+  const mode = location.state?.mode || 'text'
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [mode, setMode] = useState(location.state?.mode || 'text')
-  const [showVoicePanel, setShowVoicePanel] = useState(false)
   const [sessionId, setSessionId] = useState(null)
-  const [isRecording, setIsRecording] = useState(false)
-  const [isVideoOn, setIsVideoOn] = useState(false)
-  const [isCallActive, setIsCallActive] = useState(false)
   const messagesEndRef = useRef(null)
 
-  // Create session on mount
   useEffect(() => {
     const initSession = async () => {
       try {
         const data = await createSession(
-          user.name || 'anonymous',
-          user.id || 'user_' + Date.now(),
+          user.name || user.username,
           user.cultureTag || 'unknown',
-          'zh',
+          user.language || 'zh',
+          user.studyAbroadMonths || 0,
         )
         setSessionId(data.session_id)
+        localStorage.setItem('panda_session_id', data.session_id)
+        setMessages([{
+          role: 'panda',
+          text: isEnglish
+            ? 'I’m here. What would you like to talk about?'
+            : '我在这里。你想从哪里开始聊起？',
+        }])
       } catch (err) {
         console.error('Failed to create session:', err)
-        setSessionId('local_' + Date.now())
+        localStorage.removeItem('panda_session_id')
+        setMessages([{
+          role: 'panda',
+          text: isEnglish
+            ? 'Unable to restore the session right now. Please try again later. 💙'
+            : '暂时无法恢复会话，请稍后再试。💙',
+        }])
       }
     }
     initSession()
-  }, [])
-
-  useEffect(() => {
-    const greeting = getGreeting()
-    setMessages([{
-      role: 'panda',
-      text: `小${user.name || '朋友'}，${greeting}，我是一直惦记你的 Panda 🐼 今天怎么样呀？`,
-    }])
-  }, [])
+  }, [user.id])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
   const sendMessageToBackend = useCallback(async (text, options = {}) => {
-    if (!text.trim()) return
+    if (!text.trim() || !sessionId) return
     const userMsg = { role: 'user', text: text.trim() }
     setMessages(prev => [...prev, userMsg])
     if (!options.silent) setInput('')
@@ -73,28 +70,30 @@ export default function ChatPage() {
         options.source || 'text',
         options.voiceAnalysis || null,
       )
-      setMessages(prev => [...prev, { role: 'panda', text: data.response || data.message || '...' }])
+      setMessages(prev => [...prev, {
+        role: 'panda',
+        text: data.content || data.response || data.message || '...',
+        suggestions: data.suggestions || [],
+        isCrisis: data.emotion_level === 'crisis',
+      }])
     } catch (err) {
       console.error('Chat error:', err)
       setMessages(prev => [...prev, {
         role: 'panda',
-        text: '抱歉，我暂时无法回复你。请稍后再试。💙',
+        text: isEnglish
+          ? 'Sorry, I can’t reply right now. Please try again later. 💙'
+          : '抱歉，我暂时无法回复你。请稍后再试。💙',
       }])
     } finally {
       setIsTyping(false)
     }
-  }, [sessionId])
+  }, [sessionId, isEnglish])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessageToBackend(input)
     }
-  }
-
-  const toggleCall = () => {
-    setIsCallActive(!isCallActive)
-    if (!isCallActive) setIsVideoOn(false)
   }
 
   return (
@@ -104,53 +103,17 @@ export default function ChatPage() {
         <button onClick={() => navigate(-1)} className="p-1">
           <ArrowLeft size={22} className="text-gray-500" />
         </button>
-        <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 8px rgba(255,140,66,0.2)' }} />
+        <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full" style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 8px rgba(255,140,66,0.2)' }} />
         <div className="flex-1">
-          <h2 className="font-bold text-sm">Panda 陪你倾诉</h2>
+          <h2 className="font-bold text-sm">
+            {isEnglish ? 'Talk with Panda' : 'Panda 陪你倾诉'}
+          </h2>
           <p className="text-xs text-green-500 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block" /> 在线
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block" />
+            {isEnglish ? 'Online' : '在线'}
           </p>
         </div>
-        {/* Voice toggle */}
-        <button
-          onClick={() => setShowVoicePanel(!showVoicePanel)}
-          className="p-2 rounded-full transition"
-          style={{
-            background: showVoicePanel ? '#FF8C42' : '#f5f5f5',
-            color: showVoicePanel ? 'white' : '#999',
-          }}
-        >
-          <Mic size={18} />
-        </button>
-        {mode === 'voice' && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setIsVideoOn(!isVideoOn)}
-              className="p-2 rounded-full transition"
-              style={{ background: isVideoOn ? '#FF8C42' : '#f5f5f5', color: isVideoOn ? 'white' : '#999' }}
-            >
-              {isVideoOn ? <Video size={18} /> : <VideoOff size={18} />}
-            </button>
-            <button
-              onClick={toggleCall}
-              className="p-2 rounded-full transition"
-              style={{ background: isCallActive ? '#EF4444' : '#22C55E', color: 'white' }}
-            >
-              {isCallActive ? <PhoneOff size={18} /> : <Phone size={18} />}
-            </button>
-          </div>
-        )}
       </div>
-
-      {/* Call UI */}
-      {isCallActive && (
-        <div className="p-6 flex flex-col items-center" style={{ background: 'linear-gradient(180deg, #2D3436, #4a5568)' }}>
-          <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
-            <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full" style={{ width: 80, height: 80, objectFit: 'cover' }} />
-          </motion.div>
-          <p className="text-white text-sm mt-3">通话中...</p>
-        </div>
-      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
@@ -163,17 +126,45 @@ export default function ChatPage() {
             className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {msg.role === 'panda' && (
-              <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full flex-shrink-0" style={{ width: 32, height: 32, objectFit: 'cover' }} />
+              <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full flex-shrink-0" style={{ width: 32, height: 32, objectFit: 'cover' }} />
             )}
-            <div className={msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-panda'}>
-              {msg.text}
+            <div className={msg.role === 'user' ? '' : 'min-w-0 max-w-[82%] sm:max-w-[75%]'}>
+              <div className={msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-panda'}>
+                {msg.text}
+              </div>
+              {msg.suggestions?.length > 0 && (
+                <div className={`mt-2 flex flex-wrap gap-2 rounded-xl p-2 ${msg.isCrisis ? 'bg-red-50' : 'bg-white'}`}>
+                  {msg.suggestions.map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      onClick={() => {
+                        if (
+                          suggestion.includes('洞察报告')
+                          || suggestion.toLowerCase().includes('insight report')
+                        ) {
+                          navigate('/report')
+                        } else {
+                          sendMessageToBackend(suggestion)
+                        }
+                      }}
+                      className={`rounded-full border px-3 py-2 text-xs ${
+                        msg.isCrisis
+                          ? 'border-red-200 text-red-700'
+                          : 'border-orange-200 text-panda-primary'
+                      }`}
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
         ))}
 
         {isTyping && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-end gap-2">
-            <img src={`${import.meta.env.BASE_URL}panda-calm.jpg`} alt="Panda" className="rounded-full flex-shrink-0" style={{ width: 32, height: 32, objectFit: 'cover' }} />
+            <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full flex-shrink-0" style={{ width: 32, height: 32, objectFit: 'cover' }} />
             <div className="chat-bubble-panda flex gap-1.5 py-4 px-5">
               <span className="typing-dot" />
               <span className="typing-dot" />
@@ -184,34 +175,24 @@ export default function ChatPage() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Voice Panel (collapsible) */}
-      <AnimatePresence>
-        {showVoicePanel && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            style={{ overflow: 'hidden' }}
-          >
-            <VoicePanel
-              sessionId={sessionId}
-              onSendMessage={sendMessageToBackend}
-              messages={messages}
-              loading={isTyping}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {mode === 'voice' && (
+        <VoicePanel
+          sessionId={sessionId}
+          onSendMessage={sendMessageToBackend}
+          messages={messages}
+          loading={isTyping}
+          preferredLanguage={user.language || 'zh'}
+        />
+      )}
 
-      {/* Input */}
-      <div className="px-4 py-3" style={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+      {mode === 'text' && <div className="px-4 py-3" style={{ background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
         <div className="flex items-center gap-2">
           <input
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="输入你想说的..."
+            placeholder={isEnglish ? 'Type what you want to say...' : '输入你想说的...'}
             className="flex-1 py-3 px-5 rounded-full text-sm focus:outline-none"
             style={{ background: '#f5f3f0', border: '1px solid transparent', transition: 'all 0.3s' }}
             onFocus={e => e.target.style.borderColor = 'rgba(255,140,66,0.3)'}
@@ -221,7 +202,7 @@ export default function ChatPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => sendMessageToBackend(input)}
-            disabled={!input.trim()}
+            disabled={!input.trim() || !sessionId || isTyping}
             className="p-3 rounded-full transition"
             style={{
               background: input.trim() ? 'linear-gradient(135deg, #FF8C42, #FFB347)' : '#e0e0e0',
@@ -232,7 +213,7 @@ export default function ChatPage() {
             <Send size={18} />
           </motion.button>
         </div>
-      </div>
+      </div>}
     </div>
   )
 }

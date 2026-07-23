@@ -1,308 +1,441 @@
-"""社区 API — 帖子、评论、点赞"""
+"""Shared-database community API."""
 from __future__ import annotations
 
-import sqlite3
 import time
 import uuid
-from contextlib import contextmanager
-from pathlib import Path
+from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
+from sqlalchemy import and_, func, or_, select
+from sqlalchemy.orm import Session
+
+from auth import get_current_user, get_optional_user
+from database import (
+    CommunityComment,
+    CommunityFollow,
+    CommunityLike,
+    CommunityMessage,
+    CommunityPost,
+    User,
+    get_db,
+    init_database,
+)
+
 
 router = APIRouter(prefix="/community")
 
-# ─── 数据库 ─────────────────────────────────────────────────────────
-DB_PATH = Path(__file__).parent.parent / "data" / "community.db"
+
+def init_db() -> None:
+    init_database()
 
 
-def _get_db() -> sqlite3.Connection:
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA foreign_keys=ON")
-    return conn
-
-
-@contextmanager
-def _db():
-    conn = _get_db()
-    try:
-        yield conn
-        conn.commit()
-    finally:
-        conn.close()
-
-
-def init_db():
-    """初始化社区表（启动时调用）"""
-    with _db() as conn:
-        conn.executescript("""
-            CREATE TABLE IF NOT EXISTS posts (
-                id          TEXT PRIMARY KEY,
-                author      TEXT NOT NULL DEFAULT '匿名',
-                avatar      TEXT NOT NULL DEFAULT '🐼',
-                culture_tag TEXT NOT NULL DEFAULT 'unknown',
-                type        TEXT NOT NULL DEFAULT 'experience',
-                title       TEXT NOT NULL,
-                content     TEXT NOT NULL,
-                likes       INTEGER NOT NULL DEFAULT 0,
-                created_at  REAL NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS comments (
-                id         TEXT PRIMARY KEY,
-                post_id    TEXT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-                author     TEXT NOT NULL DEFAULT '匿名',
-                content    TEXT NOT NULL,
-                created_at REAL NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS likes (
-                user_id    TEXT NOT NULL,
-                post_id    TEXT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-                created_at REAL NOT NULL,
-                PRIMARY KEY (user_id, post_id)
-            );
-            CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC);
-            CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
-            CREATE INDEX IF NOT EXISTS idx_likes_post ON likes(post_id);
-        """)
-
-
-# ─── 请求/响应模型 ──────────────────────────────────────────────────
 class CreatePostReq(BaseModel):
-    author: str = Field(default="匿名", max_length=50)
-    avatar: str = Field(default="🐼", max_length=10)
-    culture_tag: str = Field(default="unknown", max_length=50)
     type: str = Field(default="experience", max_length=20)
     title: str = Field(min_length=1, max_length=200)
     content: str = Field(min_length=1, max_length=5000)
 
 
 class CreateCommentReq(BaseModel):
-    author: str = Field(default="匿名", max_length=50)
     content: str = Field(min_length=1, max_length=2000)
 
 
-class LikeReq(BaseModel):
-    user_id: str = Field(min_length=1, max_length=100)
+class MessageReq(BaseModel):
+    content: str = Field(min_length=1, max_length=2000)
 
 
-def _time_ago(ts: float) -> str:
-    diff = time.time() - ts
-    if diff < 60:
+def _time_ago(timestamp: float) -> str:
+    difference = time.time() - timestamp
+    if difference < 60:
         return "刚刚"
-    if diff < 3600:
-        return f"{int(diff // 60)}分钟前"
-    if diff < 86400:
-        return f"{int(diff // 3600)}小时前"
-    days = int(diff // 86400)
+    if difference < 3600:
+        return f"{int(difference // 60)}分钟前"
+    if difference < 86400:
+        return f"{int(difference // 3600)}小时前"
+    days = int(difference // 86400)
     if days < 30:
         return f"{days}天前"
     return f"{days // 30}个月前"
 
 
-def _post_dict(row: sqlite3.Row, comment_count: int = 0) -> dict:
+def _post_dict(
+    post: CommunityPost,
+    comment_count: int = 0,
+    is_following: bool = False,
+    is_liked: bool = False,
+) -> dict:
     return {
-        "id": row["id"],
-        "author": row["author"],
-        "avatar": row["avatar"],
-        "culture_tag": row["culture_tag"],
-        "type": row["type"],
-        "title": row["title"],
-        "content": row["content"],
-        "likes": row["likes"],
+        "id": post.id,
+        "author_id": post.user_id,
+        "author": post.author,
+        "avatar": post.avatar,
+        "culture_tag": post.culture_tag,
+        "type": post.type,
+        "title": post.title,
+        "content": post.content,
+        "likes": post.likes,
         "comments": comment_count,
-        "time": _time_ago(row["created_at"]),
-        "created_at": row["created_at"],
+        "time": _time_ago(post.created_at),
+        "created_at": post.created_at,
+        "is_following": is_following,
+        "is_liked": is_liked,
     }
 
 
-# ─── 路由 ──────────────────────────────────────────────────────────
 @router.get("/posts")
-async def list_posts(
+def list_posts(
     type: str = Query(default="all", max_length=20),
     q: str = Query(default="", max_length=200),
     page: int = Query(default=1, ge=1),
     size: int = Query(default=20, ge=1, le=100),
+    current_user: Optional[User] = Depends(get_optional_user),
+    database: Session = Depends(get_db),
 ):
-    """获取帖子列表（支持分类筛选 + 搜索 + 分页）"""
-    offset = (page - 1) * size
+    query = select(CommunityPost)
+    count_query = select(func.count()).select_from(CommunityPost)
     conditions = []
-    params: list = []
-
     if type and type != "all":
-        conditions.append("p.type = ?")
-        params.append(type)
-
+        conditions.append(CommunityPost.type == type)
     if q:
-        conditions.append("(p.title LIKE ? OR p.content LIKE ?)")
-        params.extend([f"%{q}%", f"%{q}%"])
+        pattern = f"%{q}%"
+        conditions.append(or_(
+            CommunityPost.title.like(pattern),
+            CommunityPost.content.like(pattern),
+        ))
+    if conditions:
+        query = query.where(*conditions)
+        count_query = count_query.where(*conditions)
 
-    where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
-
-    with _db() as conn:
-        total = conn.execute(
-            f"SELECT COUNT(*) FROM posts p {where}", params
-        ).fetchone()[0]
-
-        rows = conn.execute(
-            f"""SELECT p.* FROM posts p
-                {where}
-                ORDER BY p.created_at DESC
-                LIMIT ? OFFSET ?""",
-            params + [size, offset],
-        ).fetchall()
-
-        posts = []
-        for row in rows:
-            cc = conn.execute(
-                "SELECT COUNT(*) FROM comments WHERE post_id = ?", (row["id"],)
-            ).fetchone()[0]
-            posts.append(_post_dict(row, cc))
-
-    return {"posts": posts, "total": total, "page": page, "size": size}
+    total = database.scalar(count_query) or 0
+    posts = database.scalars(
+        query
+        .order_by(CommunityPost.created_at.desc())
+        .offset((page - 1) * size)
+        .limit(size)
+    ).all()
+    result = []
+    for post in posts:
+        comment_count = database.scalar(
+            select(func.count())
+            .select_from(CommunityComment)
+            .where(CommunityComment.post_id == post.id)
+        ) or 0
+        is_following = bool(
+            current_user
+            and post.user_id
+            and database.get(CommunityFollow, {
+                "follower_id": current_user.id,
+                "followed_id": post.user_id,
+            })
+        )
+        is_liked = bool(
+            current_user
+            and database.get(CommunityLike, {
+                "user_id": current_user.id,
+                "post_id": post.id,
+            })
+        )
+        result.append(_post_dict(
+            post,
+            comment_count,
+            is_following,
+            is_liked,
+        ))
+    return {"posts": result, "total": total, "page": page, "size": size}
 
 
 @router.post("/posts")
-async def create_post(req: CreatePostReq):
-    """发布帖子"""
-    post_id = uuid.uuid4().hex[:12]
-    now = time.time()
-    with _db() as conn:
-        conn.execute(
-            """INSERT INTO posts (id, author, avatar, culture_tag, type, title, content, likes, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)""",
-            (post_id, req.author, req.avatar, req.culture_tag, req.type, req.title, req.content, now),
-        )
-    return {
-        "id": post_id,
-        "author": req.author,
-        "avatar": req.avatar,
-        "culture_tag": req.culture_tag,
-        "type": req.type,
-        "title": req.title,
-        "content": req.content,
-        "likes": 0,
-        "comments": 0,
-        "time": "刚刚",
-        "created_at": now,
-    }
+def create_post(
+    request: CreatePostReq,
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    post = CommunityPost(
+        id=str(uuid.uuid4()),
+        user_id=user.id,
+        author=user.name or user.username,
+        avatar="🐼",
+        culture_tag=user.cultural_identity,
+        type=request.type,
+        title=request.title,
+        content=request.content,
+        likes=0,
+        created_at=time.time(),
+    )
+    database.add(post)
+    database.commit()
+    database.refresh(post)
+    return _post_dict(post)
 
 
 @router.get("/posts/{post_id}")
-async def get_post(post_id: str):
-    """获取单个帖子详情"""
-    with _db() as conn:
-        row = conn.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()
-        if not row:
-            raise HTTPException(404, "帖子不存在")
-        cc = conn.execute(
-            "SELECT COUNT(*) FROM comments WHERE post_id = ?", (post_id,)
-        ).fetchone()[0]
-        comments = conn.execute(
-            "SELECT * FROM comments WHERE post_id = ? ORDER BY created_at ASC",
-            (post_id,),
-        ).fetchall()
+def get_post(
+    post_id: str,
+    database: Session = Depends(get_db),
+):
+    post = database.get(CommunityPost, post_id)
+    if post is None:
+        raise HTTPException(404, "帖子不存在")
+    comments = database.scalars(
+        select(CommunityComment)
+        .where(CommunityComment.post_id == post_id)
+        .order_by(CommunityComment.created_at.asc())
+    ).all()
     return {
-        **_post_dict(row, cc),
+        **_post_dict(post, len(comments)),
         "comment_list": [
             {
-                "id": c["id"],
-                "author": c["author"],
-                "content": c["content"],
-                "time": _time_ago(c["created_at"]),
+                "id": comment.id,
+                "author": comment.author,
+                "content": comment.content,
+                "time": _time_ago(comment.created_at),
+                "created_at": comment.created_at,
             }
-            for c in comments
+            for comment in comments
         ],
     }
 
 
 @router.post("/posts/{post_id}/like")
-async def toggle_like(post_id: str, req: LikeReq):
-    """切换点赞（同一用户只能点赞一次）"""
-    with _db() as conn:
-        post = conn.execute("SELECT * FROM posts WHERE id = ?", (post_id,)).fetchone()
-        if not post:
-            raise HTTPException(404, "帖子不存在")
-
-        existing = conn.execute(
-            "SELECT 1 FROM likes WHERE user_id = ? AND post_id = ?",
-            (req.user_id, post_id),
-        ).fetchone()
-
-        if existing:
-            conn.execute(
-                "DELETE FROM likes WHERE user_id = ? AND post_id = ?",
-                (req.user_id, post_id),
-            )
-            conn.execute(
-                "UPDATE posts SET likes = MAX(0, likes - 1) WHERE id = ?",
-                (post_id,),
-            )
-            liked = False
-        else:
-            conn.execute(
-                "INSERT INTO likes (user_id, post_id, created_at) VALUES (?, ?, ?)",
-                (req.user_id, post_id, time.time()),
-            )
-            conn.execute(
-                "UPDATE posts SET likes = likes + 1 WHERE id = ?",
-                (post_id,),
-            )
-            liked = True
-
-        new_count = conn.execute(
-            "SELECT likes FROM posts WHERE id = ?", (post_id,)
-        ).fetchone()[0]
-
-    return {"liked": liked, "likes": new_count}
+def toggle_like(
+    post_id: str,
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    post = database.get(CommunityPost, post_id)
+    if post is None:
+        raise HTTPException(404, "帖子不存在")
+    key = {"user_id": user.id, "post_id": post_id}
+    existing = database.get(CommunityLike, key)
+    if existing is not None:
+        database.delete(existing)
+        post.likes = max(0, post.likes - 1)
+        liked = False
+    else:
+        database.add(CommunityLike(
+            user_id=user.id,
+            post_id=post_id,
+            created_at=time.time(),
+        ))
+        post.likes += 1
+        liked = True
+    database.commit()
+    return {"liked": liked, "likes": post.likes}
 
 
 @router.get("/posts/{post_id}/comments")
-async def list_comments(post_id: str):
-    """获取帖子评论列表"""
-    with _db() as conn:
-        post = conn.execute("SELECT 1 FROM posts WHERE id = ?", (post_id,)).fetchone()
-        if not post:
-            raise HTTPException(404, "帖子不存在")
-        rows = conn.execute(
-            "SELECT * FROM comments WHERE post_id = ? ORDER BY created_at ASC",
-            (post_id,),
-        ).fetchall()
+def list_comments(
+    post_id: str,
+    database: Session = Depends(get_db),
+):
+    if database.get(CommunityPost, post_id) is None:
+        raise HTTPException(404, "帖子不存在")
+    comments = database.scalars(
+        select(CommunityComment)
+        .where(CommunityComment.post_id == post_id)
+        .order_by(CommunityComment.created_at.asc())
+    ).all()
     return {
         "comments": [
             {
-                "id": c["id"],
-                "author": c["author"],
-                "content": c["content"],
-                "time": _time_ago(c["created_at"]),
+                "id": comment.id,
+                "author": comment.author,
+                "content": comment.content,
+                "time": _time_ago(comment.created_at),
+                "created_at": comment.created_at,
             }
-            for c in rows
-        ]
+            for comment in comments
+        ],
     }
 
 
 @router.post("/posts/{post_id}/comments")
-async def create_comment(post_id: str, req: CreateCommentReq):
-    """添加评论"""
-    comment_id = uuid.uuid4().hex[:12]
-    now = time.time()
-    with _db() as conn:
-        post = conn.execute("SELECT 1 FROM posts WHERE id = ?", (post_id,)).fetchone()
-        if not post:
-            raise HTTPException(404, "帖子不存在")
-        conn.execute(
-            "INSERT INTO comments (id, post_id, author, content, created_at) VALUES (?, ?, ?, ?, ?)",
-            (comment_id, post_id, req.author, req.content, now),
-        )
-        count = conn.execute(
-            "SELECT COUNT(*) FROM comments WHERE post_id = ?", (post_id,)
-        ).fetchone()[0]
+def create_comment(
+    post_id: str,
+    request: CreateCommentReq,
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    if database.get(CommunityPost, post_id) is None:
+        raise HTTPException(404, "帖子不存在")
+    comment = CommunityComment(
+        id=str(uuid.uuid4()),
+        post_id=post_id,
+        user_id=user.id,
+        author=user.name or user.username,
+        content=request.content,
+        created_at=time.time(),
+    )
+    database.add(comment)
+    database.commit()
+    count = database.scalar(
+        select(func.count())
+        .select_from(CommunityComment)
+        .where(CommunityComment.post_id == post_id)
+    ) or 0
     return {
-        "id": comment_id,
-        "author": req.author,
-        "content": req.content,
+        "id": comment.id,
+        "author": comment.author,
+        "content": comment.content,
         "time": "刚刚",
+        "created_at": comment.created_at,
         "comment_count": count,
+    }
+
+
+@router.post("/users/{user_id}/follow")
+def toggle_follow(
+    user_id: str,
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    if user_id == user.id:
+        raise HTTPException(400, "不能关注自己")
+    if database.get(User, user_id) is None:
+        raise HTTPException(404, "用户不存在")
+    key = {"follower_id": user.id, "followed_id": user_id}
+    existing = database.get(CommunityFollow, key)
+    if existing:
+        database.delete(existing)
+        following = False
+    else:
+        database.add(CommunityFollow(
+            follower_id=user.id,
+            followed_id=user_id,
+            created_at=time.time(),
+        ))
+        following = True
+    database.commit()
+    return {"following": following}
+
+
+@router.get("/me/badges")
+def get_badges(
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    experience_count = database.scalar(
+        select(func.count())
+        .select_from(CommunityPost)
+        .where(
+            CommunityPost.user_id == user.id,
+            CommunityPost.type == "experience",
+        )
+    ) or 0
+    help_count = database.scalar(
+        select(func.count())
+        .select_from(CommunityPost)
+        .where(
+            CommunityPost.user_id == user.id,
+            CommunityPost.type == "help",
+        )
+    ) or 0
+    return {
+        "experience_count": experience_count,
+        "help_count": help_count,
+        "badges": [
+            {
+                "id": "light",
+                "name": "同行微光",
+                "unlocked": experience_count >= 5,
+                "progress": min(experience_count, 5),
+                "target": 5,
+            },
+            {
+                "id": "speaker",
+                "name": "倾诉旅人",
+                "unlocked": help_count >= 5,
+                "progress": min(help_count, 5),
+                "target": 5,
+            },
+            {
+                "id": "helper",
+                "name": "渡己渡人",
+                "unlocked": experience_count >= 10 and help_count >= 10,
+                "progress": min(experience_count, 10) + min(help_count, 10),
+                "target": 20,
+            },
+            {
+                "id": "solver",
+                "name": "解忧同窗",
+                "unlocked": experience_count >= 10,
+                "progress": min(experience_count, 10),
+                "target": 10,
+            },
+        ],
+    }
+
+
+def _require_follow(
+    database: Session,
+    follower_id: str,
+    followed_id: str,
+) -> None:
+    if database.get(CommunityFollow, {
+        "follower_id": follower_id,
+        "followed_id": followed_id,
+    }) is None:
+        raise HTTPException(403, "关注后才能发送私信")
+
+
+@router.get("/messages/{user_id}")
+def get_messages(
+    user_id: str,
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    _require_follow(database, user.id, user_id)
+    messages = database.scalars(
+        select(CommunityMessage)
+        .where(or_(
+            and_(
+                CommunityMessage.sender_id == user.id,
+                CommunityMessage.recipient_id == user_id,
+            ),
+            and_(
+                CommunityMessage.sender_id == user_id,
+                CommunityMessage.recipient_id == user.id,
+            ),
+        ))
+        .order_by(CommunityMessage.created_at.asc())
+        .limit(200)
+    ).all()
+    return {
+        "messages": [
+            {
+                "id": message.id,
+                "sender_id": message.sender_id,
+                "recipient_id": message.recipient_id,
+                "content": message.content,
+                "created_at": message.created_at,
+            }
+            for message in messages
+        ]
+    }
+
+
+@router.post("/messages/{user_id}")
+def send_private_message(
+    user_id: str,
+    request: MessageReq,
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    _require_follow(database, user.id, user_id)
+    message = CommunityMessage(
+        id=str(uuid.uuid4()),
+        sender_id=user.id,
+        recipient_id=user_id,
+        content=request.content,
+        created_at=time.time(),
+        read_at=None,
+    )
+    database.add(message)
+    database.commit()
+    return {
+        "id": message.id,
+        "sender_id": message.sender_id,
+        "recipient_id": message.recipient_id,
+        "content": message.content,
+        "created_at": message.created_at,
     }

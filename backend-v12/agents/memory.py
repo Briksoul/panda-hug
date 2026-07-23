@@ -1,12 +1,13 @@
 """Persistent cross-session memory for Panda Hug users."""
 from __future__ import annotations
 
-import json
+import copy
 import time
 from collections import Counter
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+from database import UserMemoryRecord, session_scope
 from .base import AgentRole, UserProfile
 
 
@@ -34,7 +35,6 @@ class MemoryAgent:
 
     def __init__(self, storage_dir: Path | None = None):
         self.storage_dir = storage_dir or DEFAULT_USERS_DIR
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
 
     def register_session(
         self,
@@ -245,13 +245,13 @@ class MemoryAgent:
         return memory
 
     def get_memory(self, user_id: str) -> dict:
-        path = self._path(user_id)
-        if path.exists():
-            try:
-                data = json.loads(path.read_text(encoding="utf-8"))
-                return self._with_defaults(user_id, data)
-            except (json.JSONDecodeError, OSError):
-                pass
+        with session_scope() as database:
+            record = database.get(UserMemoryRecord, user_id)
+            if record is not None:
+                return self._with_defaults(
+                    user_id,
+                    copy.deepcopy(record.data or {}),
+                )
         return self._with_defaults(user_id, {})
 
     def get_summary(self, user_id: str) -> str:
@@ -395,13 +395,18 @@ class MemoryAgent:
         }
 
     def _save(self, user_id: str, memory: dict) -> None:
-        path = self._path(user_id)
-        temporary_path = path.with_suffix(".tmp")
-        temporary_path.write_text(
-            json.dumps(memory, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
-        temporary_path.replace(path)
+        with session_scope() as database:
+            record = database.get(UserMemoryRecord, user_id)
+            payload = copy.deepcopy(memory)
+            if record is None:
+                database.add(UserMemoryRecord(
+                    user_id=user_id,
+                    data=payload,
+                    updated_at=time.time(),
+                ))
+            else:
+                record.data = payload
+                record.updated_at = time.time()
 
     def _path(self, user_id: str) -> Path:
         safe_user_id = "".join(

@@ -3,8 +3,6 @@ from __future__ import annotations
 import asyncio
 import uuid
 import time
-import json
-from pathlib import Path
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -28,9 +26,8 @@ from agents.case_formulation import CaseFormulationAgent, CaseFormulation
 from agents.supervisor import SupervisorAgent
 from agents.insight_report import InsightReportAgent
 from agents.memory import MemoryAgent
+from database import ChatSessionRecord, session_scope
 from knowledge.vector_db import KnowledgeBase
-
-SESSIONS_DIR = Path(__file__).parent.parent / "data" / "sessions"
 
 
 class Phase(str, Enum):
@@ -68,7 +65,6 @@ class CognitiveOrchestrator:
     def __init__(self, knowledge_base: KnowledgeBase | None = None):
         self.sessions: dict[str, SessionState] = {}
         self.kb = knowledge_base or KnowledgeBase()
-        SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
 
         # 初始化前台 Agent
         self.agents = {
@@ -85,11 +81,8 @@ class CognitiveOrchestrator:
         self.case_formulation = CaseFormulationAgent()
         self.supervisor = SupervisorAgent()
         self.insight_report = InsightReportAgent()
-        self.memory = MemoryAgent(SESSIONS_DIR.parent / "users")
+        self.memory = MemoryAgent()
         self.background_tasks: set[asyncio.Task] = set()
-
-        # 启动时加载已有会话
-        self._load_all_sessions()
 
     # ─── 会话管理 ─────────────────────────────────────────────
     def create_session(
@@ -99,8 +92,10 @@ class CognitiveOrchestrator:
         cultural_identity: str = "unknown",
         language: str = "zh",
         study_abroad_months: int = 0,
+        phq2_score: int = 0,
+        gad2_score: int = 0,
     ) -> str:
-        sid = str(uuid.uuid4())[:8]
+        sid = str(uuid.uuid4())
         stable_user_id = user_id.strip() or str(uuid.uuid4())
         memory = self.memory.get_memory(stable_user_id)
         stored_profile = memory.get("profile", {})
@@ -147,6 +142,12 @@ class CognitiveOrchestrator:
                     else stored_profile.get("study_abroad_months", 0),
                 ),
             ),
+            phq2_score=max(0, min(6, phq2_score)),
+            gad2_score=max(0, min(6, gad2_score)),
+            emotion_level=self._emotion_level_from_scores(
+                phq2_score,
+                gad2_score,
+            ),
         )
         session = SessionState(
             session_id=sid,
@@ -159,7 +160,14 @@ class CognitiveOrchestrator:
         return sid
 
     def get_session(self, session_id: str) -> SessionState | None:
-        return self.sessions.get(session_id)
+        with session_scope() as database:
+            record = database.get(ChatSessionRecord, session_id)
+            if record is None:
+                self.sessions.pop(session_id, None)
+                return None
+            session = self._session_from_data(record.state)
+            self.sessions[session_id] = session
+            return session
 
     def get_user_memory(self, user_id: str) -> dict:
         return self.memory.get_memory(user_id)
@@ -167,12 +175,24 @@ class CognitiveOrchestrator:
     def get_user_growth(self, user_id: str) -> dict:
         return self.memory.get_growth_record(user_id)
 
+    @staticmethod
+    def _emotion_level_from_scores(
+        phq2_score: int,
+        gad2_score: int,
+    ) -> EmotionLevel:
+        maximum = max(phq2_score, gad2_score)
+        if maximum <= 1:
+            return EmotionLevel.POSITIVE
+        if maximum <= 3:
+            return EmotionLevel.MILD
+        return EmotionLevel.MODERATE
+
     def record_self_guided_training(
         self,
         session_id: str,
         training_record: dict,
     ) -> dict | None:
-        session = self.sessions.get(session_id)
+        session = self.get_session(session_id)
         if not session:
             return None
         record = {
@@ -197,7 +217,7 @@ class CognitiveOrchestrator:
         transcript: str,
         emotion_scores: dict[str, float],
     ) -> dict | None:
-        session = self.sessions.get(session_id)
+        session = self.get_session(session_id)
         if not session:
             return None
 
@@ -239,7 +259,7 @@ class CognitiveOrchestrator:
         response_content: str,
         input_mode: str = "text",
     ) -> None:
-        session = self.sessions.get(session_id)
+        session = self.get_session(session_id)
         if not session:
             return
 
@@ -280,7 +300,7 @@ class CognitiveOrchestrator:
         voice_emotion_scores: dict[str, float] | None = None,
         on_text_chunk=None,
     ) -> AgentResponse:
-        session = self.sessions.get(session_id)
+        session = self.get_session(session_id)
         if not session:
             return AgentResponse(
                 agent=AgentRole.TRIAGE,
@@ -461,6 +481,15 @@ class CognitiveOrchestrator:
         # ─── Step 6: Collect counseling data and parallel case formulation ───
         if active_agent == AgentRole.COUNSELOR and response.metadata.get("counseling_data"):
             session.counseling_data.update(response.metadata["counseling_data"])
+        if (
+            active_agent == AgentRole.COUNSELOR
+            and session.report_status == "idle"
+            and not session.insight_report
+        ):
+            session.report_status = "generating"
+            self._schedule_background(
+                self._build_case_and_generate_report(session_id)
+            )
 
         if case_task:
             cf = await case_task
@@ -522,12 +551,19 @@ class CognitiveOrchestrator:
         if response.should_transition and response.next_agent:
             if response.next_agent == AgentRole.COACH:
                 session.training_baseline = emotion_snapshot
-            agent_trace.append({
-                "agent": response.next_agent.value,
-                "status": "transition",
-                "label": f"切换 → {agent_labels.get(response.next_agent, '')}",
-            })
-            self._transition(session, response.next_agent)
+                agent_trace.append({
+                    "agent": "insight_report",
+                    "status": "training_pending",
+                    "label": "训练建议将在洞察报告中呈现",
+                })
+                self._transition(session, AgentRole.COUNSELOR)
+            else:
+                agent_trace.append({
+                    "agent": response.next_agent.value,
+                    "status": "transition",
+                    "label": f"切换 → {agent_labels.get(response.next_agent, '')}",
+                })
+                self._transition(session, response.next_agent)
             if active_agent == AgentRole.COACH and training_record:
                 session.phase = Phase.FOLLOW_UP
 
@@ -535,7 +571,6 @@ class CognitiveOrchestrator:
         if (response.agent == AgentRole.CULTURAL
                 and response.metadata.get("analysis_complete")
                 and session.case_formulation
-                and not session.insight_report
                 and session.report_status != "generating"):
             session.report_status = "generating"
             agent_trace.append({
@@ -621,13 +656,43 @@ class CognitiveOrchestrator:
             history=history,
             profile=profile,
         )
-        session = self.sessions.get(session_id)
+        session = self.get_session(session_id)
         if session:
             session.latest_supervision = result
             self._save_session(session)
 
+    async def _build_case_and_generate_report(self, session_id: str):
+        session = self.get_session(session_id)
+        if not session:
+            return
+        try:
+            source = dict(session.counseling_data)
+            if not source:
+                source["recent_history"] = session.history[-6:]
+            formulation = await self.case_formulation.build(
+                source,
+                session.profile,
+            )
+            session.case_formulation = {
+                "core_event": formulation.core_event,
+                "core_emotions": formulation.core_emotions,
+                "auto_thoughts": formulation.auto_thoughts,
+                "behavior_pattern": formulation.behavior_pattern,
+                "social_support": formulation.social_support,
+                "psychological_mechanisms": formulation.psychological_mechanisms,
+                "mechanism_chain": formulation.mechanism_chain,
+                "risk_level": formulation.risk_level,
+                "completeness": formulation.completeness,
+                "model": formulation.model,
+            }
+            self._save_session(session)
+            await self._generate_insight_report(session_id)
+        except Exception:
+            session.report_status = "error"
+            self._save_session(session)
+
     async def _generate_insight_report(self, session_id: str):
-        session = self.sessions.get(session_id)
+        session = self.get_session(session_id)
         if not session:
             return
         try:
@@ -661,6 +726,43 @@ class CognitiveOrchestrator:
             AgentRole.CRISIS: Phase.TRIAGE,
         }
         session.phase = phase_map.get(next_agent, Phase.TRIAGE)
+
+    @staticmethod
+    def _training_recommendation(profile: UserProfile) -> dict:
+        if profile.gad2_score >= 4:
+            return {
+                "id": "physiological_sigh",
+                "name": "生理叹息",
+                "duration_seconds": 120,
+                "reason": "通过双重吸气与缓慢呼气，帮助身体降低当前较明显的紧张感。",
+            }
+        if profile.gad2_score >= 2:
+            return {
+                "id": "sensory_grounding",
+                "name": "感官着陆",
+                "duration_seconds": 180,
+                "reason": "借助身边的感官线索，把注意力从担忧带回当下。",
+            }
+        if profile.phq2_score >= 4:
+            return {
+                "id": "micro_behavioral_activation",
+                "name": "微行为激活",
+                "duration_seconds": 300,
+                "reason": "从一个足够小的行动开始，为低落状态重新建立动力。",
+            }
+        if profile.phq2_score >= 2:
+            return {
+                "id": "connection_recall",
+                "name": "联结感回溯",
+                "duration_seconds": 240,
+                "reason": "回忆被支持和理解的时刻，重新感受稳定的情感联结。",
+            }
+        return {
+            "id": "body_scan",
+            "name": "身体扫描",
+            "duration_seconds": 300,
+            "reason": "温和觉察身体各部位的感受，帮助释放累积的紧绷。",
+        }
 
     @staticmethod
     def _emotion_snapshot(sensing_result, source: str = "text") -> dict:
@@ -723,14 +825,22 @@ class CognitiveOrchestrator:
             return CulturalBackground.UNKNOWN
 
     def force_transition(self, session_id: str, agent_role: AgentRole):
-        session = self.sessions.get(session_id)
+        session = self.get_session(session_id)
         if session:
             self._transition(session, agent_role)
+            session.last_active = time.time()
+            self._save_session(session)
 
     def get_state(self, session_id: str) -> dict:
-        session = self.sessions.get(session_id)
+        session = self.get_session(session_id)
         if not session:
             return {"error": "session not found"}
+        training_recommendation = self._training_recommendation(session.profile)
+        training_recommendation["before_distress"] = round(
+            max(session.profile.phq2_score, session.profile.gad2_score)
+            / 6
+            * 10
+        )
         return {
             "session_id": session.session_id,
             "current_agent": session.current_agent.value,
@@ -755,11 +865,31 @@ class CognitiveOrchestrator:
             "training_records": session.training_records,
             "training_baseline": session.training_baseline,
             "latest_voice_analysis": session.latest_voice_analysis,
+            "training_recommendation": training_recommendation,
         }
 
     # ─── 持久化 ─────────────────────────────────────────────
     def _save_session(self, session: SessionState):
-        data = {
+        data = self._session_to_data(session)
+        with session_scope() as database:
+            record = database.get(ChatSessionRecord, session.session_id)
+            if record is None:
+                database.add(ChatSessionRecord(
+                    id=session.session_id,
+                    user_id=session.profile.user_id,
+                    state=data,
+                    created_at=session.created_at,
+                    last_active=session.last_active,
+                ))
+            else:
+                record.user_id = session.profile.user_id
+                record.state = data
+                record.last_active = session.last_active
+        self.sessions[session.session_id] = session
+
+    @staticmethod
+    def _session_to_data(session: SessionState) -> dict:
+        return {
             "session_id": session.session_id,
             "current_agent": session.current_agent.value,
             "phase": session.phase.value,
@@ -792,59 +922,56 @@ class CognitiveOrchestrator:
                 "study_abroad_months": session.profile.study_abroad_months,
             },
         }
-        path = SESSIONS_DIR / f"{session.session_id}.json"
-        path.write_text(json.dumps(data, ensure_ascii=False, indent=2))
 
-    def _load_all_sessions(self):
-        for f in SESSIONS_DIR.glob("*.json"):
-            try:
-                data = json.loads(f.read_text())
-                pd = data.get("profile", {})
-                profile = UserProfile(
-                    user_id=pd.get("user_id", ""),
-                    name=pd.get("name", ""),
-                    cultural_bg=CulturalBackground(pd.get("cultural_bg", "unknown")),
-                    cultural_identity=CulturalIdentity(
-                        pd.get("cultural_identity", "unknown")
-                    ),
-                    adaptation_stage=AdaptationStage(
-                        pd.get("adaptation_stage", "unknown")
-                    ),
-                    phq2_score=pd.get("phq2_score", 0),
-                    gad2_score=pd.get("gad2_score", 0),
-                    emotion_level=EmotionLevel(pd.get("emotion_level", "mild")),
-                    session_turns=pd.get("session_turns", 0),
-                    crisis_triggered=pd.get("crisis_triggered", False),
-                    tags=pd.get("tags", []),
-                    memory_summary=pd.get("memory_summary", ""),
-                    language=pd.get("language", "zh"),
-                    study_abroad_months=pd.get("study_abroad_months", 0),
-                )
-                session = SessionState(
-                    session_id=data["session_id"],
-                    profile=profile,
-                    current_agent=AgentRole(data.get("current_agent", "triage")),
-                    phase=Phase(data.get("phase", "triage")),
-                    history=data.get("history", []),
-                    counseling_data=data.get("counseling_data", {}),
-                    case_formulation=data.get("case_formulation", {}),
-                    cultural_analysis=data.get("cultural_analysis", {}),
-                    insight_report=data.get("insight_report", {}),
-                    report_status=(
-                        "error"
-                        if data.get("report_status") == "generating"
-                        else data.get("report_status", "idle")
-                    ),
-                    latest_supervision=data.get("latest_supervision", {}),
-                    training_records=data.get("training_records", []),
-                    training_baseline=data.get("training_baseline", {}),
-                    latest_voice_analysis=data.get(
-                        "latest_voice_analysis",
-                        {},
-                    ),
-                    created_at=data.get("created_at", 0),
-                    last_active=data.get("last_active", 0),
-                )
-                self.sessions[session.session_id] = session
-            except Exception:
-                continue
+    @staticmethod
+    def _session_from_data(data: dict) -> SessionState:
+        profile_data = data.get("profile", {})
+        profile = UserProfile(
+            user_id=profile_data.get("user_id", ""),
+            name=profile_data.get("name", ""),
+            cultural_bg=CulturalBackground(
+                profile_data.get("cultural_bg", "unknown")
+            ),
+            cultural_identity=CulturalIdentity(
+                profile_data.get("cultural_identity", "unknown")
+            ),
+            adaptation_stage=AdaptationStage(
+                profile_data.get("adaptation_stage", "unknown")
+            ),
+            phq2_score=profile_data.get("phq2_score", 0),
+            gad2_score=profile_data.get("gad2_score", 0),
+            emotion_level=EmotionLevel(
+                profile_data.get("emotion_level", "mild")
+            ),
+            session_turns=profile_data.get("session_turns", 0),
+            crisis_triggered=profile_data.get("crisis_triggered", False),
+            tags=profile_data.get("tags", []),
+            memory_summary=profile_data.get("memory_summary", ""),
+            language=profile_data.get("language", "zh"),
+            study_abroad_months=profile_data.get(
+                "study_abroad_months",
+                0,
+            ),
+        )
+        return SessionState(
+            session_id=data["session_id"],
+            profile=profile,
+            current_agent=AgentRole(data.get("current_agent", "triage")),
+            phase=Phase(data.get("phase", "triage")),
+            history=data.get("history", []),
+            counseling_data=data.get("counseling_data", {}),
+            case_formulation=data.get("case_formulation", {}),
+            cultural_analysis=data.get("cultural_analysis", {}),
+            insight_report=data.get("insight_report", {}),
+            report_status=(
+                "error"
+                if data.get("report_status") == "generating"
+                else data.get("report_status", "idle")
+            ),
+            latest_supervision=data.get("latest_supervision", {}),
+            training_records=data.get("training_records", []),
+            training_baseline=data.get("training_baseline", {}),
+            latest_voice_analysis=data.get("latest_voice_analysis", {}),
+            created_at=data.get("created_at", 0),
+            last_active=data.get("last_active", 0),
+        )

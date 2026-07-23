@@ -3,36 +3,67 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUser } from '../hooks/useUser'
 import { User, Phone, Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react'
+import { registerAccount } from '../utils/api'
 
 const CULTURE_OPTIONS = [
-  { id: 'china_in_us', label: '在美求学的中国学生', emoji: '🇨🇳🇺🇸' },
-  { id: 'us_in_china', label: '在华求学的美国学生', emoji: '🇺🇸🇨🇳' },
-  { id: 'other', label: '其他', emoji: '🌍' },
+  { id: 'china_in_us', label: '在美求学的中国学生', en: 'Chinese student studying in the U.S.', emoji: '🇨🇳🇺🇸' },
+  { id: 'us_in_china', label: '在华求学的美国学生', en: 'American student studying in China', emoji: '🇺🇸🇨🇳' },
+  { id: 'other', label: '其他', en: 'Other', emoji: '🌍' },
 ]
+
+const LANGUAGE_KEY = 'panda_ui_language'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const { updateUser } = useUser()
+  const { setAuthenticatedUser } = useUser()
   const [step, setStep] = useState(0) // 0=register, 1=culture
   const [form, setForm] = useState({ name: '', phone: '', email: '', password: '' })
   const [cultureTag, setCultureTag] = useState(null)
+  const [language, setLanguage] = useState(() => localStorage.getItem(LANGUAGE_KEY) === 'en' ? 'en' : 'zh')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
+  const isEnglish = language === 'en'
 
   const updateForm = (key, val) => setForm(prev => ({ ...prev, [key]: val }))
+  const selectLanguage = (nextLanguage) => {
+    setLanguage(nextLanguage)
+    setError('')
+    localStorage.setItem(LANGUAGE_KEY, nextLanguage)
+  }
 
   const handleRegister = () => {
-    if (!form.name || !form.password) return
+    if (!form.name || form.password.length < 8) {
+      setError(isEnglish
+        ? 'The username must have at least 2 characters and the password at least 8 characters.'
+        : '用户名至少 2 个字符，密码至少 8 个字符。')
+      return
+    }
+    setError('')
     setStep(1)
   }
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (!cultureTag) return
-    updateUser({
-      ...form,
-      cultureTag,
-      registered: true,
-      id: 'user_' + Date.now(),
-    })
-    navigate('/emotion')
+    setSubmitting(true)
+    setError('')
+    try {
+      const data = await registerAccount({
+        username: form.name,
+        password: form.password,
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        cultural_identity: cultureTag,
+        language,
+        study_abroad_months: 0,
+      })
+      setAuthenticatedUser(data.user)
+      navigate('/emotion')
+    } catch {
+      setError(isEnglish ? 'Registration failed. Please try again later.' : '注册失败，请稍后再试。')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -40,7 +71,11 @@ export default function RegisterPage() {
       {/* Header */}
       <div className="flex items-center mb-6">
         {step > 0 && (
-          <button onClick={() => setStep(step - 1)} className="mr-3">
+          <button
+            onClick={() => setStep(step - 1)}
+            className="mr-3"
+            aria-label={isEnglish ? 'Go back' : '返回'}
+          >
             <ArrowLeft size={24} className="text-gray-500" />
           </button>
         )}
@@ -61,9 +96,11 @@ export default function RegisterPage() {
             className="flex-1 flex flex-col"
           >
             <div className="text-center mb-8">
-              <img src={`${import.meta.env.BASE_URL}panda-happy.jpg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(255,140,66,0.2)' }} />
-              <h2 className="text-xl font-bold">创建你的账号</h2>
-              <p className="text-sm text-gray-500 mt-1">让 Panda 认识你</p>
+              <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(255,140,66,0.2)' }} />
+              <h2 className="text-xl font-bold">{isEnglish ? 'Create your account' : '创建你的账号'}</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {isEnglish ? 'Help Panda get to know you' : '让 Panda 认识你'}
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -71,7 +108,7 @@ export default function RegisterPage() {
                 <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="用户名"
+                  placeholder={isEnglish ? 'Username' : '用户名'}
                   value={form.name}
                   onChange={e => updateForm('name', e.target.value)}
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white border border-gray-200 focus:border-panda-primary focus:outline-none transition"
@@ -81,7 +118,7 @@ export default function RegisterPage() {
                 <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="tel"
-                  placeholder="手机号码（选填）"
+                  placeholder={isEnglish ? 'Phone number (optional)' : '手机号码（选填）'}
                   value={form.phone}
                   onChange={e => updateForm('phone', e.target.value)}
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white border border-gray-200 focus:border-panda-primary focus:outline-none transition"
@@ -91,7 +128,7 @@ export default function RegisterPage() {
                 <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
-                  placeholder="邮箱（选填）"
+                  placeholder={isEnglish ? 'Email (optional)' : '邮箱（选填）'}
                   value={form.email}
                   onChange={e => updateForm('email', e.target.value)}
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white border border-gray-200 focus:border-panda-primary focus:outline-none transition"
@@ -101,7 +138,7 @@ export default function RegisterPage() {
                 <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="password"
-                  placeholder="密码"
+                  placeholder={isEnglish ? 'Password' : '密码'}
                   value={form.password}
                   onChange={e => updateForm('password', e.target.value)}
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white border border-gray-200 focus:border-panda-primary focus:outline-none transition"
@@ -110,12 +147,19 @@ export default function RegisterPage() {
             </div>
 
             <div className="mt-auto pt-6">
+              {error && <p className="mb-3 text-center text-sm text-red-500">{error}</p>}
               <button
                 onClick={handleRegister}
-                disabled={!form.name || !form.password}
+                disabled={form.name.trim().length < 2 || form.password.length < 8}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-panda-primary to-panda-warm text-white font-bold text-lg shadow-lg shadow-orange-200 disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
               >
-                下一步 <ArrowRight size={20} />
+                {isEnglish ? 'Next' : '下一步'} <ArrowRight size={20} />
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="mt-3 w-full text-sm text-gray-500"
+              >
+                {isEnglish ? 'Already have an account? Log in' : '已有账号？直接登录'}
               </button>
             </div>
           </motion.div>
@@ -128,9 +172,11 @@ export default function RegisterPage() {
             className="flex-1 flex flex-col"
           >
             <div className="text-center mb-8">
-              <img src={`${import.meta.env.BASE_URL}panda-calm.jpg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(78,205,196,0.2)' }} />
-              <h2 className="text-xl font-bold">你是？</h2>
-              <p className="text-sm text-gray-500 mt-1">帮助 Panda 了解你的文化背景</p>
+              <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(78,205,196,0.2)' }} />
+              <h2 className="text-xl font-bold">{isEnglish ? 'Who are you?' : '你是？'}</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {isEnglish ? 'Help Panda understand your cultural background' : '帮助 Panda 了解你的文化背景'}
+              </p>
             </div>
 
             <div className="space-y-3">
@@ -147,18 +193,45 @@ export default function RegisterPage() {
                   }`}
                 >
                   <span className="text-3xl">{opt.emoji}</span>
-                  <span className="font-medium text-lg">{opt.label}</span>
+                  <span className="font-medium text-lg">{isEnglish ? opt.en : opt.label}</span>
                 </motion.button>
               ))}
             </div>
 
+            <div className="mt-6">
+              <p className="mb-2 text-sm font-medium text-gray-600">
+                {isEnglish ? 'Choose your language' : '选择使用语言'}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { id: 'zh', label: '中文' },
+                  { id: 'en', label: 'English' },
+                ].map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => selectLanguage(option.id)}
+                    className={`rounded-xl border-2 py-3 font-medium ${
+                      language === option.id
+                        ? 'border-panda-primary bg-orange-50 text-panda-primary'
+                        : 'border-gray-200 bg-white text-gray-500'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="mt-auto pt-6">
+              {error && <p className="mb-3 text-center text-sm text-red-500">{error}</p>}
               <button
                 onClick={handleComplete}
-                disabled={!cultureTag}
+                disabled={!cultureTag || submitting}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-panda-primary to-panda-warm text-white font-bold text-lg shadow-lg shadow-orange-200 disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
               >
-                完成注册 🎉
+                {submitting
+                  ? (isEnglish ? 'Registering...' : '正在注册...')
+                  : (isEnglish ? 'Complete registration 🎉' : '完成注册 🎉')}
               </button>
             </div>
           </motion.div>

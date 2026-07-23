@@ -1,0 +1,12 @@
+.git
+.DS_Store
+**/.env
+**/__pycache__
+**/*.pyc
+**/node_modules
+**/dist
+backend-v12/data
+v12
+frontend-v11
+backend-v11
+knowledge_base

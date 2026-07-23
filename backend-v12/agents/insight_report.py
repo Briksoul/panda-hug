@@ -24,6 +24,11 @@ class InsightReportAgent:
         """生成心理洞察报告（7个模块）"""
         if not self.client:
             self.client = get_llm()
+        language_instruction = (
+            "Write every user-facing value in English."
+            if profile.language == "en"
+            else "所有面向用户的内容使用中文。"
+        )
 
         prompt = (
             "你是心理洞察报告生成专家。根据以下数据生成一份温暖、专业的心理洞察报告。\n\n"
@@ -31,6 +36,7 @@ class InsightReportAgent:
             f"文化分析：\n{json.dumps(cultural_analysis, ensure_ascii=False)}\n\n"
             f"用户文化背景：{profile.cultural_bg.value}\n"
             f"PHQ-2分数：{profile.phq2_score}, GAD-2分数：{profile.gad2_score}\n\n"
+            f"{language_instruction}\n\n"
             "请生成包含以下7个模块的报告，返回JSON：\n"
             "{\n"
             '  "bear_status": {\n'
@@ -64,6 +70,7 @@ class InsightReportAgent:
             "  },\n"
             '  "bear_message": "温暖的小熊寄语"\n'
             "}\n"
+            "训练建议只能从感官着陆、生理叹息、微行为激活、联结感回溯、身体扫描、音乐疗愈中选择。\n"
             "只返回JSON。用温暖、非评判性的语言。"
         )
 
@@ -82,6 +89,39 @@ class InsightReportAgent:
             pass
 
         # 降级报告
+        if profile.language == "en":
+            return {
+                "bear_status": {
+                    "emoji": "🐻",
+                    "label": "Needs attention",
+                    "description": "There is currently some emotional distress.",
+                },
+                "what_happened": {
+                    "timeline": [],
+                    "summary": "There is not enough information yet.",
+                },
+                "why_this_happens": {
+                    "psychological_mechanisms": [],
+                    "cultural_influence": "",
+                    "explanation": "More conversation is needed for a complete analysis.",
+                },
+                "cultural_adaptation": {
+                    "stage": profile.adaptation_stage.value,
+                    "label": "Cultural adaptation stage needs more information",
+                    "evidence": [],
+                    "support": "Continue noticing how cultural differences affect feelings and daily challenges.",
+                },
+                "what_i_need": {
+                    "core_needs": ["Emotional support"],
+                    "suggestions": ["Continue the conversation"],
+                },
+                "intervention_plan": {
+                    "long_term": ["Continue tracking emotional changes"],
+                    "immediate": ["Try a sensory grounding exercise"],
+                    "training_recommendation": "Consider sensory grounding, a body scan, or music therapy.",
+                },
+                "bear_message": "You have already taken an important step. Let us continue caring for you together.",
+            }
         return {
             "bear_status": {
                 "emoji": "🐻",
@@ -109,8 +149,8 @@ class InsightReportAgent:
             },
             "intervention_plan": {
                 "long_term": ["持续记录情绪变化"],
-                "immediate": ["尝试一次简短的呼吸练习"],
-                "training_recommendation": "建议尝试呼吸训练或正念练习",
+                "immediate": ["尝试一次感官着陆练习"],
+                "training_recommendation": "建议尝试感官着陆、身体扫描或音乐疗愈",
             },
             "bear_message": "你已经迈出了重要的一步，接下来让我们一起照顾好自己。",
         }

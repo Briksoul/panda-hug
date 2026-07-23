@@ -1,12 +1,12 @@
 import React from 'react'
 
 const MOOD_IMAGES = {
-  happy: `${import.meta.env.BASE_URL}panda-happy.jpg`,
-  calm: `${import.meta.env.BASE_URL}panda-calm.jpg`,
-  tired: `${import.meta.env.BASE_URL}panda-tired.jpg`,
-  sad: `${import.meta.env.BASE_URL}panda-tired.jpg`,
-  anxious: `${import.meta.env.BASE_URL}panda-anxious.jpg`,
-  thinking: `${import.meta.env.BASE_URL}panda-calm.jpg`,
+  happy: `${import.meta.env.BASE_URL}panda-icon.svg`,
+  calm: `${import.meta.env.BASE_URL}panda-icon.svg`,
+  tired: `${import.meta.env.BASE_URL}panda-icon.svg`,
+  sad: `${import.meta.env.BASE_URL}panda-icon.svg`,
+  anxious: `${import.meta.env.BASE_URL}panda-icon.svg`,
+  thinking: `${import.meta.env.BASE_URL}panda-icon.svg`,
 }
 
 export function PandaFace({ mood = 'happy', size = 120, className = '' }) {
@@ -28,14 +28,14 @@ export function PandaFace({ mood = 'happy', size = 120, className = '' }) {
   )
 }
 
-export function BearMood({ mood = 'happy', size = 120 }) {
+export function BearMood({ mood = 'happy', size = 120, language = 'zh' }) {
   const src = MOOD_IMAGES[mood] || MOOD_IMAGES.happy
   const labels = {
-    happy: '😊 开心小熊',
-    calm: '😌 平静小熊',
-    tired: '😔 疲惫小熊',
-    sad: '😢 难过小熊',
-    anxious: '😰 焦虑小熊',
+    happy: language === 'en' ? '😊 Happy Panda' : '😊 开心小熊',
+    calm: language === 'en' ? '😌 Calm Panda' : '😌 平静小熊',
+    tired: language === 'en' ? '😔 Tired Panda' : '😔 疲惫小熊',
+    sad: language === 'en' ? '😢 Sad Panda' : '😢 难过小熊',
+    anxious: language === 'en' ? '😰 Anxious Panda' : '😰 焦虑小熊',
   }
 
   return (

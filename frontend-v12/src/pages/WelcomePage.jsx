@@ -1,21 +1,44 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useUser } from '../hooks/useUser'
 
+const LANGUAGE_KEY = 'panda_ui_language'
+
 export default function WelcomePage() {
   const navigate = useNavigate()
-  const { user } = useUser()
+  const { isAuthenticated, authLoading } = useUser()
+  const [language, setLanguage] = useState(() => localStorage.getItem(LANGUAGE_KEY) === 'en' ? 'en' : 'zh')
+  const isEnglish = language === 'en'
+
+  const selectLanguage = (nextLanguage) => {
+    setLanguage(nextLanguage)
+    localStorage.setItem(LANGUAGE_KEY, nextLanguage)
+  }
 
   useEffect(() => {
-    if (user.registered) {
+    if (!authLoading && isAuthenticated) {
       navigate('/emotion')
     }
-  }, [user.registered])
+  }, [authLoading, isAuthenticated, navigate])
 
   return (
     <div className="h-full flex flex-col items-center justify-center px-6 relative overflow-hidden"
          style={{ background: 'linear-gradient(180deg, #FFF8F0 0%, #FFE8D0 40%, #FFD4B8 100%)' }}>
+      <div className="absolute right-5 top-5 z-10 flex rounded-full bg-white/80 p-1 text-xs shadow-sm">
+        {['zh', 'en'].map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => selectLanguage(option)}
+            className={`rounded-full px-3 py-1.5 font-medium ${
+              language === option ? 'bg-panda-primary text-white' : 'text-gray-500'
+            }`}
+          >
+            {option === 'zh' ? '中文' : 'EN'}
+          </button>
+        ))}
+      </div>
       
       {/* Decorative background circles */}
       <div className="deco-circle" style={{ width: 300, height: 300, background: '#FF8C42', top: -80, right: -80 }} />
@@ -54,7 +77,7 @@ export default function WelcomePage() {
       >
         <div className="animate-float">
           <img
-            src={`${import.meta.env.BASE_URL}panda-happy.jpg`}
+            src={`${import.meta.env.BASE_URL}panda-icon.svg`}
             alt="Panda Hug"
             className="rounded-full"
             style={{
@@ -84,16 +107,30 @@ export default function WelcomePage() {
         className="text-center mb-10"
       >
         <h1 className="text-3xl font-bold mb-3" style={{ color: '#2D3436' }}>
-          Hi，我是 <span style={{ color: '#FF8C42' }}>Panda</span>！
+          {isEnglish ? 'Hi, I am ' : 'Hi，我是 '}
+          <span style={{ color: '#FF8C42' }}>Panda</span>！
         </h1>
         <p className="text-base leading-relaxed max-w-xs mx-auto" style={{ color: '#666' }}>
-          无论你是在大洋彼岸求学的中国学子，<br/>
-          还是来到中国探索的美国朋友，<br/>
-          当你开心、疲惫、焦虑、迷茫的时候，<br/>
-          我都会在这里陪伴你。
+          {isEnglish ? (
+            <>
+              Whether you are a Chinese student studying abroad,<br/>
+              or an American student exploring China,<br/>
+              whenever you feel happy, tired, anxious, or lost,<br/>
+              I will be here with you.
+            </>
+          ) : (
+            <>
+              无论你是在大洋彼岸求学的中国学子，<br/>
+              还是来到中国探索的美国朋友，<br/>
+              当你开心、疲惫、焦虑、迷茫的时候，<br/>
+              我都会在这里陪伴你。
+            </>
+          )}
         </p>
         <p className="text-sm mt-4" style={{ color: '#aaa' }}>
-          在接下来的交流中，我会陪你一起理解情绪、整理思绪、寻找力量。
+          {isEnglish
+            ? 'In our conversations, I will help you understand your emotions, organize your thoughts, and find strength.'
+            : '在接下来的交流中，我会陪你一起理解情绪、整理思绪、寻找力量。'}
         </p>
       </motion.div>
 
@@ -108,8 +145,14 @@ export default function WelcomePage() {
         className="btn-primary w-64 text-lg"
         style={{ borderRadius: 50 }}
       >
-        开始旅程 ✨
+        {isEnglish ? 'Create account ✨' : '创建账号 ✨'}
       </motion.button>
+      <button
+        onClick={() => navigate('/login')}
+        className="mt-4 text-sm font-medium text-gray-600"
+      >
+        {isEnglish ? 'Already have an account? Log in' : '已有账号？登录'}
+      </button>
 
       {/* Bottom tagline */}
       <motion.p
@@ -119,7 +162,7 @@ export default function WelcomePage() {
         className="absolute bottom-8 text-xs"
         style={{ color: '#bbb' }}
       >
-        Powered by AI · 你的专属情绪陪伴
+        {isEnglish ? 'Powered by AI · Your personal emotional companion' : 'Powered by AI · 你的专属情绪陪伴'}
       </motion.p>
     </div>
   )

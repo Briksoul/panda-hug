@@ -4,11 +4,20 @@ __pycache__/
 *.pyc
 .DS_Store
 .env
+.env.deploy
+.env.local
+.vercel/
+.wrangler/
 *.log
 
 # Runtime data (ChromaDB, sessions, user data)
 backend/data/
+backend-v12/data/*.db*
+backend-v12/data/sessions/
+backend-v12/data/users/
 v12/backend/data/
+knowledge_base/**/*.doc
+knowledge_base/**/*.docx
 
 # Large images (keep small versions only)
 emotion_all.png

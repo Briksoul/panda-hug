@@ -3,10 +3,15 @@ from __future__ import annotations
 import asyncio
 import json
 import math
-from fastapi import APIRouter, HTTPException
+from datetime import datetime, timedelta
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 from typing import Optional
+from auth import get_current_user
+from database import ChatSessionRecord, EmotionAssessment, User, get_db
 from guardrail import check_guardrail, build_crisis_response
 
 router = APIRouter(prefix="/api")
@@ -29,7 +34,6 @@ def get_orchestrator():
 # ─── 请求/响应模型 ────────────────────────────────────────────────────
 class CreateSessionReq(BaseModel):
     user_name: str = ""
-    user_id: str = ""
     cultural_identity: str = "unknown"
     language: str = "zh"
     study_abroad_months: int = Field(default=0, ge=0, le=600)
@@ -106,17 +110,41 @@ def _validated_voice_scores(voice_analysis: VoiceAnalysisReq | None) -> dict:
     return scores
 
 
+def _owned_session(session_id: str, user: User):
+    session = get_orchestrator().get_session(session_id)
+    if session is None:
+        raise HTTPException(404, "session not found")
+    if session.profile.user_id != user.id:
+        raise HTTPException(403, "session does not belong to this account")
+    return session
+
+
 # ─── 路由 ──────────────────────────────────────────────────────────────
 @router.post("/session/create", response_model=CreateSessionResp)
-async def create_session(req: CreateSessionReq):
+async def create_session(
+    req: CreateSessionReq,
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
     """创建新会话"""
+    latest_assessment = database.scalar(
+        select(EmotionAssessment)
+        .where(
+            EmotionAssessment.user_id == user.id,
+            EmotionAssessment.assessment_type == "phq_gad",
+        )
+        .order_by(EmotionAssessment.created_at.desc())
+        .limit(1)
+    )
     orch = get_orchestrator()
     sid = orch.create_session(
-        user_name=req.user_name,
-        user_id=req.user_id,
-        cultural_identity=req.cultural_identity,
-        language=req.language,
-        study_abroad_months=req.study_abroad_months,
+        user_name=user.name or req.user_name,
+        user_id=user.id,
+        cultural_identity=user.cultural_identity,
+        language=user.language,
+        study_abroad_months=user.study_abroad_months,
+        phq2_score=latest_assessment.phq2_score if latest_assessment else 0,
+        gad2_score=latest_assessment.gad2_score if latest_assessment else 0,
     )
     session = orch.get_session(sid)
     return CreateSessionResp(
@@ -129,7 +157,7 @@ async def create_session(req: CreateSessionReq):
                 "Before we begin, what should I call you?\n\n"
                 "How have you been feeling over the past two weeks?"
             )
-            if req.language == "en"
+            if user.language == "en"
             else (
                 "你好呀 🐼 欢迎来到 Panda Hug！\n\n"
                 "我是你的心理陪伴助手，很高兴见到你。"
@@ -141,8 +169,12 @@ async def create_session(req: CreateSessionReq):
 
 
 @router.post("/chat", response_model=ChatResp)
-async def chat(req: ChatReq):
+async def chat(
+    req: ChatReq,
+    user: User = Depends(get_current_user),
+):
     """发送消息（含 Guardrail 危机拦截）"""
+    _owned_session(req.session_id, user)
     input_mode = req.input_mode if req.input_mode in ("text", "voice") else "text"
     voice_scores = (
         _validated_voice_scores(req.voice_analysis)
@@ -177,8 +209,12 @@ async def chat(req: ChatReq):
 
 
 @router.post("/chat/stream")
-async def chat_stream(req: ChatReq):
+async def chat_stream(
+    req: ChatReq,
+    user: User = Depends(get_current_user),
+):
     """Stream the visible Agent reply while preserving final structured state."""
+    _owned_session(req.session_id, user)
     input_mode = req.input_mode if req.input_mode in ("text", "voice") else "text"
     voice_scores = (
         _validated_voice_scores(req.voice_analysis)
@@ -247,9 +283,27 @@ async def chat_stream(req: ChatReq):
     )
 
 
+@router.get("/session/latest")
+async def get_latest_session(
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    record = database.scalar(
+        select(ChatSessionRecord)
+        .where(ChatSessionRecord.user_id == user.id)
+        .order_by(ChatSessionRecord.last_active.desc())
+        .limit(1)
+    )
+    return {"session_id": record.id if record else None}
+
+
 @router.get("/session/{session_id}/state")
-async def get_state(session_id: str):
+async def get_state(
+    session_id: str,
+    user: User = Depends(get_current_user),
+):
     """获取会话状态"""
+    _owned_session(session_id, user)
     orch = get_orchestrator()
     state = orch.get_state(session_id)
     if "error" in state:
@@ -258,12 +312,13 @@ async def get_state(session_id: str):
 
 
 @router.get("/session/{session_id}/history")
-async def get_history(session_id: str):
+async def get_history(
+    session_id: str,
+    user: User = Depends(get_current_user),
+):
     """获取会话历史（用于恢复对话）"""
     orch = get_orchestrator()
-    session = orch.get_session(session_id)
-    if not session:
-        raise HTTPException(404, "session not found")
+    session = _owned_session(session_id, user)
     # 将 history 转为前端可用格式
     messages = []
     for msg in session.history:
@@ -271,6 +326,7 @@ async def get_history(session_id: str):
             "role": msg["role"],
             "content": msg["content"],
             "agent": msg.get("agent") if msg["role"] == "assistant" else None,
+            "metadata": msg.get("metadata", {}),
         })
     return {
         "session_id": session_id,
@@ -280,12 +336,13 @@ async def get_history(session_id: str):
 
 
 @router.get("/session/{session_id}/memory")
-async def get_memory(session_id: str):
+async def get_memory(
+    session_id: str,
+    user: User = Depends(get_current_user),
+):
     """Return a user-facing view of remembered preferences and aggregate counts."""
     orch = get_orchestrator()
-    session = orch.get_session(session_id)
-    if not session:
-        raise HTTPException(404, "session not found")
+    session = _owned_session(session_id, user)
     memory = orch.get_user_memory(session.profile.user_id)
     stored_profile = memory.get("profile", {})
     return {
@@ -302,9 +359,38 @@ async def get_memory(session_id: str):
     }
 
 
+@router.get("/session/{session_id}/report")
+async def get_report_by_date(
+    session_id: str,
+    date: str = Query(pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    user: User = Depends(get_current_user),
+):
+    session = _owned_session(session_id, user)
+    memory = get_orchestrator().get_user_memory(session.profile.user_id)
+    matches = [
+        item for item in memory.get("insight_reports", [])
+        if datetime.fromtimestamp(
+            item.get("timestamp", 0)
+        ).date().isoformat() == date
+    ]
+    if not matches:
+        raise HTTPException(404, "report not found for this date")
+    latest = max(matches, key=lambda item: item.get("timestamp", 0))
+    return {
+        "date": date,
+        "report": latest.get("report", {}),
+        "session_id": latest.get("session_id"),
+    }
+
+
 @router.post("/session/{session_id}/voice-analysis")
-async def record_voice_analysis(session_id: str, req: VoiceAnalysisReq):
+async def record_voice_analysis(
+    session_id: str,
+    req: VoiceAnalysisReq,
+    user: User = Depends(get_current_user),
+):
     """Fuse and persist Hume vocal-expression measurements."""
+    _owned_session(session_id, user)
     if not req.transcript.strip():
         raise HTTPException(400, "transcript is required")
     scores = _validated_voice_scores(req)
@@ -320,21 +406,102 @@ async def record_voice_analysis(session_id: str, req: VoiceAnalysisReq):
 
 
 @router.get("/session/{session_id}/growth")
-async def get_growth(session_id: str):
+async def get_growth(
+    session_id: str,
+    user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
     """获取当前用户的成长记录"""
     orch = get_orchestrator()
-    session = orch.get_session(session_id)
-    if not session:
-        raise HTTPException(404, "session not found")
-    return orch.get_user_growth(session.profile.user_id)
+    session = _owned_session(session_id, user)
+    growth = orch.get_user_growth(session.profile.user_id)
+    assessments = database.scalars(
+        select(EmotionAssessment)
+        .where(EmotionAssessment.user_id == user.id)
+        .order_by(EmotionAssessment.created_at.asc())
+    ).all()
+    calendar_by_date = {
+        item["date"]: item for item in growth.get("calendar", [])
+    }
+    for assessment in assessments:
+        day = datetime.fromtimestamp(assessment.created_at).date().isoformat()
+        distress = round(
+            max(assessment.phq2_score, assessment.gad2_score) / 6 * 100,
+            1,
+        )
+        growth.setdefault("emotion_trend", []).append({
+            "timestamp": assessment.created_at,
+            "date": day,
+            "distress_index": distress,
+            "intensity": distress,
+            "sentiment": (
+                "positive" if assessment.bear_status == "happy"
+                else "negative"
+            ),
+            "emotion_tags": [assessment.selected_emotion],
+            "source": "assessment",
+            "voice_analysis": None,
+        })
+        entry = calendar_by_date.setdefault(day, {
+            "date": day,
+            "average_distress": distress,
+            "bear_status": (
+                "充满活力" if assessment.bear_status == "happy"
+                else "比较平静" if assessment.bear_status == "calm"
+                else "有些低落"
+            ),
+            "report_count": 0,
+            "training_count": 0,
+        })
+        entry["assessment_count"] = entry.get("assessment_count", 0) + 1
+
+    growth["emotion_trend"] = sorted(
+        growth.get("emotion_trend", []),
+        key=lambda item: item.get("timestamp", 0),
+    )
+    growth["calendar"] = sorted(calendar_by_date.values(), key=lambda item: item["date"])
+    low_days = _consecutive_assessment_low_days(assessments)
+    if low_days >= 14:
+        growth["care_alert"] = {
+            "triggered": True,
+            "reason": "连续14天情绪持续低落",
+            "resources": [],
+            "resource_status": "pending_medical_database",
+        }
+    else:
+        growth.setdefault("care_alert", {})["resources"] = []
+        growth["care_alert"]["resource_status"] = "pending_medical_database"
+    return growth
+
+
+def _consecutive_assessment_low_days(
+    assessments: list[EmotionAssessment],
+) -> int:
+    daily_status = {}
+    for assessment in assessments:
+        day = datetime.fromtimestamp(assessment.created_at).date()
+        daily_status[day] = max(
+            daily_status.get(day, 0),
+            max(assessment.phq2_score, assessment.gad2_score),
+        )
+    if not daily_status:
+        return 0
+    current = max(daily_status)
+    count = 0
+    while daily_status.get(current, 0) >= 4:
+        count += 1
+        current -= timedelta(days=1)
+    return count
 
 
 @router.post("/session/{session_id}/training/self-guided")
 async def record_self_guided_training(
     session_id: str,
     req: SelfGuidedTrainingReq,
+    user: User = Depends(get_current_user),
 ):
     """Record a completed self-guided exercise."""
+    _owned_session(session_id, user)
     before = {
         "captured_at": 0,
         "distress_index": req.before_distress * 10,
@@ -369,10 +536,14 @@ async def record_self_guided_training(
 
 
 @router.post("/session/transition")
-async def force_transition(req: TransitionReq):
+async def force_transition(
+    req: TransitionReq,
+    user: User = Depends(get_current_user),
+):
     """手动切换 Agent"""
     from agents.base import AgentRole
     orch = get_orchestrator()
+    _owned_session(req.session_id, user)
     try:
         target = AgentRole(req.target_agent)
     except ValueError:

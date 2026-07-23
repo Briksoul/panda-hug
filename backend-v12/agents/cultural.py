@@ -51,18 +51,18 @@ SYSTEM_PROMPT = """\
 - 不要急于给建议，先充分理解和确认
 - 用温和、专业的语气
 - 避免说教，用"我注意到""我很好奇"等表达
-- 当用户情绪缓和后，询问是否愿意进行心理训练
+- 当分析完成后，告知用户洞察报告正在生成，并引导用户前往查看报告
 
 ## 输出格式
 当分析完成、用户情绪缓和时：
 ```json
 {
-  "reply": "面向用户的文化适配洞察，并邀请用户进入练习阶段",
+  "reply": "面向用户的文化适配洞察，并邀请用户前往查看洞察报告",
   "analysis_complete": true,
   "core_issue": "核心问题描述",
   "cultural_insight": "文化视角分析",
   "adaptation_stage": "honeymoon|culture_shock|recovery|adjustment|unknown",
-  "readiness_for_coach": true
+  "ready_for_report": true
 }
 ```
 """
@@ -94,10 +94,10 @@ class CulturalAnalystAgent(BaseAgent):
         next_agent = None
         suggestions = []
 
-        if data.get("analysis_complete") and data.get("readiness_for_coach"):
+        if data.get("analysis_complete") and data.get("ready_for_report", True):
             should_transition = True
-            next_agent = AgentRole.COACH
-            suggestions = ["开始心理训练", "继续聊聊", "不需要了"]
+            next_agent = AgentRole.COUNSELOR
+            suggestions = ["查看洞察报告", "继续聊聊"]
 
         try:
             profile.adaptation_stage = AdaptationStage(
