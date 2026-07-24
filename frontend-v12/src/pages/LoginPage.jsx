@@ -67,7 +67,7 @@ export default function LoginPage() {
       >
         <div className="mb-8 text-center">
           <img
-            src={`${import.meta.env.BASE_URL}panda-icon.svg`}
+            src={`${import.meta.env.BASE_URL}panda-icon-v2.png`}
             alt="Panda"
             className="mx-auto mb-3 rounded-full"
             style={{ width: 88, height: 88, objectFit: 'cover' }}

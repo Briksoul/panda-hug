@@ -22,7 +22,10 @@ export function useBrowserVoice() {
 
   const startListening = useCallback((onResult, options = {}) => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-    if (!SpeechRecognition) return
+    if (!SpeechRecognition) {
+      setError('not-supported')
+      return false
+    }
 
     setError("")
     const recognition = new SpeechRecognition()
@@ -62,9 +65,17 @@ export function useBrowserVoice() {
       setListening(false)
     }
 
-    recognition.start()
-    recognitionRef.current = recognition
-    setListening(true)
+    try {
+      recognition.start()
+      recognitionRef.current = recognition
+      setListening(true)
+      return true
+    } catch (startError) {
+      console.error('[Voice] Failed to start recognition:', startError)
+      setError('start-failed')
+      setListening(false)
+      return false
+    }
   }, [])
 
   const stopListening = useCallback(() => {
@@ -75,7 +86,7 @@ export function useBrowserVoice() {
     setListening(false)
   }, [])
 
-  const speak = useCallback((text, lang, rate = 1.15, onDone) => {
+  const speak = useCallback((text, lang, rate = 0.92, onDone) => {
     if (!synthRef.current) return
 
     synthRef.current.cancel()
@@ -84,14 +95,20 @@ export function useBrowserVoice() {
 
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = lang || (/[\u4e00-\u9fff]/.test(text) ? 'zh-CN' : 'en-US')
-    utterance.rate = Math.max(0.5, Math.min(2, Number(rate) || 1.15))
-    utterance.pitch = 1.0
+    utterance.rate = Math.max(0.5, Math.min(2, Number(rate) || 0.92))
+    utterance.pitch = 0.96
 
     const voices = synthRef.current.getVoices()
-    const languageCode = utterance.lang.split('-')[0]
-    const matchingVoices = voices.filter(v => v.lang.startsWith(languageCode))
+    const exactVoices = voices.filter(v => v.lang.toLowerCase() === utterance.lang.toLowerCase())
+    const languageCode = utterance.lang.split('-')[0].toLowerCase()
+    const matchingVoices = exactVoices.length > 0
+      ? exactVoices
+      : voices.filter(v => (
+        v.lang.toLowerCase().startsWith(languageCode)
+        && !/^zh-(hk|tw)/i.test(v.lang)
+      ))
     const preferredVoice = matchingVoices.find(v => (
-      /premium|enhanced|natural|samantha|ting[- ]?ting|meijia/i.test(v.name)
+      /premium|enhanced|natural|xiaoxiao|ting[- ]?ting|meijia|samantha/i.test(v.name)
     )) || matchingVoices.find(v => v.localService) || matchingVoices[0]
     if (preferredVoice) utterance.voice = preferredVoice
 

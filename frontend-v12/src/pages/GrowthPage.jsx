@@ -3,7 +3,12 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts'
 import { Calendar, TrendingUp, BarChart3, Award, ChevronLeft, ChevronRight } from 'lucide-react'
-import { getGrowthRecord, getLatestSession } from '../utils/api'
+import {
+  getGrowthRecord,
+  getLatestSession,
+  getMedicalRegions,
+  getMedicalResources,
+} from '../utils/api'
 import { useUser } from '../hooks/useUser'
 
 const ISSUE_COLORS = ['#FF8C42', '#4ECDC4', '#87CEEB', '#FFB347', '#A78BFA', '#D3D3D3']
@@ -34,38 +39,38 @@ const INTERACTION_LEVELS = [
   {
     min: 1,
     max: 14,
-    zhLabel: '初识伙伴',
-    enLabel: 'New Companion',
+    zhLabel: '初识新芽',
+    enLabel: 'New Sprout',
     emoji: '🌱',
-    zhDesc: '刚开始了解彼此',
-    enDesc: 'Just beginning to know each other',
+    zhDesc: '一颗新芽，代表我们刚开始了解彼此',
+    enDesc: 'A new sprout as we begin to know each other',
   },
   {
     min: 15,
     max: 30,
-    zhLabel: '温暖陪伴',
-    enLabel: 'Warm Companion',
+    zhLabel: '信任枝桠',
+    enLabel: 'Branch of Trust',
     emoji: '🌿',
-    zhDesc: '逐渐建立信任',
-    enDesc: 'Gradually building trust',
+    zhDesc: '长出枝桠，信任正在慢慢建立',
+    enDesc: 'A growing branch as trust takes shape',
   },
   {
     min: 31,
     max: 60,
-    zhLabel: '知心好友',
-    enLabel: 'Close Friend',
+    zhLabel: '陪伴之树',
+    enLabel: 'Companion Tree',
     emoji: '🌳',
-    zhDesc: '深入了解你的世界',
-    enDesc: 'Understanding your world more deeply',
+    zhDesc: '成为一棵树，更深入地理解你的世界',
+    enDesc: 'A strong tree that understands your world more deeply',
   },
   {
     min: 61,
     max: 90,
     zhLabel: '灵魂知己',
     enLabel: 'Kindred Spirit',
-    emoji: '🌟',
-    zhDesc: '最懂你的 Panda',
-    enDesc: 'The Panda who understands you best',
+    emoji: '🌳🌳',
+    zhDesc: '两棵相伴的树，代表彼此理解的灵魂知己',
+    enDesc: 'Two trees together, representing a deeply understood bond',
   },
 ]
 
@@ -88,6 +93,14 @@ export default function GrowthPage() {
   const [growth, setGrowth] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [careCountry, setCareCountry] = useState(
+    user.cultureTag === 'china_in_us' ? 'US' : 'CN',
+  )
+  const [careRegion, setCareRegion] = useState('')
+  const [careRegions, setCareRegions] = useState([])
+  const [careResources, setCareResources] = useState([])
+  const [careDisclaimer, setCareDisclaimer] = useState('')
+  const [careLoading, setCareLoading] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -116,6 +129,36 @@ export default function GrowthPage() {
       cancelled = true
     }
   }, [isEnglish])
+
+  useEffect(() => {
+    if (!growth?.care_alert?.triggered) return
+    getMedicalRegions(careCountry)
+      .then((data) => {
+        setCareRegions(data.regions || [])
+        setCareRegion('')
+        setCareResources([])
+      })
+      .catch((requestError) => {
+        console.error('Failed to load medical regions:', requestError)
+      })
+  }, [careCountry, growth?.care_alert?.triggered])
+
+  const findCareResources = async () => {
+    if (!careRegion) return
+    setCareLoading(true)
+    try {
+      const data = await getMedicalResources({
+        country: careCountry,
+        region: careRegion,
+      })
+      setCareResources(data.resources || [])
+      setCareDisclaimer(data.disclaimer || '')
+    } catch (requestError) {
+      console.error('Failed to load medical resources:', requestError)
+    } finally {
+      setCareLoading(false)
+    }
+  }
 
   const emotionTrend = useMemo(
     () => (growth?.emotion_trend || []).map((item) => ({
@@ -198,7 +241,7 @@ export default function GrowthPage() {
     { id: 'calendar', label: isEnglish ? 'Calendar' : '日历', icon: Calendar },
     { id: 'trend', label: isEnglish ? 'Trends' : '趋势', icon: TrendingUp },
     { id: 'issues', label: isEnglish ? 'Topics' : '问题', icon: BarChart3 },
-    { id: 'level', label: isEnglish ? 'Level' : '等级', icon: Award },
+    { id: 'level', label: isEnglish ? 'Bond' : '亲密度', icon: Award },
   ]
 
   if (!loading && growth && !hasGrowthData) {
@@ -266,11 +309,92 @@ export default function GrowthPage() {
           <p className="mt-1 text-sm text-red-600">
             {isEnglish ? 'Low mood has continued for 14 consecutive days.' : growth.care_alert.reason}
           </p>
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mt-2 text-sm font-medium text-gray-700">
             {isEnglish
-              ? 'The nearby hospital and cross-cultural clinician database is not yet available. Unverified recommendations will not be shown.'
-              : '附近医院与跨文化医生数据库尚待补充，当前不会展示未经核实的推荐。'}
+              ? 'Choose your current region to view professional resources.'
+              : '请选择当前所在地区，查看专业支持资源。'}
           </p>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <select
+              value={careCountry}
+              onChange={(event) => setCareCountry(event.target.value)}
+              className="rounded-lg border border-red-100 bg-white px-2 py-2 text-sm"
+            >
+              <option value="CN">{isEnglish ? 'China' : '中国'}</option>
+              <option value="US">{isEnglish ? 'United States' : '美国'}</option>
+              <option value="CA">{isEnglish ? 'Canada' : '加拿大'}</option>
+            </select>
+            <select
+              value={careRegion}
+              onChange={(event) => setCareRegion(event.target.value)}
+              className="rounded-lg border border-red-100 bg-white px-2 py-2 text-sm"
+            >
+              <option value="">
+                {isEnglish ? 'Select region' : '选择地区'}
+              </option>
+              {careRegions.map((region) => (
+                <option key={`${region.country}-${region.region}`} value={region.region}>
+                  {isEnglish ? region.region : region.region_zh || region.region}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={findCareResources}
+            disabled={!careRegion || careLoading}
+            className="mt-3 w-full rounded-full bg-red-600 py-2 text-sm font-bold text-white disabled:opacity-40"
+          >
+            {careLoading
+              ? (isEnglish ? 'Loading...' : '正在查询...')
+              : (isEnglish ? 'Find support resources' : '查找支持资源')}
+          </button>
+          {careResources.length > 0 && (
+            <div className="mt-4 space-y-3">
+              {careResources.map((resource) => (
+                <div key={resource.id} className="rounded-xl bg-white p-3">
+                  <p className="font-bold text-gray-800">{resource.name}</p>
+                  {resource.organization && (
+                    <p className="text-xs text-gray-500">{resource.organization}</p>
+                  )}
+                  {resource.phones?.length > 0 && (
+                    <p className="mt-2 text-sm text-gray-700">
+                      {isEnglish ? 'Phone' : '电话'}: {resource.phones.join(' / ')}
+                    </p>
+                  )}
+                  {resource.emails?.length > 0 && (
+                    <p className="break-all text-sm text-gray-700">
+                      Email: {resource.emails.join(' / ')}
+                    </p>
+                  )}
+                  {resource.specialties?.length > 0 && (
+                    <p className="mt-2 text-xs leading-relaxed text-gray-500">
+                      {resource.specialties.slice(0, 3).join(' · ')}
+                    </p>
+                  )}
+                  {resource.source_url && (
+                    <a
+                      href={resource.source_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-2 inline-block text-xs text-panda-primary underline"
+                    >
+                      {isEnglish ? 'Verify source' : '查看并核验来源'}
+                    </a>
+                  )}
+                </div>
+              ))}
+              <p className="text-xs leading-relaxed text-gray-500">
+                {careDisclaimer}
+              </p>
+            </div>
+          )}
+          {!careLoading && careRegion && careResources.length === 0 && careDisclaimer && (
+            <p className="mt-3 text-xs text-gray-500">
+              {isEnglish
+                ? 'No matching resources were found for this region.'
+                : '当前地区暂未找到匹配资源。'}
+            </p>
+          )}
         </div>
       )}
 
@@ -530,17 +654,20 @@ export default function GrowthPage() {
                 ? `${interactionDays} days together`
                 : `已陪伴 ${interactionDays} 天`}
             </p>
-            <div className="progress-bar mt-4">
-              <div className="progress-bar-fill" style={{ width: `${interactionDays / 90 * 100}%` }} />
+            <p className="mt-4 text-sm font-bold text-panda-primary">
+              {isEnglish ? 'Panda Bond' : 'Panda 亲密度'} · {Math.min(100, Math.round(interactionDays / 90 * 100))}%
+            </p>
+            <div className="progress-bar mt-2">
+              <div className="progress-bar-fill" style={{ width: `${Math.min(100, interactionDays / 90 * 100)}%` }} />
             </div>
             <p className="text-xs text-gray-400 mt-1">
               {currentLevel === INTERACTION_LEVELS[INTERACTION_LEVELS.length - 1]
                 ? (isEnglish
-                  ? 'You have reached the highest interaction level'
-                  : '已达到当前最高互动等级')
+                  ? 'You have reached the closest bond stage'
+                  : '已达到当前最高亲密度阶段')
                 : (isEnglish
-                  ? `${currentLevel.max - interactionDays} days to the next level`
-                  : `距离下一等级还需 ${currentLevel.max - interactionDays} 天`)}
+                  ? `${currentLevel.max - interactionDays + 1} days to the next bond stage`
+                  : `距离下一亲密度阶段还需 ${currentLevel.max - interactionDays + 1} 天`)}
             </p>
           </div>
 

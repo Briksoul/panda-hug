@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUser } from '../hooks/useUser'
-import { User, Phone, Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react'
+import { User, AtSign, Lock, ArrowRight, ArrowLeft } from 'lucide-react'
 import { registerAccount } from '../utils/api'
 
 const CULTURE_OPTIONS = [
@@ -17,7 +17,7 @@ export default function RegisterPage() {
   const navigate = useNavigate()
   const { setAuthenticatedUser } = useUser()
   const [step, setStep] = useState(0) // 0=register, 1=culture
-  const [form, setForm] = useState({ name: '', phone: '', email: '', password: '' })
+  const [form, setForm] = useState({ name: '', contact: '', password: '' })
   const [cultureTag, setCultureTag] = useState(null)
   const [language, setLanguage] = useState(() => localStorage.getItem(LANGUAGE_KEY) === 'en' ? 'en' : 'zh')
   const [submitting, setSubmitting] = useState(false)
@@ -32,10 +32,10 @@ export default function RegisterPage() {
   }
 
   const handleRegister = () => {
-    if (!form.name || form.password.length < 8) {
+    if (!form.name.trim() || !form.password) {
       setError(isEnglish
-        ? 'The username must have at least 2 characters and the password at least 8 characters.'
-        : '用户名至少 2 个字符，密码至少 8 个字符。')
+        ? 'Enter a username and password.'
+        : '请填写用户名和密码。')
       return
     }
     setError('')
@@ -51,8 +51,8 @@ export default function RegisterPage() {
         username: form.name,
         password: form.password,
         name: form.name,
-        phone: form.phone,
-        email: form.email,
+        phone: form.contact.includes('@') ? '' : form.contact,
+        email: form.contact.includes('@') ? form.contact : '',
         cultural_identity: cultureTag,
         language,
         study_abroad_months: 0,
@@ -96,7 +96,7 @@ export default function RegisterPage() {
             className="flex-1 flex flex-col"
           >
             <div className="text-center mb-8">
-              <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(255,140,66,0.2)' }} />
+              <img src={`${import.meta.env.BASE_URL}panda-icon-v2.png`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(255,140,66,0.2)' }} />
               <h2 className="text-xl font-bold">{isEnglish ? 'Create your account' : '创建你的账号'}</h2>
               <p className="text-sm text-gray-500 mt-1">
                 {isEnglish ? 'Help Panda get to know you' : '让 Panda 认识你'}
@@ -108,29 +108,22 @@ export default function RegisterPage() {
                 <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  placeholder={isEnglish ? 'Username' : '用户名'}
+                  autoComplete="username"
+                  placeholder={isEnglish ? 'Username (any format)' : '用户名（格式不限）'}
                   value={form.name}
                   onChange={e => updateForm('name', e.target.value)}
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white border border-gray-200 focus:border-panda-primary focus:outline-none transition"
                 />
               </div>
               <div className="relative">
-                <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <AtSign size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
-                  type="tel"
-                  placeholder={isEnglish ? 'Phone number (optional)' : '手机号码（选填）'}
-                  value={form.phone}
-                  onChange={e => updateForm('phone', e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white border border-gray-200 focus:border-panda-primary focus:outline-none transition"
-                />
-              </div>
-              <div className="relative">
-                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="email"
-                  placeholder={isEnglish ? 'Email (optional)' : '邮箱（选填）'}
-                  value={form.email}
-                  onChange={e => updateForm('email', e.target.value)}
+                  type="text"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder={isEnglish ? 'Phone / email (optional)' : '手机号码 / 邮箱（选填）'}
+                  value={form.contact}
+                  onChange={e => updateForm('contact', e.target.value)}
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white border border-gray-200 focus:border-panda-primary focus:outline-none transition"
                 />
               </div>
@@ -138,7 +131,8 @@ export default function RegisterPage() {
                 <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="password"
-                  placeholder={isEnglish ? 'Password' : '密码'}
+                  autoComplete="new-password"
+                  placeholder={isEnglish ? 'Password (any non-empty value)' : '密码（任意内容）'}
                   value={form.password}
                   onChange={e => updateForm('password', e.target.value)}
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white border border-gray-200 focus:border-panda-primary focus:outline-none transition"
@@ -150,8 +144,7 @@ export default function RegisterPage() {
               {error && <p className="mb-3 text-center text-sm text-red-500">{error}</p>}
               <button
                 onClick={handleRegister}
-                disabled={form.name.trim().length < 2 || form.password.length < 8}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-panda-primary to-panda-warm text-white font-bold text-lg shadow-lg shadow-orange-200 disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-full bg-gradient-to-r from-panda-primary to-panda-warm text-white font-bold text-lg shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
               >
                 {isEnglish ? 'Next' : '下一步'} <ArrowRight size={20} />
               </button>
@@ -172,7 +165,7 @@ export default function RegisterPage() {
             className="flex-1 flex flex-col"
           >
             <div className="text-center mb-8">
-              <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(78,205,196,0.2)' }} />
+              <img src={`${import.meta.env.BASE_URL}panda-icon-v2.png`} alt="Panda" className="rounded-full mx-auto mb-3" style={{ width: 80, height: 80, objectFit: 'cover', border: '3px solid white', boxShadow: '0 8px 24px rgba(78,205,196,0.2)' }} />
               <h2 className="text-xl font-bold">{isEnglish ? 'Who are you?' : '你是？'}</h2>
               <p className="text-sm text-gray-500 mt-1">
                 {isEnglish ? 'Help Panda understand your cultural background' : '帮助 Panda 了解你的文化背景'}

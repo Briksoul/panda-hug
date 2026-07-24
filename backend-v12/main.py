@@ -9,16 +9,20 @@ from config import config
 from orchestrator import CognitiveOrchestrator as Orchestrator
 from knowledge import KnowledgeBase
 from api.routes import router, set_orchestrator
-from api.voice import router as voice_router
 from api.emotion import router as emotion_router
 from api.community import router as community_router, init_db as init_community_db
 from api.auth_routes import router as auth_router
 from api.assessment import router as assessment_router
+from api.medical_resources import (
+    init_medical_resources,
+    router as medical_resources_router,
+)
 from database import init_database
 
 
 def create_app() -> FastAPI:
     init_database()
+    init_medical_resources()
     app = FastAPI(
         title="Panda Hug",
         description="温暖跨文化心理伴侣 — 多 Agent 心理咨询系统",
@@ -44,17 +48,17 @@ def create_app() -> FastAPI:
 
     # 注册路由
     app.include_router(router)
-    app.include_router(voice_router, prefix="/api")
     app.include_router(emotion_router, prefix="/api")
     app.include_router(community_router, prefix="/api")
     app.include_router(auth_router, prefix="/api")
     app.include_router(assessment_router, prefix="/api")
+    app.include_router(medical_resources_router, prefix="/api")
     app.include_router(router, prefix="/pandahug")
-    app.include_router(voice_router, prefix="/pandahug/api")
     app.include_router(emotion_router, prefix="/pandahug/api")
     app.include_router(community_router, prefix="/pandahug/api")
     app.include_router(auth_router, prefix="/pandahug/api")
     app.include_router(assessment_router, prefix="/pandahug/api")
+    app.include_router(medical_resources_router, prefix="/pandahug/api")
 
     # 初始化社区数据库
     init_community_db()

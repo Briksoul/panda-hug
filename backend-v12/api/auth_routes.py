@@ -34,8 +34,8 @@ IDENTITY_FROM_FRONTEND = {
 
 
 class RegisterRequest(BaseModel):
-    username: str = Field(min_length=2, max_length=64)
-    password: str = Field(min_length=8, max_length=128)
+    username: str = Field(min_length=1, max_length=64)
+    password: str = Field(min_length=1, max_length=128)
     name: str = Field(default="", max_length=100)
     phone: str = Field(default="", max_length=32)
     email: str = Field(default="", max_length=255)
@@ -45,7 +45,7 @@ class RegisterRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    username: str = Field(min_length=2, max_length=64)
+    username: str = Field(min_length=1, max_length=64)
     password: str = Field(min_length=1, max_length=128)
 
 
@@ -55,13 +55,8 @@ class PreferencesRequest(BaseModel):
 
 def normalize_username(username: str) -> str:
     normalized = unicodedata.normalize("NFKC", username).strip().casefold()
-    if not normalized or any(character.isspace() for character in normalized):
-        raise HTTPException(400, "Username cannot contain spaces")
-    if any(
-        not (character.isalnum() or character in ("_", "-", "."))
-        for character in normalized
-    ):
-        raise HTTPException(400, "Username contains unsupported characters")
+    if not normalized:
+        raise HTTPException(400, "Username is required")
     return normalized
 
 

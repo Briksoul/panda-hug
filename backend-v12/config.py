@@ -20,6 +20,10 @@ class Config:
     OPENAI_BASE_URL: str = os.getenv("OPENAI_BASE_URL", "https://api.deepseek.com/v1")
     LLM_MODEL: str = os.getenv("LLM_MODEL", "deepseek-chat")
     LLM_FAST_MODEL: str = os.getenv("LLM_FAST_MODEL", "deepseek-chat")
+    EMOTION_MODEL: str = os.getenv(
+        "EMOTION_MODEL",
+        os.getenv("LLM_FAST_MODEL", "gemini-3.5-flash"),
+    )
     LLM_TEMPERATURE: float = 0.7
     LLM_MAX_TOKENS: int = int(os.getenv("LLM_MAX_TOKENS", "4096"))
 

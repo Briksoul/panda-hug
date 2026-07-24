@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import math
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -13,6 +13,8 @@ from typing import Optional
 from auth import get_current_user
 from database import ChatSessionRecord, EmotionAssessment, User, get_db
 from guardrail import check_guardrail, build_crisis_response
+from api.medical_resources import search_medical_resources
+from agents.base import AgentRole
 
 router = APIRouter(prefix="/api")
 
@@ -48,6 +50,7 @@ class CreateSessionResp(BaseModel):
 class VoiceAnalysisReq(BaseModel):
     transcript: str = Field(default="", max_length=5000)
     emotion_scores: dict[str, float] = Field(default_factory=dict)
+    analysis_source: str = Field(default="gemini_text", max_length=32)
 
 
 class ChatReq(BaseModel):
@@ -119,6 +122,55 @@ def _owned_session(session_id: str, user: User):
     return session
 
 
+@router.get("/psychoeducation/tip")
+async def get_psychoeducation_tip(
+    user: User = Depends(get_current_user),
+):
+    """Return one concise, daily psychoeducation sentence from the knowledge base."""
+    topics = (
+        (
+            "正念 当下 情绪观察",
+            "Mindfulness means noticing thoughts and feelings without having to follow or judge them.",
+        ),
+        (
+            "焦虑 不确定性 认知机制",
+            "Anxiety often grows when the brain treats uncertainty as a sign of danger.",
+        ),
+        (
+            "孤独 归属需求 心理机制",
+            "The need to belong is a basic human need, so loneliness can feel genuinely painful.",
+        ),
+        (
+            "情绪表达 压抑 心理健康",
+            "Naming an emotion can reduce the effort required to hold it inside.",
+        ),
+    )
+    query, english_tip = topics[date.today().toordinal() % len(topics)]
+    cultural_bg = (
+        "abroad"
+        if user.cultural_identity == "chinese_in_us"
+        else "china" if user.cultural_identity == "american_in_china" else ""
+    )
+    context = await get_orchestrator().kb.search(
+        query=query,
+        cultural_bg=cultural_bg,
+        agent_role="counselor",
+        top_k=1,
+    )
+    content = context.split("] ", 1)[-1].strip() if context else ""
+    first_sentence = content
+    for punctuation in ("。", "！", "？"):
+        if punctuation in first_sentence:
+            first_sentence = first_sentence.split(punctuation, 1)[0] + punctuation
+            break
+    if not first_sentence or len(first_sentence) > 150:
+        first_sentence = "情绪会随处境变化，准确说出此刻的感受，往往就是调节情绪的第一步。"
+    return {
+        "tip": english_tip if user.language == "en" else first_sentence,
+        "source": "knowledge_base",
+    }
+
+
 # ─── 路由 ──────────────────────────────────────────────────────────────
 @router.post("/session/create", response_model=CreateSessionResp)
 async def create_session(
@@ -146,6 +198,8 @@ async def create_session(
         phq2_score=latest_assessment.phq2_score if latest_assessment else 0,
         gad2_score=latest_assessment.gad2_score if latest_assessment else 0,
     )
+    if latest_assessment is not None:
+        orch.force_transition(sid, AgentRole.COUNSELOR)
     session = orch.get_session(sid)
     return CreateSessionResp(
         session_id=sid,
@@ -154,15 +208,13 @@ async def create_session(
             (
                 "Hi 🐼 Welcome to Panda Hug!\n\n"
                 "I'm your mental wellness companion. "
-                "Before we begin, what should I call you?\n\n"
-                "How have you been feeling over the past two weeks?"
+                "I'm here to listen. What feels most important right now?"
             )
             if user.language == "en"
             else (
                 "你好呀 🐼 欢迎来到 Panda Hug！\n\n"
-                "我是你的心理陪伴助手，很高兴见到你。"
-                "在我们开始之前，可以先告诉我你的名字吗？\n\n"
-                "另外，最近两周你感觉怎么样？"
+                "我是你的心理陪伴助手。"
+                "我会认真听你说，此刻最想聊的是什么？"
             )
         ),
     )
@@ -204,6 +256,11 @@ async def chat(
         input_mode=input_mode,
         risk_hint=guard.risk_level,
         voice_emotion_scores=voice_scores,
+        voice_analysis_source=(
+            req.voice_analysis.analysis_source
+            if req.voice_analysis and voice_scores
+            else ""
+        ),
     )
     return ChatResp(**_response_payload(response))
 
@@ -251,6 +308,11 @@ async def chat_stream(
                     input_mode=input_mode,
                     risk_hint=guard.risk_level,
                     voice_emotion_scores=voice_scores,
+                    voice_analysis_source=(
+                        req.voice_analysis.analysis_source
+                        if req.voice_analysis and voice_scores
+                        else ""
+                    ),
                     on_text_chunk=emit_text,
                 )
                 await queue.put({
@@ -285,16 +347,23 @@ async def chat_stream(
 
 @router.get("/session/latest")
 async def get_latest_session(
+    since: float = Query(default=0, ge=0),
     user: User = Depends(get_current_user),
     database: Session = Depends(get_db),
 ):
-    record = database.scalar(
-        select(ChatSessionRecord)
-        .where(ChatSessionRecord.user_id == user.id)
-        .order_by(ChatSessionRecord.last_active.desc())
-        .limit(1)
+    query = select(ChatSessionRecord).where(
+        ChatSessionRecord.user_id == user.id,
     )
-    return {"session_id": record.id if record else None}
+    if since:
+        query = query.where(ChatSessionRecord.created_at >= since)
+    record = database.scalar(
+        query.order_by(ChatSessionRecord.last_active.desc()).limit(1)
+    )
+    return {
+        "session_id": record.id if record else None,
+        "created_at": record.created_at if record else None,
+        "last_active": record.last_active if record else None,
+    }
 
 
 @router.get("/session/{session_id}/state")
@@ -389,7 +458,7 @@ async def record_voice_analysis(
     req: VoiceAnalysisReq,
     user: User = Depends(get_current_user),
 ):
-    """Fuse and persist Hume vocal-expression measurements."""
+    """Persist supplemental emotion analysis for a voice transcript."""
     _owned_session(session_id, user)
     if not req.transcript.strip():
         raise HTTPException(400, "transcript is required")
@@ -399,6 +468,7 @@ async def record_voice_analysis(
         session_id=session_id,
         transcript=req.transcript,
         emotion_scores=scores,
+        analysis_source=req.analysis_source,
     )
     if record is None:
         raise HTTPException(404, "session not found")
@@ -408,6 +478,8 @@ async def record_voice_analysis(
 @router.get("/session/{session_id}/growth")
 async def get_growth(
     session_id: str,
+    country: str = Query(default="", max_length=8),
+    region: str = Query(default="", max_length=100),
     user: User = Depends(get_current_user),
     database: Session = Depends(get_db),
 ):
@@ -462,15 +534,29 @@ async def get_growth(
     growth["calendar"] = sorted(calendar_by_date.values(), key=lambda item: item["date"])
     low_days = _consecutive_assessment_low_days(assessments)
     if low_days >= 14:
+        resources = (
+            search_medical_resources(
+                database,
+                country=country,
+                region=region,
+                limit=5,
+            )
+            if region
+            else []
+        )
         growth["care_alert"] = {
             "triggered": True,
             "reason": "连续14天情绪持续低落",
-            "resources": [],
-            "resource_status": "pending_medical_database",
+            "resources": resources,
+            "resource_status": (
+                "ready" if resources
+                else "no_matches" if region
+                else "region_required"
+            ),
         }
     else:
         growth.setdefault("care_alert", {})["resources"] = []
-        growth["care_alert"]["resource_status"] = "pending_medical_database"
+        growth["care_alert"]["resource_status"] = "available_when_needed"
     return growth
 
 

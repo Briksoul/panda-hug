@@ -1,0 +1,3513 @@
+{
+  "source": "knowledge_base/08_medical_resources/心理咨询医生知识库.docx",
+  "disclaimer_zh": "资源信息来自用户提供的资料，尚未逐条核验。请在联系前自行确认资质、服务范围、费用与可用性；紧急情况请联系当地急救或危机热线。",
+  "disclaimer_en": "These resources came from a user-provided directory and have not been individually verified. Confirm credentials, scope, fees, and availability before use. Contact local emergency or crisis services for urgent situations.",
+  "resources": [
+    {
+      "id": "48b40ffb-788a-5594-aacf-16be34580a74",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Alabama",
+      "region_zh": "阿拉巴马州",
+      "name": "Joseph Ackerson",
+      "organization": "Ackerson & Associates",
+      "phones": [
+        "(205) 823-2373",
+        "(205) 914-2874"
+      ],
+      "emails": [
+        "jackerson@ackersonandassociates.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Neuropsychology（神经心理学）",
+        "Brain Injury / Memory Issues（脑损伤与记忆问题）",
+        "Forensic Evaluations（司法心理评估）",
+        "Tourette’s Syndrome（抽动秽语综合征）",
+        "儿童及青少年心理服务"
+      ],
+      "source_url": "https://www.alapsych.org/Find-a-Psychologist",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "a7722777-6bcc-5ad0-bc70-3591367647b0",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Alaska",
+      "region_zh": "阿拉斯加州",
+      "name": "Dr. Brittany Joy Pope",
+      "organization": "Be Well Counseling, LLC",
+      "phones": [
+        "(855) 768-0507"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Infertility（不孕相关心理支持）",
+        "Grief（哀伤与失落支持）",
+        "Women's Issues（女性心理健康）",
+        "Anxiety（焦虑）",
+        "Depression（抑郁）",
+        "Pregnancy, Prenatal & Postpartum Mental Health（孕期及产后心理健康）",
+        "ADHD（注意力缺陷/多动）",
+        "Stress Management（压力管理）",
+        "Life Transitions（人生变化适应）",
+        "LGBTQ+ Mental Health（LGBTQ+心理支持）",
+        "Children, Adolescents & Adults Therapy（儿童、青少年及成人心理咨询）"
+      ],
+      "source_url": "https://www.ak-pa.org/find-a-psychologist/#!directory",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "cf5b15a9-e9a6-50bd-a624-cffd3491ebff",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Arizona",
+      "region_zh": "亚利桑那州",
+      "name": "Mercedes Anderson",
+      "organization": "Spectrum Wellness AZ",
+      "phones": [
+        "480-621-7257"
+      ],
+      "emails": [
+        "mercedes@spectrumwellnessaz.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Adjustment Disorders（适应障碍）",
+        "Anxiety（焦虑症）",
+        "Career Counseling / Coaching（职业咨询与发展辅导）",
+        "Communication Skills（沟通能力提升）",
+        "Depression（抑郁症）",
+        "EMDR（眼动脱敏与再加工疗法）",
+        "Ethnic Minority / Cultural Issues（少数族裔及文化适应问题）",
+        "Mindfulness（正念疗法）",
+        "PTSD / Acute Stress Disorder（创伤后应激障碍及急性压力障碍）",
+        "Stress Management（压力管理）",
+        "Women's Issues（女性心理健康）"
+      ],
+      "source_url": "https://azpa.org/Find-A-Psychologist",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "4c0deb97-11e7-5dbb-a429-31353acbba05",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Arkansas",
+      "region_zh": "阿肯色州",
+      "name": "Candice Kelley",
+      "organization": "Forthright Behavioral Health Services",
+      "phones": [
+        "(479) 348-2357"
+      ],
+      "emails": [
+        "jennifercollins@stonehavenclinic.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Neurodivergent Affirming Techniques（神经多样性支持）",
+        "LGBTQ+ Mental Health（LGBTQ+心理健康支持）",
+        "Trauma / PTSD（创伤及创伤后应激障碍）",
+        "ADHD（注意力缺陷多动障碍）",
+        "Anxiety（焦虑症）",
+        "Autism（自闭症相关支持）",
+        "Depression（抑郁症）",
+        "Career Counseling（职业咨询）",
+        "Emotional Regulation（情绪管理）",
+        "Life Transitions（人生阶段变化适应）",
+        "Relationship Issues（人际关系问题）",
+        "Stress Management（压力管理）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Arkansas#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "9ab09fa7-b089-5ca4-9cd2-da26b271bbe3",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "California",
+      "region_zh": "加利福尼亚州",
+      "name": "Dr. Peter A. Adler（彼得·A·阿德勒博士）",
+      "organization": "Private Practice（Licensed Psychologist）",
+      "phones": [
+        "408-710-7819"
+      ],
+      "emails": [
+        "peter@drpeteradler.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑症）",
+        "Depression（抑郁症）",
+        "Cognitive Behavioral Therapy / CBT（认知行为疗法）",
+        "Child and Adolescent Psychology（儿童及青少年心理）",
+        "Autism / PDD（自闭症谱系及广泛性发育障碍）",
+        "Asperger’s Syndrome（阿斯伯格综合征）",
+        "ADHD（注意力缺陷多动障碍）",
+        "Couples Therapy（伴侣治疗）",
+        "Family Therapy（家庭治疗）",
+        "Parenting Issues（育儿问题）",
+        "OCD（强迫症）",
+        "Panic Disorders and Phobias（惊恐障碍及恐惧症）",
+        "Stress Management（压力管理）",
+        "Insomnia（失眠问题）",
+        "Grief and Loss（死亡、临终及哀伤支持）",
+        "Life Transitions（人生阶段变化适应）",
+        "Learning Disabilities（学习障碍）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "0c9b12c1-01fa-5c83-922a-be0eb67d9631",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Colorado",
+      "region_zh": "科罗拉多州",
+      "name": "Neal Brugman, PsyD",
+      "organization": "Compass Psychology",
+      "phones": [
+        "720-295-7605"
+      ],
+      "emails": [
+        "drnealbrugman@gmail.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑症）",
+        "Depression（抑郁症）",
+        "Alcohol / Substance Use（酒精及物质使用问题）",
+        "Divorce（离婚相关心理支持）",
+        "Men's Issues（男性心理健康）",
+        "Relationship Issues（人际关系及伴侣问题）"
+      ],
+      "source_url": "https://www.coloradopsych.org/find-a-psychologist#/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "b412a46f-1840-567e-955a-080ee7f20822",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Connecticut",
+      "region_zh": "康涅狄格州",
+      "name": "Dr. Chelsea Tucker",
+      "organization": "Connecticut Psychological Services",
+      "phones": [],
+      "emails": [
+        "chelseatuckerphd@ct-psychological.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Children & Adolescents（儿童及青少年心理）",
+        "Adult Psychotherapy（成人心理治疗）",
+        "Individual Psychotherapy（个体心理咨询）",
+        "Anxiety（焦虑症）",
+        "Cognitive Behavioral Therapy / CBT（认知行为疗法）",
+        "Obsessive Compulsive Disorder / OCD（强迫症）",
+        "Exposure and Response Prevention / ERP（暴露与反应预防治疗）",
+        "Culturally Sensitive Therapy（文化敏感心理治疗）",
+        "Telehealth Therapy（在线心理咨询）"
+      ],
+      "source_url": "https://connpsych.org/find-a-psychologist/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "18fe1053-b336-53a9-afd3-c8cb7b991fd4",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Delaware",
+      "region_zh": "特拉华州",
+      "name": "Wesley Bowman, Ph.D.",
+      "organization": "Delaware Family Center",
+      "phones": [
+        "302-995-9600"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety / Phobias（焦虑症及恐惧症）",
+        "Depression（抑郁症）",
+        "Addiction（成瘾问题）",
+        "Grief and Loss（哀伤与失落支持）",
+        "Relationships / Couples Issues（关系及伴侣问题）",
+        "Couples Therapy（伴侣治疗）",
+        "Family Therapy（家庭治疗）",
+        "Individual Therapy（个体心理咨询）",
+        "Telehealth Therapy（在线心理咨询）"
+      ],
+      "source_url": "https://www.depsych.org/Find-A-Psychologist-Options",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "ba97aa6a-f2fa-5a7f-a7e7-67fc44abe96e",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Florida",
+      "region_zh": "佛罗里达州",
+      "name": "Dr. Adriana W. Bal",
+      "organization": "Constructive Psychological Solutions, Inc.",
+      "phones": [
+        "(786) 288-1667"
+      ],
+      "emails": [
+        "Dr.Bal@ConstructivePsychologicalSolutions.com"
+      ],
+      "websites": [
+        "www.ConstructivePsychologicalSolutions.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑症）",
+        "Stress Management（压力管理）",
+        "Relationship Issues（关系问题）",
+        "Complex Trauma（复杂创伤）",
+        "Unresolved Past Issues（未解决的过去经历影响）",
+        "Adjustment / Life Transitions（适应问题及人生转变）",
+        "Grief / Loss（哀伤与失落）",
+        "Emotional Regulation（情绪调节）",
+        "Divorce / Separation（离婚及分离问题）",
+        "ADHD（注意力缺陷多动障碍）",
+        "Individual Therapy（个人心理咨询）",
+        "Couples Therapy（伴侣治疗）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Florida#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "8417a760-a85d-5f25-a88d-3e4b9fbbef3a",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Georgia",
+      "region_zh": "佐治亚州",
+      "name": "Dr. Ellen Brackup, Ph.D.",
+      "organization": "Private Practice（Atlanta, Georgia）",
+      "phones": [
+        "(404) 231-4455"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety Disorders（焦虑障碍）",
+        "Depressive & Bipolar Disorders（抑郁症及双相情感障碍）",
+        "LGBTQ+ Issues（LGBTQ+心理支持）",
+        "Personality Disorders（人格障碍）",
+        "Stress / Life Transitions（压力管理及人生转变）",
+        "Psychodynamic Psychotherapy（心理动力学治疗）",
+        "Humanistic Psychotherapy（人本主义心理治疗）"
+      ],
+      "source_url": "https://www.gapsychology.org/search/custom.asp?id=2175",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "888114f5-4e1e-59f2-9f41-cdc26473cc60",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Hawaii",
+      "region_zh": "夏威夷州",
+      "name": "Susan Bergman, NCC",
+      "organization": "Play Therapy & Counseling Center of Hawaii, LLC",
+      "phones": [
+        "(808) 261-0066"
+      ],
+      "emails": [
+        "uhanesmb@yahoo.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Play Therapy（游戏治疗）",
+        "Child & Adolescent Therapy（儿童及青少年心理咨询）",
+        "Family Therapy（家庭治疗）",
+        "Sandplay Therapy（沙盘治疗）",
+        "Art Therapy（艺术治疗）",
+        "Emotional & Behavioral Issues（情绪及行为问题）",
+        "Learning Challenges（学习困难支持）",
+        "Parent-Child Relationship Counseling（亲子关系辅导）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Hawaii#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "1d9df099-6d84-5a99-974a-f9d5dfa6a6c3",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Idaho",
+      "region_zh": "爱达荷州",
+      "name": "Denise M. Jensen, MS, CSS, QSUDP, LPC",
+      "organization": "Healthier Bodies Inc.",
+      "phones": [
+        "(208) 225-5968"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Family Conflict（家庭冲突）",
+        "Relationship Issues（人际关系及伴侣问题）",
+        "Psychosis（精神病性障碍）",
+        "Anxiety（焦虑症）",
+        "Depression（抑郁症）",
+        "Trauma & PTSD（创伤及创伤后应激障碍）",
+        "ADHD（注意力缺陷多动障碍）",
+        "Bipolar Disorder（双相情感障碍）",
+        "Grief（哀伤与失落）",
+        "Stress Management（压力管理）",
+        "Substance Use（物质使用问题）",
+        "Parenting（亲子教育与育儿支持）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Idaho#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "161327ea-f669-56c2-b6df-8c4a3cb0508f",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Illinois",
+      "region_zh": "伊利诺伊州",
+      "name": "Dr. Arturo Soto-Nevarez",
+      "organization": "DSN Psychology",
+      "phones": [
+        "(844) 682-9173"
+      ],
+      "emails": [
+        "drsotonevarez@dsnpsychology.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "ADHD / ADD（注意力缺陷多动障碍）",
+        "Autism Spectrum Disorders（自闭症谱系障碍）",
+        "Neurodevelopmental Disorders（神经发育障碍）",
+        "Learning Disabilities（学习障碍）",
+        "Psychological & Neuropsychological Assessment（心理及神经心理评估）",
+        "Educational Concerns / IEP & 504 Planning（教育评估、IEP及504计划）",
+        "Anxiety Disorders（焦虑障碍）",
+        "Depressive Disorders（抑郁障碍）",
+        "Parenting（亲子教育）",
+        "School Issues（学校适应问题）",
+        "Behavioral Therapy（行为治疗）",
+        "Play Therapy（游戏治疗）"
+      ],
+      "source_url": "https://illinoispsychology.org/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "eadf373f-c510-5509-b2b6-d935ce62ab2e",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Indiana",
+      "region_zh": "印第安纳州",
+      "name": "Julia Crumrine, Ph.D.",
+      "organization": "Julia Crumrine PhD Clinical Psychologist LLC",
+      "phones": [
+        "(219) 707-8515"
+      ],
+      "emails": [],
+      "websites": [
+        "www.ThinkDrJC.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety / Panic Disorders（焦虑及惊恐障碍）",
+        "Depression（抑郁症）",
+        "Grief / Loss（哀伤与失落）",
+        "Career / Employment Concerns（职业与就业问题）",
+        "Health & Wellness（健康与身心福祉）",
+        "Life Transitions（人生阶段变化适应）",
+        "Stress Management（压力管理）",
+        "Obesity / Weight Loss（肥胖及体重管理相关心理支持）"
+      ],
+      "source_url": "https://www.memberleap.com/members/directory/search_inpa.php?org_id=INPA",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "c6a344b5-58e8-5bc0-a682-ddea57b8e62e",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Iowa",
+      "region_zh": "艾奥瓦州",
+      "name": "Dr. Annie Stachowitz",
+      "organization": "bethink, PLLC",
+      "phones": [
+        "(712) 202-2969"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "ADHD（注意力缺陷多动障碍评估）",
+        "Assessment & Evaluation（心理评估与诊断）",
+        "Educational / Specific Learning Disorders（学习障碍评估）",
+        "General Diagnostic Assessment（综合心理诊断）",
+        "Intellectual Disability（智力障碍评估）",
+        "Personality Assessment（人格评估）",
+        "Children, Adolescents & Adults Assessment（儿童、青少年及成人心理评估）"
+      ],
+      "source_url": "https://iopa.memberclicks.net/find-a-psychologist",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "ed6c6f81-7c1a-5647-aff2-3954a74a8577",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Kansas",
+      "region_zh": "堪萨斯州",
+      "name": "Dr. Crystal Duclos",
+      "organization": "Private Practice",
+      "phones": [
+        "(785) 273-7292"
+      ],
+      "emails": [
+        "crystal.duclos@gmail.com"
+      ],
+      "websites": [
+        "http://www.DrCrystalDuclos.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑症）",
+        "Bipolar / Mania（双相情感障碍/躁狂）",
+        "Depression / Mood Disorders（抑郁症及情绪障碍）",
+        "Obsessive-Compulsive Disorder / OCD（强迫症）",
+        "Panic Disorders（惊恐障碍）",
+        "Phobias（恐惧症）",
+        "Schizophrenia（精神分裂症）",
+        "Stress Management（压力管理）"
+      ],
+      "source_url": "https://kspsych.org/Psychologist-Locator",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "07a0dbce-e49e-5af1-adbf-4b8fdc999fa9",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Kentucky",
+      "region_zh": "肯塔基州",
+      "name": "Rachael Yates",
+      "organization": "Child & Adolescent Neuropsychology",
+      "phones": [
+        "(858) 229-2424"
+      ],
+      "emails": [
+        "rachael.yates.phd@gmail.com"
+      ],
+      "websites": [
+        "https://www.childadolescentneuropsychology.com/"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Pediatric Neuropsychology（儿童神经心理学）",
+        "Neuropsychological Assessment（神经心理评估）",
+        "Child & Adolescent Psychology（儿童及青少年心理）",
+        "Developmental Assessment（儿童发育评估）",
+        "American Sign Language (ASL) Support（美国手语服务）"
+      ],
+      "source_url": "https://kpa.memberlocator.info/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "21690cda-dac3-5af5-bd85-d2478f01ddc5",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Louisiana",
+      "region_zh": "路易斯安那州",
+      "name": "Amelia Laurent-Julien, NCC",
+      "organization": "Building Bridges Counseling",
+      "phones": [],
+      "emails": [
+        "a.julien@buildingbridgesbh.com"
+      ],
+      "websites": [
+        "www.buildingbridgesbh.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Stress & Anxiety（压力与焦虑）",
+        "Relationship Issues（关系问题）",
+        "Parenting Issues（育儿问题）",
+        "Self Esteem（自尊问题）",
+        "Coping with Life Changes（应对人生变化）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Louisiana#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "61d33056-5d01-52da-a4ff-8b8cd6bc6669",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Maine",
+      "region_zh": "缅因州",
+      "name": "Dr. Tom Cooper",
+      "organization": "Cooper Counseling, LLC",
+      "phones": [
+        "(207) 773-2828 ext. 108"
+      ],
+      "emails": [
+        "tom@coopercounselingllc.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety Disorders（焦虑障碍）",
+        "Depression（抑郁症）",
+        "Autism / Asperger’s Disorder（自闭症及阿斯伯格综合征）",
+        "Bipolar Disorder（双相情感障碍）",
+        "PTSD（创伤后应激障碍）",
+        "Adjustment Disorders（适应障碍）",
+        "Grief and Loss（哀伤与失落）",
+        "Relationship Difficulties（关系问题）",
+        "Stress Management（压力管理）",
+        "Substance Abuse（物质使用问题）",
+        "Life Transitions（人生阶段变化适应）",
+        "Couples Therapy（伴侣治疗）",
+        "Family Therapy（家庭治疗）",
+        "Psychological Assessment（心理评估）"
+      ],
+      "source_url": "https://mepa.org/directory",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "da3b04df-adcf-52d4-b2ba-12e1ad59e870",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Maryland",
+      "region_zh": "马里兰州",
+      "name": "Lee R. Chase, Ph.D.",
+      "organization": "Growth and Recovery",
+      "phones": [],
+      "emails": [],
+      "websites": [
+        "www.growthandrecovery.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "ADHD / ADD Treatment（注意力缺陷多动障碍）",
+        "Anxiety（焦虑症）",
+        "Attachment Disorder（依恋障碍）",
+        "Depression（抑郁症）",
+        "Family Problems（家庭问题）",
+        "Interpersonal Problems（人际关系问题）",
+        "Life Transitions（人生阶段变化适应）",
+        "Loneliness（孤独感）",
+        "Obesity / Weight Loss（肥胖及体重管理相关心理支持）",
+        "Parenting Issues（育儿问题）",
+        "Relationship Issues（关系问题）",
+        "Seasonal Affective Disorder / SAD（季节性情感障碍）",
+        "Self-Esteem / Self-Concept（自尊与自我认知）",
+        "Self-Harm / Cutting（自伤行为支持）",
+        "Sleep Problems（睡眠问题）",
+        "Stress Management（压力管理）",
+        "Trauma（创伤相关问题）",
+        "Women's Issues（女性心理健康）"
+      ],
+      "source_url": "https://www.marylandpsychology.org/index.php?option=com_mcdirectorysearch&view=search&id=2001760#/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "ce7000ae-e88e-5b7e-a16e-0c03e0af3d91",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Massachusetts",
+      "region_zh": "马萨诸塞州",
+      "name": "Dr. Arthur Stephenson Spangler Jr., Sc.D.",
+      "organization": "Dana Behavioral Health",
+      "phones": [
+        "(781) 429-7755 ext. 119"
+      ],
+      "emails": [],
+      "websites": [
+        "Dana Behavioral Health"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety Disorders（焦虑障碍）",
+        "Depression & Suicidality（抑郁及自杀风险干预）",
+        "Bipolar Disorders（双相情感障碍）",
+        "ADD / ADHD（注意力缺陷多动障碍）",
+        "Addiction & Substance Abuse（成瘾及物质滥用）",
+        "OCD（强迫症）",
+        "Phobias（恐惧症）",
+        "Trauma & PTSD（创伤及创伤后应激障碍）",
+        "Dissociative Disorders（解离障碍）",
+        "Learning Disabilities（学习障碍）",
+        "Personality Disorders（人格障碍）",
+        "Pain Management（疼痛管理）",
+        "Stress Management（压力管理）",
+        "Career / Employment Issues（职业与就业相关心理问题）",
+        "Couple & Marital Issues（伴侣及婚姻关系问题）",
+        "Family Dysfunction（家庭关系问题）",
+        "Grief & Loss（哀伤与失落）",
+        "LGBT Mental Health（LGBTQ+心理支持）"
+      ],
+      "source_url": "https://www.masspsych.org/search/newsearch.asp",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "b6d7e90a-1831-5db6-8895-b25031ccc5e8",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Michigan",
+      "region_zh": "密歇根州",
+      "name": "Brittani Bertoni, MA, LPC, NCC",
+      "organization": "Community Mental Health for Central Michigan (CMHCM)",
+      "phones": [
+        "(989) 772-5938"
+      ],
+      "emails": [
+        "bbertoni@cmhcm.org"
+      ],
+      "websites": [
+        "www.cmhcm.org"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑症）",
+        "Coping Skills（应对技能训练）",
+        "Life Transitions（人生阶段变化适应）",
+        "Depression（抑郁症）",
+        "Bipolar Disorder（双相情感障碍）",
+        "Mood Disorders（情绪障碍）",
+        "Anger Management（愤怒管理）",
+        "Family Conflict（家庭冲突）",
+        "Grief（哀伤与失落）",
+        "Parenting Issues（育儿问题）",
+        "Relationship Issues（关系问题）",
+        "Self-Esteem（自尊问题）",
+        "Stress Management（压力管理）",
+        "Women's Issues（女性心理健康）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Michigan#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "25c0fb14-32a1-523a-8a83-7966eccd6fd9",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Minnesota",
+      "region_zh": "明尼苏达州",
+      "name": "Dr. Samantha Lee Anders, PhD, LP",
+      "organization": "Anders Psychological Services, LLC",
+      "phones": [
+        "(612) 260-1809 / (612) 208-2476"
+      ],
+      "emails": [
+        "drsamanthaanders@gmail.com"
+      ],
+      "websites": [
+        "anderspsychological.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety Disorders（焦虑障碍）",
+        "Depression（抑郁症）",
+        "Sleep Disorders / Insomnia（睡眠障碍与失眠）",
+        "Career Counseling & Assessment（职业咨询与职业评估）",
+        "PTSD / Trauma（创伤及创伤后应激障碍）",
+        "Panic Disorder（惊恐障碍）",
+        "Grief（哀伤与失落）",
+        "Stress Management（压力管理）",
+        "Relationship Issues（关系问题）",
+        "Life Transitions（人生转变适应）",
+        "Health Behaviors（健康行为改善）"
+      ],
+      "source_url": "https://www.mnpsych.org/MPA/MPA/Resources/Find-a-Psychologist.aspx?hkey=5bb8e572-99e4-4175-83e3-edd0a0f7156d",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "fbda6cbd-d891-54d5-9f28-523747377fac",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Mississippi",
+      "region_zh": "密西西比州",
+      "name": "Brittani Bertoni, MA, LPC, NCC",
+      "organization": "Community Mental Health for Central Michigan (CMHCM)",
+      "phones": [
+        "(989) 772-5938"
+      ],
+      "emails": [
+        "bbertoni@cmhcm.org"
+      ],
+      "websites": [
+        "www.cmhcm.org"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Coping Skills（应对技能）",
+        "Life Transitions（人生转变）"
+      ],
+      "source_url": "https://mpassoc.org/psychologist-directory/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "a8e8ae1a-6588-526d-88db-8a5c5bd3f3fe",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Missouri",
+      "region_zh": "密苏里州",
+      "name": "Andrea Dixon, MA, LPC, NCC, CDWF",
+      "organization": "Mindset LLC",
+      "phones": [
+        "816-875-0276"
+      ],
+      "emails": [
+        "info@mindsetkc.com"
+      ],
+      "websites": [
+        "www.mindsetkc.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Trauma/PTSD（创伤与创伤后应激）",
+        "Cognitive Behavioral Therapy（认知行为治疗）",
+        "Mindfulness（正念）",
+        "Life Transitions（人生转变与适应）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Missouri#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "b02b0063-bc79-5608-be6d-e9b351281cc0",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Montana",
+      "region_zh": "蒙大拿州",
+      "name": "Brenden Green, NCC",
+      "organization": "A Guiding Path, LLC",
+      "phones": [
+        "406-552-3587"
+      ],
+      "emails": [
+        "guidingpath@protonmail.com"
+      ],
+      "websites": [
+        "www.aguidingpath.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Trauma/PTSD（创伤与创伤后应激）",
+        "Anxiety & Stress（焦虑与压力）",
+        "Depression（抑郁）",
+        "Grief & Loss（哀伤与失落）",
+        "Relationship Issues（关系问题）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Montana#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "deb37eab-48df-55dc-aa3a-ef5d3e12b279",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Nebraska",
+      "region_zh": "内布拉斯加州",
+      "name": "Shawn Curtis, Psy.D.",
+      "organization": "Madonna Rehabilitation Hospitals",
+      "phones": [
+        "—"
+      ],
+      "emails": [
+        "scurtis@madonna.org"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Neuropsychological Evaluation（神经心理评估）",
+        "Neurocognitive Disorders（神经认知障碍）",
+        "Developmental Disabilities（发育障碍）",
+        "Cognitive Functioning Assessment（认知功能评估）",
+        "Behavioral Management（行为管理）",
+        "Cross-Cultural Neuropsychological Evaluation（跨文化神经心理评估）",
+        "Psychological Assessment（心理评估）",
+        "Disability Evaluation（残障相关评估）",
+        "Children, Adolescents & Adults（儿童、青少年及成人心理服务）"
+      ],
+      "source_url": "https://www.nebpsych.org/find-a-psychologist",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "a9ac20c2-c839-5a06-b15c-52285e2bf291",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Nevada",
+      "region_zh": "内华达州",
+      "name": "Luke R. Allen, Ph.D.",
+      "organization": "Private Practice（Solo/Group Practice）",
+      "phones": [
+        "(702) 530-6134"
+      ],
+      "emails": [],
+      "websites": [
+        "www.lukeallenphd.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety & Panic Disorders（焦虑与惊恐障碍）",
+        "Depression（抑郁症）",
+        "Social Anxiety（社交焦虑）",
+        "Obsessive-Compulsive Disorder (OCD)（强迫症）",
+        "Stress Management（压力管理）",
+        "Life Transitions（人生转变适应）",
+        "Self-Esteem Issues（自尊问题）",
+        "Fear of Public Speaking（公开演讲恐惧）",
+        "Sleep Problems（睡眠问题）",
+        "Smoking Cessation（戒烟支持）",
+        "LGBTQ+ Issues（LGBTQ+相关心理支持）",
+        "Gender Identity & Transgender Issues（性别认同与跨性别议题）",
+        "Men's Issues（男性心理问题）",
+        "Multicultural Issues（多元文化心理议题）",
+        "Internet Addiction（网络成瘾）",
+        "Shyness & Social Confidence（害羞与社交自信）",
+        "Trichotillomania（拔毛癖）",
+        "Pre-Surgical Evaluation for Transgender Care（跨性别相关术前心理评估）"
+      ],
+      "source_url": "https://www.nvpsychology.org/index.php?option=com_mcdirectorysearch&view=search&id=2002658#/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "b1cac436-cc09-5326-a33e-ba78e1aac424",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "New Hampshire",
+      "region_zh": "新罕布什尔州",
+      "name": "Christopher Stoddard, Psy.D, NCSP",
+      "organization": "Plymouth State University",
+      "phones": [],
+      "emails": [
+        "c.stoddard.psyd@gmail.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Child & Adolescent Mental Health（儿童及青少年心理健康）",
+        "Anxiety（焦虑问题）",
+        "Depression & Mood Disorders（抑郁与情绪障碍）",
+        "Behavioral Challenges（行为问题）",
+        "School Problems（学校适应问题）",
+        "ADHD（注意力缺陷多动障碍）",
+        "Learning Disabilities（学习障碍）",
+        "Psychological Assessment（心理评估）",
+        "Psychoeducational Evaluation（教育心理评估）",
+        "Developmental Disorders（发展性障碍）",
+        "Neuropsychological Assessment（神经心理评估）",
+        "Solution-Focused Therapy（焦点解决短期治疗）",
+        "LGBTQIA+ Issues（LGBTQIA+相关心理支持）",
+        "Parenting & Family Support（家长支持与家庭问题）"
+      ],
+      "source_url": "https://nhpsychology.org/find-a-psychologist/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "eaaddf85-86d7-5130-b73c-d62f0347d096",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "New Jersey",
+      "region_zh": "新泽西州",
+      "name": "Andrew Billups, Psy.D.",
+      "organization": "Private Practice（Health & Performance NJ）",
+      "phones": [
+        "(862) 248-1783"
+      ],
+      "emails": [
+        "abillups@healthandperformancenj.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "ADHD（注意力缺陷多动障碍）",
+        "Anxiety（焦虑问题）",
+        "Depression（抑郁问题）",
+        "Child & Adolescent Therapy（儿童及青少年心理治疗）",
+        "Life Transitions（人生阶段变化适应）",
+        "Stress Management（压力管理）",
+        "Self-Esteem & Confidence（自尊与自信提升）",
+        "Emotional Regulation（情绪调节）",
+        "Executive Functioning（执行功能训练）",
+        "School/Educational Issues（学校与教育问题）",
+        "Social Skills（社交技能）",
+        "Family Conflict（家庭冲突）",
+        "Parenting Support（家长支持）",
+        "Autism Spectrum Disorders（自闭症谱系障碍）",
+        "Conduct & Oppositional Defiant Disorders（行为障碍与对立违抗障碍）",
+        "Sport Psychology（运动心理学）",
+        "LGBTQ+/Gender Identity Issues（LGBTQ+及性别认同相关议题）",
+        "Psychological Assessment & Testing（心理评估与测试）"
+      ],
+      "source_url": "https://psychologynj.org/search/newsearch.asp",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "f8c29bcd-dc81-527d-a1d5-6f8d7685f2a4",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "New Mexico",
+      "region_zh": "新墨西哥州",
+      "name": "Deborah Okon, Ph.D.",
+      "organization": "Private Practice",
+      "phones": [
+        "(505) 861-3894"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "ADHD（注意力缺陷多动障碍）",
+        "Anxiety / Panic / Phobias / OCD（焦虑、惊恐、恐惧症、强迫症）",
+        "Depression（抑郁症）",
+        "Behavior Problems（行为问题）",
+        "Eating Disorders（饮食障碍）",
+        "Family & Blended Family Issues（家庭及重组家庭问题）",
+        "PTSD / Trauma（创伤后应激障碍与创伤）",
+        "Military Issues（军人相关心理问题）",
+        "Geriatric Mental Health（老年心理健康）",
+        "Child & Adolescent Issues（儿童及青少年心理问题）",
+        "Adult Mental Health（成人心理健康）"
+      ],
+      "source_url": "https://nmpsychology.org/search/custom.asp?id=1608",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "6bdd3939-be53-50fe-821c-da3a048709ba",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "New York",
+      "region_zh": "纽约州",
+      "name": "Amy Louise Zimet, PhD",
+      "organization": "Amy L. Zimet, Clinical Psychologist, P.C.",
+      "phones": [
+        "(646) 600-5106"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑症）",
+        "Depression（抑郁症）",
+        "Panic Disorder（惊恐障碍）",
+        "Relationship Issues（关系问题）",
+        "Couples Therapy（伴侣/婚姻咨询）",
+        "Character Pathology（人格问题）",
+        "Substance Use / Polydrug Dependence（物质使用问题）",
+        "Stress Management（压力管理）",
+        "Adjustment Disorders（适应障碍）",
+        "Family Issues（家庭问题）",
+        "Sleep Problems（睡眠问题）"
+      ],
+      "source_url": "https://www.nyspa.org/search/custom.asp?id=3049",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "50fd3739-a89a-5267-9b4f-b19f4bde8736",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "North Carolina",
+      "region_zh": "北卡罗来纳州",
+      "name": "Amanda Gayle, Ph.D., HSP-P",
+      "organization": "Best Health & Wellness Psychology（Best HWP）",
+      "phones": [
+        "(919) 741-9699"
+      ],
+      "emails": [
+        "dramandaprice@yahoo.com"
+      ],
+      "websites": [
+        "https://www.besthwp.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑症）",
+        "Depression（抑郁症）",
+        "Mood Disorders（情绪障碍）",
+        "Grief & Loss（哀伤与失落）",
+        "Stress & Burnout（压力与职业倦怠）",
+        "Relationship Issues（关系问题）",
+        "Divorce Adjustment（离婚适应）",
+        "Co-Parenting & Family Transitions（共同育儿与家庭变化适应）",
+        "Career Planning（职业规划）",
+        "Anger Management（愤怒管理）",
+        "ADHD（注意力缺陷多动障碍）",
+        "Chronic Pain Management（慢性疼痛管理）",
+        "Trauma（创伤）",
+        "Self-Esteem（自尊问题）",
+        "Identity Development（身份发展）",
+        "Work-Life Balance（工作与生活平衡）"
+      ],
+      "source_url": "https://www.ncpsychology.org/find-a-psychologist",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "c4ac23c8-1cbc-53fc-8e41-60d3f21980d5",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "North Dakota",
+      "region_zh": "北达科他州",
+      "name": "Lory Hellman, LPCC, CCMHC",
+      "organization": "Beacon Counseling Services PLLC",
+      "phones": [
+        "(701) 214-5530"
+      ],
+      "emails": [
+        "lhellman@beaconcounselingservices.net"
+      ],
+      "websites": [
+        "www.beaconcounselingservices.net"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Trauma/PTSD（创伤与创伤后应激障碍）",
+        "Depression（抑郁症）",
+        "Anxiety（焦虑症）",
+        "Grief & Loss（哀伤与失落）",
+        "Life Stressors（生活压力与适应问题）",
+        "Dual Diagnosis（心理健康与成瘾共病）",
+        "Addiction Recovery Support（成瘾康复支持）",
+        "Stress Management（压力管理）",
+        "Emotional Regulation（情绪调节）",
+        "Coping Skills（应对技能训练）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/North%20Dakota#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "b71ba4cf-7cc6-52fc-b50d-cda9ed700bed",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Ohio",
+      "region_zh": "俄亥俄州",
+      "name": "Michael Accardo, PhD",
+      "organization": "Empathic Therapy, LLC",
+      "phones": [
+        "(412) 754-4628"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "ADHD/ADD（注意力缺陷多动障碍）",
+        "Anxiety（焦虑症）",
+        "Social Anxiety（社交焦虑）",
+        "Depression（抑郁症）",
+        "Bipolar Disorder（双相情感障碍）",
+        "Obsessive-Compulsive Disorder (OCD)（强迫症）",
+        "PTSD/Trauma（创伤与创伤后应激障碍）",
+        "Autism Spectrum / Neurodiversity（自闭症谱系与神经多样性）",
+        "LGBTQ+ Issues（LGBTQ+相关心理支持）",
+        "Gender Identity Issues（性别认同相关问题）",
+        "Emotion Regulation（情绪调节）",
+        "Anger Management（愤怒管理）",
+        "Stress Management（压力管理）",
+        "Grief Counseling（哀伤辅导）",
+        "Relationship Issues（关系问题）",
+        "Self-Esteem Issues（自尊问题）",
+        "Life Transitions（人生转变适应）",
+        "Sleep Disorders（睡眠问题）",
+        "Chronic Illness & Disability（慢性疾病与功能障碍适应）"
+      ],
+      "source_url": "https://ohpsych.org/search/custom.asp?id=4247",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "905a0368-9308-5799-a022-dfdf5649163e",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Oklahoma",
+      "region_zh": "俄克拉何马州",
+      "name": "Bea Waller, M.Ed., LPC, NCC",
+      "organization": "Restore Behavioral Health",
+      "phones": [
+        "(405) 310-3262"
+      ],
+      "emails": [
+        "Office@Restore-BH.com"
+      ],
+      "websites": [
+        "www.Restore-BH.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Trauma（创伤）",
+        "Domestic Abuse（家庭暴力）",
+        "Sexual Assault（性侵创伤）",
+        "Perinatal Mental Health（围产期心理健康）",
+        "Anxiety（焦虑症）",
+        "Depression（抑郁症）",
+        "Grief & Loss（哀伤与失落）",
+        "Stress Management（压力管理）",
+        "Adjustment Disorders（适应障碍）",
+        "Codependency（共依赖问题）",
+        "Relationship Issues（关系问题）",
+        "EMDR Therapy（眼动脱敏与再加工疗法）",
+        "Internal Family Systems (IFS)（内部家庭系统疗法）",
+        "College & Young Adult Issues（大学生与青年成人心理问题）",
+        "Women’s Mental Health（女性心理健康）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Oklahoma#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "29cfce46-447f-54a5-9182-215f2c8a61eb",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Oregon",
+      "region_zh": "俄勒冈州",
+      "name": "Jerome Yoman, Ph.D., ABPP",
+      "organization": "Life Skills Resource",
+      "phones": [
+        "(503) 488-0889"
+      ],
+      "emails": [],
+      "websites": [
+        "www.lifeskillsresourcepdx.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Depression（抑郁症）",
+        "Insomnia / Sleep Disorders（失眠与睡眠障碍）",
+        "Bipolar Disorder（双相情感障碍）",
+        "Schizophrenia（精神分裂症）",
+        "Chronic Mental Illness（慢性精神健康问题）",
+        "Substance Abuse（物质滥用问题）",
+        "Anxiety（焦虑症）",
+        "Social Anxiety & Social Skills（社交焦虑与社交技能）",
+        "Communication Skills（沟通能力问题）",
+        "Family Stress（家庭压力与家庭支持）",
+        "Couples / Relationship Counseling（伴侣与关系咨询）",
+        "Mood Disorders（情绪障碍）",
+        "Serious Mental Illness Support（严重精神疾病支持）"
+      ],
+      "source_url": "https://members.opa.org/findapsychologist",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "5bd8b6ef-f356-5e46-8779-843ee11b24d7",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Pennsylvania",
+      "region_zh": "宾夕法尼亚州",
+      "name": "Saudia S. Bickley, LPC, NCC",
+      "organization": "Philadelphia Center for Change",
+      "phones": [
+        "(610) 508-9593"
+      ],
+      "emails": [
+        "saudia_bickley@comcast.net"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "ADHD（注意力缺陷多动障碍）",
+        "Anxiety（焦虑症）",
+        "Depression（抑郁症）",
+        "Stress Management（压力管理）",
+        "Life Transitions（人生转变适应）",
+        "Relationship Issues（关系问题）",
+        "Couples Counseling（伴侣咨询）",
+        "Body Focused Repetitive Behaviors（身体聚焦重复行为，如拔毛、咬甲、抠皮）",
+        "Anger Management（愤怒管理）",
+        "Codependency（共依赖问题）",
+        "Coping Skills（应对技能训练）",
+        "Self-Esteem（自尊问题）",
+        "Boundary Setting & Assertiveness（界限建立与自我表达）",
+        "Mediation & Conflict Resolution（调解与冲突解决）",
+        "Sex Therapy（性心理咨询）",
+        "Women’s Issues（女性心理健康）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Pennsylvania#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "a8b7027d-111b-5a0e-8a47-de33b93ae8fd",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Rhode Island",
+      "region_zh": "罗得岛州",
+      "name": "Frank J. Gallo, PhD",
+      "organization": "Frank J. Gallo, PhD / Private Practice",
+      "phones": [
+        "(401) 594-9010"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Depression（抑郁）",
+        "Stress Management（压力管理）",
+        "Grief/Loss（哀伤与失落）",
+        "Trauma/PTSD（创伤与创伤后应激障碍）",
+        "Career Counseling（职业发展）",
+        "Sports Psychology（运动心理）",
+        "Suicidality Support（自杀风险支持）",
+        "Mindfulness（正念训练）",
+        "Biofeedback（生物反馈）"
+      ],
+      "source_url": "https://www.ripsych.org/search/custom.asp?id=4632",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "be0e473c-5f94-5741-ba5f-a3f94574ae2a",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "South Carolina",
+      "region_zh": "南卡罗来纳州",
+      "name": "Nan W. Cooley, PsyD",
+      "organization": "Private Practice",
+      "phones": [
+        "(864) 778-7883"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Child & Adolescent Therapy（儿童青少年心理治疗）",
+        "Anxiety（焦虑）",
+        "Trauma/PTSD（创伤与创伤后应激障碍）",
+        "Depression & Mood Disorders（抑郁与情绪障碍）",
+        "Parenting Issues（育儿问题）",
+        "Family Conflict（家庭冲突）",
+        "School Issues（学校适应问题）",
+        "Self-Esteem（自尊问题）",
+        "Abuse & Domestic Violence（虐待与家庭暴力相关问题）",
+        "Life Transitions（人生阶段变化适应）"
+      ],
+      "source_url": "https://members.scpsychologists.net/site_page.cfm?pk_association_webpage_menu=11225&pk_association_webpage=23206",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "3314bc31-553b-50ff-a67a-ef040736c8bc",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "South Dakota",
+      "region_zh": "南达科他州",
+      "name": "Jacob Seidel, LPC-MH, QMHP, NCC, ACS",
+      "organization": "Foundations Counseling LLC",
+      "phones": [
+        "(605) 721-0200"
+      ],
+      "emails": [
+        "JSeidel@FoundationsCounselingSD.com"
+      ],
+      "websites": [
+        "www.FoundationsCounselingSD.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Depression（抑郁）",
+        "Bipolar Disorder（双相情感障碍）",
+        "Mood Disorders（情绪障碍）",
+        "Stress & Burnout（压力与职业倦怠）",
+        "Self-Esteem & Identity Issues（自尊与身份认同问题）",
+        "Men’s Issues（男性心理问题）",
+        "Fatherhood Issues（父亲角色与家庭适应）",
+        "Life Transitions（人生转变适应）",
+        "Coping Skills（应对技能训练）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/South%20Dakota#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "261e316a-0bfa-5769-b0dd-ff78dca08c2a",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Tennessee",
+      "region_zh": "田纳西州",
+      "name": "Philip L. Accaria, PhD",
+      "organization": "PHILIP L. ACCARIA, PHD, PLLC",
+      "phones": [
+        "(973) 420-5073"
+      ],
+      "emails": [
+        "placcaria@aol.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety/Panic/Phobias（焦虑、惊恐与恐惧症）",
+        "Depression（抑郁）",
+        "Trauma/PTSD（创伤与创伤后应激障碍）",
+        "Abuse Issues（虐待相关问题）",
+        "Bipolar Disorder（双相情感障碍）",
+        "OCD（强迫症）",
+        "Grief & Loss（哀伤与失落）",
+        "Sleep Disorders（睡眠障碍）",
+        "Chronic Illness & Pain Management（慢性疾病与疼痛管理）",
+        "Relationship & Divorce Issues（关系与离婚问题）",
+        "Sports Performance（运动表现提升）",
+        "Spiritual Concerns（精神与信仰相关议题）"
+      ],
+      "source_url": "https://www.tpaonline.org/search/custom.asp?id=6422",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "ed8397ae-b64d-512e-a418-03133a622119",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Texas",
+      "region_zh": "德克萨斯州",
+      "name": "Allison L. Smith, M.Ed., LPC-S, RPT-S, NCC",
+      "organization": "Our Lives Counseling",
+      "phones": [
+        "(512) 270-1923"
+      ],
+      "emails": [
+        "office@ourlivescounseling.com"
+      ],
+      "websites": [
+        "www.ourlivescounseling.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "LGBTQIA+ Affirming Therapy（LGBTQIA+友善心理支持）",
+        "Anxiety（焦虑）",
+        "Trauma Recovery（创伤恢复）",
+        "Depression（抑郁）",
+        "Executive Functioning（执行功能训练）",
+        "Stress Management（压力管理）",
+        "Identity Development（身份认同探索）",
+        "Life Transitions（人生转变适应）",
+        "Relationship Issues（关系问题）",
+        "Coping Skills（应对技能训练）",
+        "Child & Adolescent Issues（儿童青少年心理问题）",
+        "Play Therapy（游戏治疗）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Texas#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "1337b2eb-78a7-522f-8099-f05892d4389f",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Utah",
+      "region_zh": "犹他州",
+      "name": "Kimberly Applewhite, PsyD",
+      "organization": "Utah Center for Evidence Based Treatment / University of Utah Neuropsychiatric Institute",
+      "phones": [
+        "(801) 410-0337"
+      ],
+      "emails": [
+        "Kimberly.applewhite@ucebt.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Depression（抑郁）",
+        "Trauma/PTSD（创伤与创伤后应激障碍）",
+        "Child & Adolescent Issues（儿童青少年心理问题）",
+        "Adoption/Foster Care（收养与寄养相关问题）",
+        "Behavior Problems（行为问题）",
+        "Family Issues（家庭问题）",
+        "Parenting Issues（育儿问题）",
+        "Self-Esteem（自尊与自我概念）",
+        "Self-Harm（自伤行为）",
+        "Eating Disorders（进食障碍）",
+        "LGBTQ+ Issues（LGBTQ+相关心理支持）",
+        "ADHD/ADD Assessment（注意力缺陷评估）"
+      ],
+      "source_url": "https://utpsych.org/directory",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "f1042e21-6dc6-583c-8c74-c69cca520eb4",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Vermont",
+      "region_zh": "佛蒙特州",
+      "name": "Holiday Eames, LCMHC, NCC",
+      "organization": "Parks Place",
+      "phones": [
+        "(802) 289-0263"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Relationship Issues（关系问题）",
+        "ADHD（注意力缺陷/多动障碍）",
+        "Adoption（收养相关问题）",
+        "Behavioral Issues（行为问题）",
+        "Child Issues（儿童心理问题）",
+        "Coping Skills（应对技能）",
+        "Depression（抑郁）",
+        "Emotional Disturbance（情绪困扰）",
+        "Family Conflict（家庭冲突）",
+        "Grief（哀伤与失落）",
+        "Hoarding（囤积障碍）",
+        "Life Transitions（人生转变）",
+        "Oppositional Defiance (ODD)（对立违抗障碍）",
+        "Peer Relationships（同伴关系问题）",
+        "School Issues（学校相关问题）",
+        "Self-Esteem（自尊与自我价值）",
+        "Sleep Issues / Insomnia（睡眠问题/失眠）",
+        "Spirituality（灵性相关议题）",
+        "Stress Management（压力管理）",
+        "Transgender Issues（跨性别相关支持）",
+        "Trauma and PTSD（创伤与创伤后应激障碍）",
+        "Women's Issues（女性议题）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Vermont#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "3229795d-c3ea-5c42-8eb0-d9317fc827d8",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Virginia",
+      "region_zh": "弗吉尼亚州",
+      "name": "Dr. Anita L. Auerbach, Ph.D.",
+      "organization": "Commonwealth Psychological Associates PLC",
+      "phones": [
+        "703-734-0787"
+      ],
+      "emails": [],
+      "websites": [
+        "cwpsych.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Depression（抑郁）",
+        "Mood Disorders（情绪障碍）",
+        "Adjustment Disorder（适应障碍）",
+        "PTSD / Abuse（创伤后应激障碍与虐待相关问题）",
+        "Trauma（创伤）",
+        "Grief & Bereavement（哀伤与丧亲支持）",
+        "Anger Management（愤怒管理）",
+        "Stress Management（压力管理）",
+        "Life Transitions（人生转变与适应问题）",
+        "Relationship Issues（关系问题）",
+        "Couples Therapy（伴侣治疗）",
+        "Women's Health Issues（女性健康心理问题）",
+        "ADHD（注意力缺陷多动障碍）",
+        "Eating Disorders（进食障碍）",
+        "Obsessive Compulsive Disorder（强迫症）",
+        "Panic Disorder（惊恐障碍）",
+        "Social Phobia（社交恐惧）",
+        "Bipolar Disorder（双相情感障碍）",
+        "Borderline Personality Disorder（边缘型人格障碍）",
+        "Insomnia（失眠问题）",
+        "Learning Disabilities Testing（学习障碍评估）"
+      ],
+      "source_url": "https://www.vapsych.org/find-a-clinical-psychologist-in-your-community#/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "b2b4f8e8-a966-575b-b191-3fd37bd53717",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Washington",
+      "region_zh": "华盛顿州",
+      "name": "Carlin Harris, LMHC, NCC",
+      "organization": "Sunrise Counseling Services",
+      "phones": [
+        "253-445-2441"
+      ],
+      "emails": [
+        "info@carlinharris.com"
+      ],
+      "websites": [
+        "www.carlinharris.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Depression（抑郁）",
+        "Trauma Recovery（创伤恢复）",
+        "Grief & Loss（哀伤与失落）",
+        "Stress Management（压力管理）",
+        "Life Transitions（人生转变与适应问题）",
+        "Family Issues（家庭问题）",
+        "Relationship Issues（关系问题）",
+        "Children & Adolescents（儿童与青少年心理支持）",
+        "Mindfulness-Based Therapy（正念治疗）",
+        "Cognitive Behavioral Therapy（认知行为治疗 CBT）",
+        "Hypnotherapy（催眠治疗）",
+        "Expressive Arts Therapy（表达性艺术治疗）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Washington#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "4301c812-3b8b-5ee0-b272-57a674986e4c",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "West Virginia",
+      "region_zh": "西弗吉尼亚州",
+      "name": "Michael David Clay, DMin, CCMHC, NCC, LPC, LPCC",
+      "organization": "The Word House, Inc. / Focus Consultation Services",
+      "phones": [
+        "(304) 568-5369"
+      ],
+      "emails": [
+        "thewordhouse@frontier.com"
+      ],
+      "websites": [
+        "www.thewordhouse.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Depression（抑郁）",
+        "Coping Skills（应对技能）",
+        "Relationship & Family Issues（婚姻、家庭与关系问题）",
+        "Addiction & Dual Diagnosis（成瘾与双重诊断）",
+        "ADHD（注意力缺陷多动障碍）",
+        "Trauma（创伤）",
+        "Children, Adolescents & Adults（儿童、青少年及成人心理咨询）",
+        "Cognitive Behavioral Therapy（认知行为治疗 CBT）",
+        "Dialectical Behavior Therapy（辩证行为治疗 DBT）",
+        "EMDR（眼动脱敏与再加工治疗）",
+        "Acceptance and Commitment Therapy（接纳与承诺疗法 ACT）",
+        "Christian Counseling（基督教心理咨询）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/West%20Virginia#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "3d396ac6-3a1f-58db-9411-062d00d33832",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Wisconsin",
+      "region_zh": "威斯康星州",
+      "name": "Angela Wessels, LPC, NCC, BCN",
+      "organization": "Life Point Counseling, LLC",
+      "phones": [
+        "(920) 892-7606"
+      ],
+      "emails": [
+        "angela@lifepointwi.com"
+      ],
+      "websites": [
+        "www.lifepointwi.com"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety（焦虑）",
+        "Depression（抑郁）",
+        "Trauma（创伤）",
+        "Stress Management（压力管理）",
+        "Life Adjustment Issues（生活适应问题）",
+        "Neurofeedback（神经反馈训练）",
+        "First Responders Mental Health（一线应急人员心理健康）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Wisconsin#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "cf13657d-e0d0-535e-afbd-e01147a9e7ef",
+      "resource_type": "clinician",
+      "country": "US",
+      "region": "Wyoming",
+      "region_zh": "怀俄明州",
+      "name": "Haley Rawlings, MS, LPC, NCC",
+      "organization": "Wellness Associates",
+      "phones": [
+        "(307) 630-3466"
+      ],
+      "emails": [
+        "chrisclark@counselingmail.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Children & Adolescents（儿童与青少年心理）",
+        "Play Therapy（游戏治疗）",
+        "Expressive Arts Therapy（表达性艺术治疗）",
+        "Family Relationships（家庭关系）",
+        "Wellness & Resilience（心理健康与复原力）",
+        "Workplace Mental Health（职场心理健康）"
+      ],
+      "source_url": "https://nbcc.org/resources/searchdirectories/counselorfind/Wyoming#counselor-find-search-results",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "79979527-ab3d-55f0-9145-719d936c0f71",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "上海市心理热线",
+      "organization": "",
+      "phones": [
+        "021-962525"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "全社会24小时",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "af66b9c1-6115-5fac-8477-58ae1bfb9ab2",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "清华大学热线",
+      "organization": "",
+      "phones": [
+        "400-0100525"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "全社会10:00-22:00",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "a7d337af-4f18-5460-887e-2188968478bd",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "北京12355青少年心理与法律服务热线",
+      "organization": "",
+      "phones": [
+        "12355"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "89c4bf78-0c86-515b-bfec-77d2633729ba",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "北京市心理援助热线",
+      "organization": "",
+      "phones": [
+        "800-8101117",
+        "82951"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "0fa89868-bbe2-55c0-a247-323d4a69e8fd",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "晨帆心理热线",
+      "organization": "",
+      "phones": [
+        "010-86460770"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "41ead154-b5d5-5215-a5a6-ef161114983f",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "大兴区心理援助热线",
+      "organization": "",
+      "phones": [
+        "010-61214314",
+        "010-61214284"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "33ec46cc-7117-5c96-a029-6b6a55612ec1",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "红枫妇女热线",
+      "organization": "",
+      "phones": [
+        "010-68333888"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "bff04795-0e3f-57cc-8e24-b476fdf09531",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "大偶心理热线",
+      "organization": "",
+      "phones": [
+        "400-8510525"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "567e2a1e-6ee6-5a00-80eb-c384c222e1eb",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "清华大学幸福公益心理服务热线",
+      "organization": "",
+      "phones": [
+        "400-0100525"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "bd7a648c-25a0-5db1-887b-7fbab759f188",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "中国科学院大学启明灯心理热线",
+      "organization": "",
+      "phones": [
+        "400-6525580"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "d6ee0af4-b500-5cc6-ab87-12be9cb7f0ad",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "天津市心理援助热线",
+      "organization": "",
+      "phones": [
+        "022-88188858"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "cf21c8fd-4017-582b-80ef-05681f15f9eb",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "河北省整合心战置热线",
+      "organization": "",
+      "phones": [
+        "0311-85959869"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "8e6f9e09-83ed-5df0-8e37-9735fe212bce",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "内蒙古自治区12320-5心理援助热线",
+      "organization": "",
+      "phones": [
+        "12320"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "873d3028-a445-50d0-b4e4-831a324edbcd",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "辽宁省锦州市心理援助热线",
+      "organization": "",
+      "phones": [
+        "0416-3215120"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "15147357-8be5-550a-8fcf-82c5c0388446",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "吉林省心理援助热线",
+      "organization": "",
+      "phones": [
+        "0434-5079510"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "8fe3f9e2-28c3-59ef-97ae-fa98e671c57e",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "上海市心理热线",
+      "organization": "",
+      "phones": [
+        "021-962525"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "ec6ac89d-f736-5728-8cb8-311a7d711e3c",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "江苏省心理危机干预热线",
+      "organization": "",
+      "phones": [
+        "025-83712977"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "80f27f4c-0a32-59ad-9961-ec7e884991de",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "南京市12320心理热线",
+      "organization": "",
+      "phones": [
+        "12320"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "dffd7a04-28a8-5149-9513-a69eb6ff3398",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "南京市陶老师热线",
+      "organization": "",
+      "phones": [
+        "96111"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "4767c8a7-0044-5f7a-aadc-d78d963bd839",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "温州医科大学附属康宁医院心理危机干预热线",
+      "organization": "",
+      "phones": [
+        "400-8009585"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "9aa7d6b2-4afd-5daa-b8c2-4986623b0fa7",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "乐清市人民医院公益心理咨询热线",
+      "organization": "",
+      "phones": [
+        "0577-62061616"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "b3b4b671-2ddf-5a2d-8850-bfb1966e1275",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "安阳市社会心理服务体系建设研究会心理援助热线",
+      "organization": "",
+      "phones": [
+        "0372-2373300"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "6737fae1-dddf-5308-b6d8-201aaaf22a1c",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "河南省奇才心理热线",
+      "organization": "",
+      "phones": [
+        "0371-86169595",
+        "0371-22993442"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "3e264246-4ffd-55fb-8662-bf850818d81d",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "华中师范大学心理援助热线",
+      "organization": "",
+      "phones": [
+        "400-9678920",
+        "010-67440033",
+        "027-59427263"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "118cb56b-28f4-5ac0-ab7b-44e37fc8e219",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "武汉市“心心语”心理援助热线",
+      "organization": "",
+      "phones": [
+        "027-85844666",
+        "12320"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "83dafffd-bf04-534b-a0c7-ba8fab68cc4c",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "宜昌市公众心理服务热线",
+      "organization": "",
+      "phones": [
+        "0717-6269123"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "716dba80-457a-5b13-a195-3ea0a6076991",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "湖南心晴公益心理援助热线",
+      "organization": "",
+      "phones": [
+        "400-8785525"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "8d222c35-53e4-599f-b835-37d487710e75",
+      "resource_type": "hotline",
+      "country": "CN",
+      "region": "",
+      "region_zh": "",
+      "name": "汕头市24小时心理援助热线",
+      "organization": "",
+      "phones": [
+        "0754-87271333"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理援助热线",
+        "Psychological support hotline"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "6a158191-eab7-5b23-a675-32f26c0fe89c",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "北京市",
+      "region_zh": "北京市",
+      "name": "张真，国家二级心理咨询师",
+      "organization": "个人执业",
+      "phones": [],
+      "emails": [
+        "slavicdawn@163.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "精神动力学长程咨询（Psychodynamic Long-term Therapy）",
+        "成年人自我发展（Adult Self Development）",
+        "职场适应与职业成长（Career Adaptation & Development）",
+        "人际关系问题（Interpersonal Relationships）",
+        "亲密关系问题（Intimate Relationships）",
+        "原生家庭关系（Family of Origin Issues）",
+        "跨文化困扰（Cross-cultural Issues）",
+        "情绪困扰（Emotional Difficulties）",
+        "性心理困扰（Sexual Psychology Issues）",
+        "LGBTQ+相关心理支持（LGBTQ+ Affirmative Therapy）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/北京市/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "e3ec72ab-907a-56d4-b047-4982d7f8297d",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "天津市",
+      "region_zh": "天津市",
+      "name": "孙婵，注册心理师",
+      "organization": "私人执业",
+      "phones": [],
+      "emails": [
+        "sunchan_psy@163.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理动力学取向咨询（Psychodynamic Therapy）",
+        "成人心理咨询（Adult Psychotherapy）",
+        "自我成长与个人发展（Self Development）",
+        "人际关系问题（Interpersonal Relationships）",
+        "情绪困扰（Emotional Difficulties）",
+        "长程心理治疗（Long-term Psychotherapy）",
+        "个案概念化与临床督导（Case Conceptualization & Clinical Supervision）",
+        "移情与反移情工作（Transference & Countertransference Work）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "fa517f25-8fcf-5483-9071-265662ef840d",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "天津市",
+      "region_zh": "天津市",
+      "name": "杨建立，医学博士，主任医师，教授，博士生导师",
+      "organization": "天津医科大学总医院临床心理科",
+      "phones": [
+        "022-60362255（总机）；022-60361301（预约）；022-60361365（预约）；022-60362288（咨询）"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "天津市和平区鞍山道154号",
+      "schedule": "上午：8:00-12:00（挂号时间7:30-11:00）; 下午：13:30-17:00（挂号时间13:00-16:00）",
+      "specialties": [
+        "焦虑症（Anxiety Disorders）",
+        "抑郁症（Depression）",
+        "强迫症（Obsessive-Compulsive Disorder）",
+        "心理障碍诊断与治疗（Psychological Disorders Diagnosis & Treatment）",
+        "精神科疑难疾病（Complex Psychiatric Disorders）",
+        "心身疾病（Psychosomatic Disorders）",
+        "临床心理治疗（Clinical Psychotherapy）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "76668b69-da7e-5d8d-b123-ce2d06d53a66",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "河北省",
+      "region_zh": "河北省",
+      "name": "罗亚娟，注册心理师",
+      "organization": "保定市应用心理学会",
+      "phones": [
+        "18932659071"
+      ],
+      "emails": [
+        "1780087340@qq.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "婚恋关系咨询（Marriage & Relationship Issues）",
+        "家庭关系与家庭治疗（Family Therapy）",
+        "职场压力与减压（Work Stress Management）",
+        "考前压力管理（Exam Stress Management）",
+        "自我认识与个人成长（Self-Awareness & Personal Growth）",
+        "催眠相关心理服务（Hypnotherapy）",
+        "萨提亚家庭系统治疗（Satir Family Therapy）",
+        "整合取向心理咨询（Integrative Psychotherapy）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "0fe1d303-d4d1-5ccd-8214-6151f3b1abb2",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "山西省",
+      "region_zh": "山西省",
+      "name": "刘志芬，医学博士，主任医师 / 副主任医师",
+      "organization": "山西医科大学第一医院 精神卫生科",
+      "phones": [
+        "0351-4639114（山西医科大学第一医院总机）"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "抑郁障碍（Depression Disorders）",
+        "双相情感障碍（Bipolar Disorder）",
+        "焦虑障碍（Anxiety Disorders）",
+        "心身疾病（Psychosomatic Disorders）",
+        "躯体形式障碍（Somatic Symptom Disorders）",
+        "常见精神疾病诊断与治疗（Diagnosis & Treatment of Common Psychiatric Disorders）",
+        "心理问题评估与干预（Psychological Assessment & Intervention）",
+        "情感障碍基础与临床研究（Mood Disorder Research）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "4888772d-25dd-5624-bfde-8ca22dc6045e",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "内蒙古自治区",
+      "region_zh": "内蒙古自治区",
+      "name": "周静波，注册心理师",
+      "organization": "个人执业",
+      "phones": [
+        "18647641133"
+      ],
+      "emails": [
+        "jingbochifeng@126.com / 408910120@qq.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理动力学取向咨询（Psychodynamic Therapy）",
+        "青少年心理咨询（Adolescent Counseling）",
+        "成人发展性心理咨询（Adult Developmental Counseling）",
+        "焦虑与抑郁情绪问题（Anxiety & Depression）",
+        "人际关系困扰（Interpersonal Relationship Issues）",
+        "个人成长与自我探索（Personal Growth & Self Exploration）",
+        "咨询师个人体验与成长（Therapist Personal Development）",
+        "长程心理治疗（Long-term Psychotherapy）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "5c359e47-60cd-5ecb-aa07-99218a1b1ffc",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "辽宁省",
+      "region_zh": "辽宁省",
+      "name": "罗晓禹，注册心理师（X-26-270）",
+      "organization": "个人执业",
+      "phones": [],
+      "emails": [
+        "791119277@qq.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [
+        "791119277"
+      ],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "心理动力学取向心理咨询（Psychodynamic Therapy）",
+        "儿童与青少年心理咨询（Child & Adolescent Counseling）",
+        "成人心理成长与自我探索（Adult Personal Growth）",
+        "情绪困扰（焦虑、抑郁等）（Anxiety & Depression）",
+        "人际关系问题（Interpersonal Issues）",
+        "亲密关系与伴侣咨询（Couples Counseling）",
+        "婚姻家庭咨询（Marriage & Family Counseling）",
+        "儿童青少年发展问题（Child & Adolescent Developmental Issues）",
+        "心理动力学长程治疗（Long-term Psychodynamic Psychotherapy）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "f0365aa2-3b70-50ad-9407-f2589cdbe87e",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "吉林省",
+      "region_zh": "吉林省",
+      "name": "于鑫，注册心理师",
+      "organization": "东北师范大学",
+      "phones": [
+        "18946691010"
+      ],
+      "emails": [
+        "554291070@qq.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "婚姻与家庭咨询（Marriage & Family Counseling）",
+        "青少年心理咨询（Adolescent Counseling）",
+        "性心理相关问题（Sexual Psychology Issues）",
+        "心理动力学咨询（Psychodynamic Therapy）",
+        "认知行为治疗（CBT）",
+        "人际关系与情绪困扰（Interpersonal & Emotional Issues）",
+        "个人成长与自我探索（Personal Growth & Self Exploration）",
+        "整合取向心理咨询（Integrative Psychotherapy）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "906e9212-4926-5fd5-a170-f4f1f69bc59c",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "黑龙江省",
+      "region_zh": "黑龙江省",
+      "name": "张秋波，副主任医师，心理治疗师",
+      "organization": "黑龙江省神经精神病防治院/黑龙江省第三医院 心理科",
+      "phones": [
+        "0456-6429133（黑龙江省神经精神病防治院预约电话）"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "青少年心理与行为问题（Adolescent Psychological & Behavioral Issues）",
+        "婚姻情感问题（Marriage & Relationship Issues）",
+        "重大生活事件心理应激（Life Event Related Psychological Issues）",
+        "顽固性失眠（Chronic Insomnia）",
+        "社交恐惧症（Social Anxiety Disorder）",
+        "心理障碍诊断与治疗（Diagnosis & Treatment of Psychological Disorders）",
+        "异常行为与思维问题（Abnormal Behavior & Thought Issues）",
+        "心理咨询与心理治疗（Psychological Counseling & Therapy）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "1190e849-d6b5-5664-a1ab-f7ac26070a9e",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "上海市",
+      "region_zh": "上海市",
+      "name": "张晓菲",
+      "organization": "个人执业",
+      "phones": [],
+      "emails": [
+        "feipsy@126.com"
+      ],
+      "websites": [],
+      "other_contacts": [
+        "fayework111"
+      ],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "精神动力学取向心理咨询（Psychodynamic Therapy）",
+        "亲密关系与依恋问题（Intimate Relationship & Attachment Issues）",
+        "自我认同与个人成长（Self-Identity & Personal Growth）",
+        "原生家庭议题（Family of Origin Issues）",
+        "孤独感与无意义感（Loneliness & Meaning Issues）",
+        "焦虑与抑郁情绪困扰（Anxiety & Depression）",
+        "多文化适应与跨文化心理问题（Cross-cultural Psychological Issues）",
+        "长程心理咨询（Long-term Psychotherapy）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "32518918-7d7a-5205-8e8e-4be27488b2d7",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "江苏省",
+      "region_zh": "江苏省",
+      "name": "陈华平",
+      "organization": "江南大学",
+      "phones": [
+        "—"
+      ],
+      "emails": [
+        "675722484@qq.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Psychological Assessment（心理评估）",
+        "Self-Exploration（自我探索）",
+        "Interpersonal Relationships（人际关系）",
+        "Academic & Career Development（学业与职业发展）",
+        "Stress & Emotional Management（情绪与压力调适）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "17c89407-c178-5a99-afff-ca67a92c6688",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "浙江省",
+      "region_zh": "浙江省",
+      "name": "王应婴",
+      "organization": "个人执业",
+      "phones": [
+        "18968529790"
+      ],
+      "emails": [
+        "—"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Depression（抑郁）",
+        "Anxiety（焦虑）",
+        "Personal Growth（个人成长）",
+        "Psychodynamic Therapy（心理动力学治疗）"
+      ],
+      "source_url": "https://privatepractice.cn/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "4c4ced61-6818-56a4-afac-3ce2bccaf57c",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "安徽省",
+      "region_zh": "安徽省",
+      "name": "余勇",
+      "organization": "合肥市公安局",
+      "phones": [
+        "13909696577"
+      ],
+      "emails": [
+        "914192728@qq.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Child & Adolescent Counseling（儿童与青少年心理咨询）",
+        "School Refusal & Academic Stress（厌学、考试焦虑）",
+        "Marriage & Family Counseling（婚姻与家庭咨询）",
+        "Anxiety & Trauma（焦虑与成长创伤）",
+        "Interpersonal Relationships & Personal Growth（人际关系与个人成长）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/安徽省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "1fa837c2-1a60-5595-9926-f029091adbab",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "福建省",
+      "region_zh": "福建省",
+      "name": "王海荣",
+      "organization": "华侨大学心理健康教育中心",
+      "phones": [
+        "15606097768"
+      ],
+      "emails": [
+        "814688314@qq.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Adolescent Mental Health（青少年心理健康）",
+        "Emotion Regulation（情绪调节）",
+        "Interpersonal Relationships（人际关系）",
+        "Self-Exploration（自我探索）",
+        "Neurosis Counseling（神经症心理咨询）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/福建省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "79e56ce1-8a66-54e8-b097-d81bc75d6106",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "江西省",
+      "region_zh": "江西省",
+      "name": "叶宝娟",
+      "organization": "江西师范大学心理学院 / 心理教育中心",
+      "phones": [
+        "13697097560（微信）"
+      ],
+      "emails": [
+        "yebaojuan0806@163.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Relationship & Couples Counseling（恋爱情感咨询）",
+        "Personal Growth（个人成长）",
+        "Interpersonal Relationships（人际关系）",
+        "Family Relationships（家庭关系）",
+        "Study, Career & Stress Management（学习、职场与压力管理）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/江西省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "b0a624f6-459d-5284-95cd-377b48edc2b6",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "山东省",
+      "region_zh": "山东省",
+      "name": "高卫星",
+      "organization": "山东第二医科大学附属医院临床心理科 / 第一临床医学院",
+      "phones": [
+        "15095246187"
+      ],
+      "emails": [
+        "562539623@qq.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Emotion & Stress Management（情绪与压力管理）",
+        "Family & Parenting（家庭与亲子关系）",
+        "Relationship & Marriage Counseling（情感婚恋咨询）",
+        "Personal Growth（个人成长）",
+        "Gender & Sexuality Psychology（两性心理）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/山东省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "f2b08349-0058-5318-add1-46ebad760acc",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "河南省",
+      "region_zh": "河南省",
+      "name": "郭亚恒",
+      "organization": "个人执业",
+      "phones": [
+        "—"
+      ],
+      "emails": [
+        "yaheng01@foxmail.com"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Cognitive Behavioral Therapy (CBT)（认知行为治疗）",
+        "Dialectical Behavior Therapy (DBT)（辩证行为治疗）",
+        "Schema Therapy（图式治疗）",
+        "Emotion & Stress Management（情绪与压力管理）",
+        "Personal Growth（个人成长）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/河南省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "0d278fae-c425-5c0b-b428-21f50191f964",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "湖北省",
+      "region_zh": "湖北省",
+      "name": "张爱萍",
+      "organization": "个人执业",
+      "phones": [],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [
+        "zapxinli"
+      ],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Adolescent Counseling（青少年心理咨询）",
+        "Interpersonal Relationships（人际关系）",
+        "Depression（抑郁）",
+        "Personal Growth（个人成长）",
+        "LGBTQ+ Counseling（LGBTQ+心理支持）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/湖北省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "248d515f-1a46-56a6-9521-11b166e36529",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "湖南省",
+      "region_zh": "湖南省",
+      "name": "叶湘虹",
+      "organization": "中南大学",
+      "phones": [],
+      "emails": [
+        "yexianghong@vip.sina.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Adolescent Counseling（青少年心理咨询）",
+        "Parent-Child Relationships（亲子关系）",
+        "Marriage & Relationship Counseling（婚恋关系咨询）",
+        "Emotion & Stress Management（情绪与压力管理）",
+        "Personal Growth（个人成长）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/湖南省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "89360b57-f65f-5b5c-95c4-e158c9968145",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "广东省",
+      "region_zh": "广东省",
+      "name": "虞国钰",
+      "organization": "个人执业",
+      "phones": [],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [
+        "jadeyu13"
+      ],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Marriage & Relationship Counseling（婚姻与亲密关系咨询）",
+        "LGBTQ+ Counseling（LGBTQ+心理支持）",
+        "Adolescent Counseling（青少年心理咨询）",
+        "Emotion Regulation（情绪问题）",
+        "Personal Growth（个人成长）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/广东省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "9c82fcac-9097-538b-b653-3e4134e91253",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "广西壮族自治区",
+      "region_zh": "广西壮族自治区",
+      "name": "潘志武",
+      "organization": "南宁市第五人民医院（南宁心理医院 / 南宁市精神卫生中心）精神科",
+      "phones": [
+        "暂无公开个人电话",
+        "0771-3300009"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "抑郁症（Depression）",
+        "焦虑症（Anxiety）",
+        "失眠障碍（Insomnia）",
+        "躁郁症/双相情感障碍（Bipolar Disorder）",
+        "精神障碍诊断与治疗（Psychiatric Disorders）",
+        "精神分裂症（Schizophrenia）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg?sf=2&gzd=广西壮族自治区&lwqx=7&sex=8&page=5.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "33f4681b-4fc5-5ce1-9eb1-62972b91d363",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "海南省",
+      "region_zh": "海南省",
+      "name": "姜惠红",
+      "organization": "海南医科大学附属琼海市人民医院",
+      "phones": [
+        "0898-62931453（医院预约电话）"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Child & Adolescent Mental Health（儿童青少年心理问题）",
+        "Parenting & Family Education（家庭教育与亲子关系）",
+        "Marriage & Relationship Counseling（婚恋情感咨询）",
+        "Emotional Issues（情绪问题）",
+        "Personal Growth（个人成长）",
+        "Stress Management（压力管理）",
+        "Grief Counseling（丧失与哀伤辅导）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/海南省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "be3fc520-a48e-52f6-a68a-9aa0925b5cd3",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "重庆市",
+      "region_zh": "重庆市",
+      "name": "简洁",
+      "organization": "重庆电子科技职业大学",
+      "phones": [
+        "咨询预约请关注微信公众号“点妈聊心理教育”"
+      ],
+      "emails": [
+        "咨询预约请关注微信公众号“点妈聊心理教育”"
+      ],
+      "websites": [
+        "—"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Cognitive Behavioral Therapy（认知行为治疗）",
+        "Psychological Counseling（心理咨询）",
+        "Student Mental Health（学生心理健康）",
+        "Emotion Management（情绪管理）",
+        "Personal Growth（个人成长）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/重庆市/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "25ab3b7e-2732-55f2-b6cf-f531ae87c13d",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "重庆市",
+      "region_zh": "重庆市",
+      "name": "王烨",
+      "organization": "四川大学华西医院心理卫生中心",
+      "phones": [
+        "028-85551331"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Psychological Counseling（心理咨询）",
+        "Anxiety & Depression（焦虑与抑郁相关问题）",
+        "Emotional Issues（情绪问题）",
+        "Child & Adolescent Issues（儿童青少年心理问题）",
+        "Sleep & Psychological Problems（睡眠及心理障碍）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/重庆市/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "ca236341-74e0-570d-843c-6c00094a5125",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "贵州省",
+      "region_zh": "贵州省",
+      "name": "郭俊汝",
+      "organization": "贵州民族大学民族文化与认知科学学院心理学系",
+      "phones": [
+        "17585567615"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Career Development & Planning（职业生涯与发展规划）",
+        "Adjustment Disorders（适应障碍）",
+        "Emotional Issues（情绪困扰）",
+        "Grief Counseling（哀伤辅导）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/贵州省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "4558c0e5-5637-5073-952f-d63af95e7480",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "云南省",
+      "region_zh": "云南省",
+      "name": "陈瑜",
+      "organization": "个人执业",
+      "phones": [],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Intimate Relationships & Marriage Counseling（亲密关系与婚恋情感咨询）",
+        "Anxiety Disorders（焦虑障碍）",
+        "Grief & Loss（分离与丧失）",
+        "Postpartum Depression（产后抑郁）",
+        "Child & Adolescent Development（儿童青少年健康与发展）",
+        "Family Therapy（家庭治疗）",
+        "Group Therapy（团体治疗）",
+        "Couple Therapy（夫妻治疗）",
+        "Interpersonal Relationship Issues（人际关系障碍）",
+        "Work & Academic Stress（工作与学业压力）",
+        "Personal Growth（个人成长）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/云南省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "ecc2c1c9-8d7a-59eb-bb5a-85077884466f",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "西藏自治区",
+      "region_zh": "西藏自治区",
+      "name": "西藏大学心理咨询中心",
+      "organization": "西藏大学心理咨询中心",
+      "phones": [
+        "0891-6405095"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Interpersonal Relationships（人际关系）",
+        "Emotional Issues（情绪情感问题）",
+        "Career Planning（职业规划）",
+        "Self-Awareness & Personal Growth（自我认识与探索）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "472b236a-11d7-5393-b970-72b5ea4cd34b",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "陕西省",
+      "region_zh": "陕西省",
+      "name": "樊珍",
+      "organization": "西安市精神卫生中心",
+      "phones": [
+        "可拨打029-63609288进行咨询"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Sleep Disorders（睡眠障碍）",
+        "Depression Disorders（抑郁障碍）",
+        "Anxiety Disorders（焦虑障碍）",
+        "Depression（抑郁症）",
+        "Bipolar Disorder（躁郁症）",
+        "Psychological & Psychiatric Disorders（精神心理疾病诊治）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/陕西省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "444d7704-c021-5a1d-a9bb-9dda45a08247",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "甘肃省",
+      "region_zh": "甘肃省",
+      "name": "王晓梅",
+      "organization": "酒泉师范学校心理健康教育辅导中心",
+      "phones": [
+        "19289676651"
+      ],
+      "emails": [
+        "86110335@qq.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Cognitive Behavioral Therapy（认知-行为）",
+        "Family Therapy（家庭治疗）",
+        "Humanistic-Existential Therapy（人本-存在）",
+        "Adolescent Psychological Issues（青少年心理问题）",
+        "School Refusal & Academic Difficulties（厌学拒学问题心理干预）",
+        "Family & Marriage Counseling（家庭婚姻咨询）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/甘肃省/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "8d15f46e-9990-516f-b25c-3799ebb7ea8b",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "青海省",
+      "region_zh": "青海省",
+      "name": "申斌",
+      "organization": "青海大学心理健康教育中心",
+      "phones": [],
+      "emails": [
+        "Milkyt2022@163.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Psychodynamic Therapy（心理动力学）",
+        "Intimate Relationship（亲密关系）",
+        "Personal Growth（个人成长）",
+        "Self-Exploration（自我探索）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg?sf=2&gzd=青海省&lwqx=7&sex=8&page=5.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "e490e3db-1ad7-5aad-8375-44a661258f6e",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "宁夏回族自治区",
+      "region_zh": "宁夏回族自治区",
+      "name": "陈彦华",
+      "organization": "宁夏医科大学总医院心理卫生中心",
+      "phones": [],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Psychological Counseling & Therapy（心理问题咨询与治疗）",
+        "Child & Adolescent Psychological Issues（儿童青少年心理问题）",
+        "Learning & Interpersonal Issues（学习、人际关系问题）",
+        "Sleep Disorders（睡眠障碍）",
+        "Depression Disorders（抑郁障碍）",
+        "Anxiety Disorders（焦虑症）",
+        "Obsessive-Compulsive Disorder（强迫症）",
+        "Social Phobia（社交恐怖症）",
+        "Schizophrenia（精神分裂症）",
+        "Mood Disorders（心境障碍）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg?sf=2&gzd=宁夏回族自治区&lwqx=7&sex=8&page=3.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "3d39e5fe-40a2-5416-91b3-7bdc3ab1c89c",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "新疆维吾尔自治区",
+      "region_zh": "新疆维吾尔自治区",
+      "name": "郭薇",
+      "organization": "新疆师范大学心理学院",
+      "phones": [
+        "QQ: 3052157232"
+      ],
+      "emails": [
+        "mixuan723@qq.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Cognitive Behavioral Therapy（认知-行为）",
+        "Integrative Therapy（整合-折中）",
+        "Family Therapy（家庭治疗）",
+        "Child & Adolescent Psychological Issues（儿童及青少年心理问题）",
+        "Academic Stress & Parent-Child Relationship（学业压力与亲子关系）",
+        "Anxiety & Depression（焦虑与抑郁相关问题）",
+        "Interpersonal Relationship Counseling（人际关系咨询）",
+        "Career Development & Personal Growth（生涯发展与个人成长）"
+      ],
+      "source_url": "http://www.chinacpb.net/public/index.php/index/index/diqucxjg/gzd/新疆维吾尔自治区/sf/2/lwqx/7/sex/8.html",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "4d50d735-a396-55f6-a74e-a9e12c850708",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "台湾省",
+      "region_zh": "台湾省",
+      "name": "林俊廷",
+      "organization": "看見心理諮商所",
+      "phones": [
+        "0902-109-885",
+        "02-2775-1051",
+        "02-8773-0003"
+      ],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Emotional Issues & Stress Management（情绪困扰与压力调适）",
+        "Family Relationships & Family Issues（原生家庭与家庭关系）",
+        "Intimate Relationships & Interpersonal Issues（亲密关系与人际议题）",
+        "Deep Self-Exploration（深度自我探索）",
+        "Mind-Body Integration（身心整合）",
+        "Depression & Anxiety（抑郁与焦虑情绪调适）",
+        "Sleep Problems（睡眠困扰）",
+        "Workplace Stress & Adaptation（职场压力与适应）",
+        "rTMS Consultation（rTMS相关心理咨询）"
+      ],
+      "source_url": "https://www.seeingcounseling.com/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "0d73f712-b40c-5c5b-b129-56bd21a83530",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "香港特别行政区",
+      "region_zh": "香港特别行政区",
+      "name": "鄧景丰",
+      "organization": "香港心理輔導中心",
+      "phones": [
+        "WhatsApp：+852 6676 4236"
+      ],
+      "emails": [
+        "info@hkpcc.hk"
+      ],
+      "websites": [],
+      "other_contacts": [
+        "hkpcc01"
+      ],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Psychoanalytic Psychotherapy（精神分析心理治疗）",
+        "Counseling Psychology（心理咨询）",
+        "Anxiety & Depression（焦虑与抑郁相关问题）",
+        "Emotional Issues（情绪困扰）",
+        "Sleep Problems（失眠问题）",
+        "Relationship Issues（人际关系与亲密关系问题）",
+        "Self-Esteem & Personal Growth（自我价值与个人成长）",
+        "Childhood Experiences & Unconscious Patterns（童年经历与潜意识模式探索）"
+      ],
+      "source_url": "https://www.hkpcc.hk/v2/zh-hk/therapist/",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "89af15e5-1bee-5360-ad75-a5aa27b93643",
+      "resource_type": "clinician",
+      "country": "CN",
+      "region": "澳门特别行政区",
+      "region_zh": "澳门特别行政区",
+      "name": "余秋",
+      "organization": "个人执业（澳门）",
+      "phones": [],
+      "emails": [],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Jungian Analytical Psychology（荣格心理分析）",
+        "Psychodynamic Therapy（心理动力学）",
+        "Individual Counseling（个体心理咨询）",
+        "Group Counseling（团体心理咨询）",
+        "Anxiety & Emotional Issues（焦虑与情绪问题）",
+        "Personal Growth & Self-Exploration（个人成长与自我探索）",
+        "Dream Analysis（梦的分析）",
+        "Sandplay Therapy（沙盘游戏咨询）"
+      ],
+      "source_url": "",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "aceb7a9e-9228-5570-ad53-cbf5afc189e3",
+      "resource_type": "clinician",
+      "country": "CA",
+      "region": "Alberta",
+      "region_zh": "Alberta",
+      "name": "Dr. Marlene Taube-Schiff（玛琳·陶布-希夫）",
+      "organization": "Forward Thinking Psychological Services",
+      "phones": [
+        "+1 437-783-5183"
+      ],
+      "emails": [
+        "marlene@ftpsych.ca"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Depression（抑郁症）",
+        "Anxiety（焦虑症）",
+        "ADHD（注意力缺陷多动障碍）",
+        "Trauma / PTSD（创伤及创伤后应激障碍）",
+        "Obsessive Compulsive Disorder (OCD)（强迫症）",
+        "Autism Spectrum Disorder（自闭症谱系障碍）",
+        "Relationship Issues（人际关系问题）",
+        "Emotional and Behavioural Issues（情绪及行为问题）"
+      ],
+      "source_url": "https://psychologistsassociation.ab.ca/find-psychologist",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "11783e22-a3fa-51d7-949a-2e557082ab46",
+      "resource_type": "clinician",
+      "country": "CA",
+      "region": "British Columbia",
+      "region_zh": "British Columbia",
+      "name": "Dr. Susan Hackett",
+      "organization": "North Shore CBT Centre",
+      "phones": [
+        "+1 604-612-4114"
+      ],
+      "emails": [
+        "drsusanhackett@gmail.com"
+      ],
+      "websites": [],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Addiction（成瘾问题）",
+        "Anxiety（焦虑症）",
+        "Childhood Trauma（童年创伤）",
+        "Depression（抑郁症）",
+        "Dissociative Disorders（解离性障碍）",
+        "Family Relationships（家庭关系问题）",
+        "Spiritual Issues（精神与价值观相关问题）",
+        "Women's Issues（女性心理健康）",
+        "Racism / Racial Trauma（种族歧视及相关创伤）",
+        "Stress Management（压力管理）",
+        "青少年及家庭心理支持"
+      ],
+      "source_url": "https://psychologists.bc.ca/find-psychologist",
+      "verification_status": "unverified_source_document"
+    },
+    {
+      "id": "4fcdc8d7-c06e-5d6b-a5ea-20bfa9da4f33",
+      "resource_type": "clinician",
+      "country": "CA",
+      "region": "Manitoba",
+      "region_zh": "Manitoba",
+      "name": "Darek Dawda",
+      "organization": "Prairie Psychology",
+      "phones": [
+        "(204) 253-2832"
+      ],
+      "emails": [
+        "info@prairiepsychology.ca"
+      ],
+      "websites": [
+        "prairiepsychology.ca"
+      ],
+      "other_contacts": [],
+      "address": "",
+      "schedule": "",
+      "specialties": [
+        "Anxiety and Worry（焦虑及担忧）",
+        "Depression（抑郁症）",
+        "Bipolar Disorder（双相情感障碍）",
+        "Obsessive Compulsive Disorder / OCD（强迫症）",
+        "Panic Disorder（惊恐障碍）",
+        "Social Anxiety（社交焦虑）",
+        "PTSD / Trauma（创伤及创伤后应激障碍）",
+        "Grief（哀伤与失落）",
+        "Stress Management（压力管理）",
+        "Sleep Problems / Sleep Disorders（睡眠问题及睡眠障碍）",
+        "Anger Management（愤怒管理）",
+        "Relationship & Couples Issues（关系及伴侣问题）",
+        "Family Therapy（家庭治疗）",
+        "Pain Management（疼痛管理）",
+        "Parenting Issues（育儿问题）",
+        "Wellness & Life Goals（身心健康与目标管理）"
+      ],
+      "source_url": "https://members.mps.ca/",
+      "verification_status": "unverified_source_document"
+    }
+  ]
+}

@@ -372,7 +372,12 @@ class MemoryAgent:
                 "count": len(voice_analyses),
                 "latest": voice_analyses[-1] if voice_analyses else None,
                 "recent": voice_analyses[-20:],
-                "disclaimer": "声学表达趋势仅作辅助参考，不构成临床诊断。",
+                "disclaimer": (
+                    "文字情绪由 AI 根据语音转写推断，不分析声纹或语调，"
+                    "不构成临床诊断。"
+                    if voice_analyses and voice_analyses[-1].get("provider") == "gemini-flash"
+                    else "声学表达趋势仅作辅助参考，不构成临床诊断。"
+                ),
             },
             "data_sources": {
                 "text": any(
@@ -384,7 +389,11 @@ class MemoryAgent:
                     for item in emotion_history
                 ),
                 "acoustic": any(
-                    bool(item.get("voice_analysis"))
+                    item.get("voice_analysis", {}).get("provider") == "hume"
+                    for item in emotion_history
+                ),
+                "ai_text_emotion": any(
+                    item.get("voice_analysis", {}).get("provider") == "gemini-flash"
                     for item in emotion_history
                 ),
             },

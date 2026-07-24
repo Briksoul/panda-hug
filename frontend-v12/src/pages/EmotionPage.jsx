@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { BearMood } from '../components/PandaFace'
 import { useUser } from '../hooks/useUser'
 import { LogOut, MessageCircle, Mic } from 'lucide-react'
-import { getAssessmentStatus, saveAssessment } from '../utils/api'
+import { getAssessmentStatus, getPsychoeducationTip, saveAssessment } from '../utils/api'
 
 const EMOTIONS = [
   { id: 'energetic', label: '充满活力', en: 'Energetic', emoji: '☀️', color: 'from-yellow-400 to-orange-400', bg: '#FFF3E0', type: 'positive' },
@@ -29,6 +29,21 @@ const OPTIONS = [
   { label: '几天', en: 'Several days', score: 1 },
   { label: '一半以上天数', en: 'More than half the days', score: 2 },
   { label: '几乎每天', en: 'Nearly every day', score: 3 },
+]
+
+const PSYCHO_EDUCATION = [
+  {
+    zh: '情绪像天气一样会变化。先准确说出此刻的感受，往往就是调节情绪的第一步。',
+    en: 'Emotions shift like the weather. Naming what you feel is often the first step toward regulating it.',
+  },
+  {
+    zh: '积极情绪不需要一直保持；留意一个微小的愉快瞬间，也能帮助大脑积累心理资源。',
+    en: 'Positive feelings do not need to last forever. Noticing one small pleasant moment can still build psychological resources.',
+  },
+  {
+    zh: '当压力出现时，缓慢延长呼气可以向身体传递“此刻相对安全”的信号。',
+    en: 'When stress rises, gently lengthening your exhale can signal relative safety to your body.',
+  },
 ]
 
 function getGreeting() {
@@ -73,9 +88,11 @@ export default function EmotionPage() {
     assessment_due: true,
     latest: null,
   })
+  const [knowledgeTip, setKnowledgeTip] = useState('')
 
   const allQuestions = useMemo(() => [...PHQ2, ...GAD2].map((q, i) => ({ ...q, id: i })), [])
   const isEnglish = user.language === 'en'
+  const psychoEducation = PSYCHO_EDUCATION[new Date().getDate() % PSYCHO_EDUCATION.length]
   const visibleQuestions = allQuestions.slice(
     assessmentPage * 2,
     assessmentPage * 2 + 2,
@@ -88,6 +105,12 @@ export default function EmotionPage() {
     getAssessmentStatus()
       .then(setAssessmentStatus)
       .catch((error) => console.error('Failed to load assessment status:', error))
+  }, [])
+
+  React.useEffect(() => {
+    getPsychoeducationTip()
+      .then((data) => setKnowledgeTip(data.tip || ''))
+      .catch((error) => console.error('Failed to load psychoeducation tip:', error))
   }, [])
 
   const handleEmotionSelect = async (emotion) => {
@@ -162,7 +185,7 @@ export default function EmotionPage() {
       {phase === 'select' && <div className="px-6 pt-6 pb-5">
         <div className="flex items-center gap-4">
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
-            <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full" style={{ width: 52, height: 52, objectFit: 'cover', border: '3px solid white', boxShadow: '0 4px 12px rgba(255,140,66,0.2)' }} />
+            <img src={`${import.meta.env.BASE_URL}panda-icon-v2.png`} alt="Panda" className="rounded-full" style={{ width: 52, height: 52, objectFit: 'cover', border: '3px solid white', boxShadow: '0 4px 12px rgba(255,140,66,0.2)' }} />
           </motion.div>
           <div className="min-w-0 flex-1">
             <p className="text-sm text-gray-500">
@@ -315,20 +338,35 @@ export default function EmotionPage() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.2 }}
-              className="mb-6"
+              className="mb-4 rounded-full bg-gradient-to-br from-orange-100 via-white to-teal-50 p-4 shadow-lg ring-4 ring-white"
             >
               <BearMood mood={bearResult.mood} size={140} language={user.language} />
             </motion.div>
 
-            <div className="card text-center mb-6 w-full">
-              <p className="text-gray-600 text-sm leading-relaxed">{bearResult.text}</p>
+            <h2 className="mb-4 text-2xl font-extrabold text-gray-800">
+              {bearResult.mood === 'happy'
+                ? (isEnglish ? 'Happy Panda' : '开心小熊')
+                : bearResult.mood === 'tired'
+                  ? (isEnglish ? 'Tired Panda' : '疲惫小熊')
+                  : (isEnglish ? 'Calm Panda' : '平静小熊')}
+            </h2>
+
+            <div className="card mb-6 w-full border-orange-100 bg-gradient-to-br from-orange-50 to-white text-center">
+              <p className="text-sm font-semibold leading-relaxed text-gray-800">{bearResult.text}</p>
+              <div className="mx-auto my-3 h-px w-16 bg-orange-200" />
+              <p className="text-xs font-bold uppercase tracking-wider text-panda-primary">
+                {isEnglish ? 'A note from psychology' : '心理小知识'}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-gray-700">
+                {knowledgeTip || (isEnglish ? psychoEducation.en : psychoEducation.zh)}
+              </p>
             </div>
 
             <div className="card w-full mb-6 text-center">
               <h2 className="text-xl font-bold text-gray-800">
                 {isEnglish ? 'Would you like to talk more?' : '进一步和我聊聊吗？'}
               </h2>
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm font-medium text-gray-700">
                 {isEnglish
                   ? 'I can listen and help you make sense of what you are feeling.'
                   : '我可以陪你一起梳理困扰、理解情绪。'}
@@ -337,13 +375,13 @@ export default function EmotionPage() {
 
             <div className="flex gap-3 w-full mb-4">
               <button
-                onClick={() => navigate('/chat', { state: { mode: 'voice', newSession: true } })}
+                onClick={() => navigate('/chat', { state: { mode: 'voice' } })}
                 className="btn-primary flex-1 flex items-center justify-center gap-2"
               >
                 <Mic size={18} /> {isEnglish ? 'Voice' : '语音倾诉'}
               </button>
               <button
-                onClick={() => navigate('/chat', { state: { mode: 'text', newSession: true } })}
+                onClick={() => navigate('/chat', { state: { mode: 'text' } })}
                 className="btn-secondary flex-1 flex items-center justify-center gap-2"
               >
                 <MessageCircle size={18} /> {isEnglish ? 'Text' : '文字倾诉'}

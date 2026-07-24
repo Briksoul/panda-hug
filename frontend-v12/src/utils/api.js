@@ -174,9 +174,32 @@ export async function getReportByDate(sessionId, date) {
   return res.json();
 }
 
-export async function getGrowthRecord(sessionId) {
-  const res = await apiFetch(`/session/${sessionId}/growth`);
+export async function getGrowthRecord(sessionId, location = {}) {
+  const params = new URLSearchParams();
+  if (location.country) params.set("country", location.country);
+  if (location.region) params.set("region", location.region);
+  const suffix = params.size ? `?${params}` : "";
+  const res = await apiFetch(`/session/${sessionId}/growth${suffix}`);
   if (!res.ok) throw new Error("Failed to get growth record");
+  return res.json();
+}
+
+export async function getMedicalRegions(country = "") {
+  const params = new URLSearchParams();
+  if (country) params.set("country", country);
+  const suffix = params.size ? `?${params}` : "";
+  const res = await apiFetch(`/medical-resources/regions${suffix}`);
+  if (!res.ok) throw new Error("Failed to get medical regions");
+  return res.json();
+}
+
+export async function getMedicalResources({ country = "", region = "", q = "" } = {}) {
+  const params = new URLSearchParams({ limit: "20" });
+  if (country) params.set("country", country);
+  if (region) params.set("region", region);
+  if (q) params.set("q", q);
+  const res = await apiFetch(`/medical-resources?${params}`);
+  if (!res.ok) throw new Error("Failed to get medical resources");
   return res.json();
 }
 
@@ -189,32 +212,29 @@ export async function recordSelfGuidedTraining(sessionId, training) {
   return res.json();
 }
 
-export async function getHumeAccessToken() {
-  const res = await apiFetch("/voice/token", {
+export async function analyzeTextEmotion(text, history = []) {
+  const res = await apiFetch("/analyze-emotion", {
     method: "POST",
+    body: JSON.stringify({ text, history }),
   });
   if (!res.ok) {
     const payload = await res.json().catch(() => ({}));
-    throw new Error(payload.detail || "Failed to authenticate with Hume EVI");
+    throw new Error(payload.detail || "Failed to analyze text emotion");
   }
-  const payload = await res.json();
-  if (!payload.proxy_url || !payload.proxy_grant) return payload;
+  return res.json();
+}
 
-  const proxyResponse = await fetch(payload.proxy_url, {
+export async function recordTextEmotionAnalysis(sessionId, transcript, emotionScores) {
+  const res = await apiFetch(`/session/${sessionId}/voice-analysis`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${payload.proxy_grant}`,
-      Accept: "application/json",
-    },
+    body: JSON.stringify({
+      transcript,
+      emotion_scores: emotionScores,
+      analysis_source: "gemini_text",
+    }),
   });
-  if (!proxyResponse.ok) {
-    throw new Error("Failed to authenticate with Hume EVI");
-  }
-  const token = await proxyResponse.json();
-  return {
-    ...token,
-    config_id: payload.config_id,
-  };
+  if (!res.ok) throw new Error("Failed to record text emotion analysis");
+  return res.json();
 }
 
 export async function forceTransition(sessionId, targetAgent) {
@@ -226,8 +246,11 @@ export async function forceTransition(sessionId, targetAgent) {
   return res.json();
 }
 
-export async function getLatestSession() {
-  const res = await apiFetch("/session/latest");
+export async function getLatestSession({ since = 0 } = {}) {
+  const params = new URLSearchParams();
+  if (since > 0) params.set("since", String(since));
+  const suffix = params.size ? `?${params}` : "";
+  const res = await apiFetch(`/session/latest${suffix}`);
   if (!res.ok) throw new Error("Failed to get latest session");
   return res.json();
 }
@@ -235,6 +258,12 @@ export async function getLatestSession() {
 export async function getAssessmentStatus() {
   const res = await apiFetch("/assessment/status");
   if (!res.ok) throw new Error("Failed to get assessment status");
+  return res.json();
+}
+
+export async function getPsychoeducationTip() {
+  const res = await apiFetch("/psychoeducation/tip");
+  if (!res.ok) throw new Error("Failed to get psychoeducation tip");
   return res.json();
 }
 

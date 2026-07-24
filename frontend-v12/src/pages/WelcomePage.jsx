@@ -23,7 +23,7 @@ export default function WelcomePage() {
   }, [authLoading, isAuthenticated, navigate])
 
   return (
-    <div className="h-full flex flex-col items-center justify-center px-6 relative overflow-hidden"
+      <div className="h-full flex flex-col items-center justify-center px-6 relative overflow-hidden"
          style={{ background: 'linear-gradient(180deg, #FFF8F0 0%, #FFE8D0 40%, #FFD4B8 100%)' }}>
       <div className="absolute right-5 top-5 z-10 flex rounded-full bg-white/80 p-1 text-xs shadow-sm">
         {['zh', 'en'].map((option) => (
@@ -73,11 +73,11 @@ export default function WelcomePage() {
         initial={{ scale: 0, opacity: 0, rotate: -10 }}
         animate={{ scale: 1, opacity: 1, rotate: 0 }}
         transition={{ duration: 0.8, type: 'spring', bounce: 0.4 }}
-        className="mb-8 relative"
+        className="mb-6 relative"
       >
         <div className="animate-float">
           <img
-            src={`${import.meta.env.BASE_URL}panda-icon.svg`}
+            src={`${import.meta.env.BASE_URL}panda-icon-v2.png`}
             alt="Panda Hug"
             className="rounded-full"
             style={{
@@ -104,13 +104,13 @@ export default function WelcomePage() {
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.6 }}
-        className="text-center mb-10"
+        className="text-center mb-8"
       >
         <h1 className="text-3xl font-bold mb-3" style={{ color: '#2D3436' }}>
           {isEnglish ? 'Hi, I am ' : 'Hi，我是 '}
           <span style={{ color: '#FF8C42' }}>Panda</span>！
         </h1>
-        <p className="text-base leading-relaxed max-w-xs mx-auto" style={{ color: '#666' }}>
+        <p className="mx-auto max-w-sm rounded-3xl border border-white/70 bg-white/45 px-5 py-4 text-base font-medium leading-7 text-gray-700 shadow-sm backdrop-blur-sm">
           {isEnglish ? (
             <>
               Whether you are a Chinese student studying abroad,<br/>
@@ -127,7 +127,7 @@ export default function WelcomePage() {
             </>
           )}
         </p>
-        <p className="text-sm mt-4" style={{ color: '#aaa' }}>
+        <p className="mt-4 text-sm font-medium text-gray-600">
           {isEnglish
             ? 'In our conversations, I will help you understand your emotions, organize your thoughts, and find strength.'
             : '在接下来的交流中，我会陪你一起理解情绪、整理思绪、寻找力量。'}

@@ -83,11 +83,13 @@ html, body, #root {
   color: white;
   border-radius: 20px 20px 4px 20px;
   padding: 12px 16px;
-  max-width: 80%;
+  max-width: 100%;
   margin-left: auto;
   box-shadow: 0 4px 12px rgba(255,140,66,0.25);
   font-size: 14px;
   line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .chat-bubble-panda {
@@ -95,10 +97,12 @@ html, body, #root {
   color: var(--panda-dark);
   border-radius: 20px 20px 20px 4px;
   padding: 12px 16px;
-  max-width: 80%;
+  max-width: 100%;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   font-size: 14px;
   line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 /* Progress bar */

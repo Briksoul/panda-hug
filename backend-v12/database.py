@@ -173,6 +173,27 @@ class CommunityMessage(Base):
     read_at: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
 
 
+class MedicalResource(Base):
+    __tablename__ = "medical_resources"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    resource_type: Mapped[str] = mapped_column(String(24), index=True)
+    country: Mapped[str] = mapped_column(String(8), index=True)
+    region: Mapped[str] = mapped_column(String(100), index=True)
+    region_zh: Mapped[str] = mapped_column(String(100), default="")
+    name: Mapped[str] = mapped_column(String(255))
+    organization: Mapped[str] = mapped_column(String(255), default="")
+    phones: Mapped[list] = mapped_column(JSON)
+    emails: Mapped[list] = mapped_column(JSON)
+    websites: Mapped[list] = mapped_column(JSON)
+    other_contacts: Mapped[list] = mapped_column(JSON)
+    address: Mapped[str] = mapped_column(String(500), default="")
+    schedule: Mapped[str] = mapped_column(String(500), default="")
+    specialties: Mapped[list] = mapped_column(JSON)
+    source_url: Mapped[str] = mapped_column(String(1000), default="")
+    verification_status: Mapped[str] = mapped_column(String(64))
+
+
 Index("idx_community_posts_created", CommunityPost.created_at.desc())
 
 

@@ -224,6 +224,7 @@ class SensingAgent(BaseAgent):
         }
         return fused, {
             "provider": "hume",
+            "analysis_type": "vocal_expression",
             "scores": scores,
             "top_emotions": [
                 {
@@ -240,6 +241,91 @@ class SensingAgent(BaseAgent):
             "disclaimer": (
                 "Vocal-expression estimate only; not a clinical diagnosis "
                 "and not an independent crisis trigger."
+            ),
+        }
+
+    def fuse_text_ai_analysis(
+        self,
+        text_result: SensingResult,
+        emotion_scores: dict[str, float],
+    ) -> tuple[SensingResult, dict]:
+        """Combine transcript-only AI scores with the deterministic text pass."""
+        scores = {
+            name: round(max(0.0, min(1.0, float(score))), 4)
+            for name, score in emotion_scores.items()
+            if isinstance(name, str) and isinstance(score, (int, float))
+        }
+        ranked = sorted(scores.items(), key=lambda item: item[1], reverse=True)
+        negative_peak = max(
+            (scores.get(name, 0.0) for name in HUME_NEGATIVE_EMOTIONS),
+            default=0.0,
+        )
+        positive_peak = max(
+            (scores.get(name, 0.0) for name in HUME_POSITIVE_EMOTIONS),
+            default=0.0,
+        )
+        if negative_peak >= 0.28 and negative_peak > positive_peak + 0.06:
+            inferred_sentiment = "negative"
+            inferred_intensity = negative_peak
+        elif positive_peak >= 0.28 and positive_peak > negative_peak + 0.06:
+            inferred_sentiment = "positive"
+            inferred_intensity = positive_peak
+        else:
+            inferred_sentiment = "neutral"
+            inferred_intensity = max(negative_peak, positive_peak, 0.2)
+
+        fused = SensingResult(
+            sentiment=text_result.sentiment,
+            crisis_keywords=list(text_result.crisis_keywords),
+            emotion_tags=list(text_result.emotion_tags),
+            intensity=text_result.intensity,
+            should_trigger_crisis=text_result.should_trigger_crisis,
+        )
+        if inferred_sentiment != "neutral":
+            if fused.sentiment == "neutral":
+                fused.sentiment = inferred_sentiment
+            if fused.sentiment == inferred_sentiment:
+                fused.intensity = max(fused.intensity, inferred_intensity)
+        for name, score in ranked[:3]:
+            if score >= 0.12:
+                label = HUME_EMOTION_LABELS.get(name, name)
+                if label not in fused.emotion_tags:
+                    fused.emotion_tags.append(label)
+
+        psychological_signals = {
+            "distress": round(max(
+                scores.get("distress", 0.0),
+                scores.get("sadness", 0.0),
+            ), 4),
+            "anxiety": round(max(
+                scores.get("anxiety", 0.0),
+                scores.get("fear", 0.0),
+            ), 4),
+            "low_mood": round(max(
+                scores.get("sadness", 0.0),
+                scores.get("disappointment", 0.0),
+                scores.get("tiredness", 0.0),
+            ), 4),
+        }
+        return fused, {
+            "provider": "gemini-flash",
+            "analysis_type": "transcript_text",
+            "scores": scores,
+            "top_emotions": [
+                {
+                    "name": name,
+                    "label": HUME_EMOTION_LABELS.get(name, name),
+                    "score": score,
+                }
+                for name, score in ranked[:5]
+            ],
+            "text_sentiment": inferred_sentiment,
+            "text_intensity": round(inferred_intensity, 4),
+            "psychological_signals": psychological_signals,
+            "text_voice_incongruent": False,
+            "disclaimer": (
+                "Emotion cues inferred from transcript text only; no vocal "
+                "tone or voiceprint was analyzed, and this is not a diagnosis."
             ),
         }
 

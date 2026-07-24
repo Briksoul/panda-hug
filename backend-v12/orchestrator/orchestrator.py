@@ -216,16 +216,25 @@ class CognitiveOrchestrator:
         session_id: str,
         transcript: str,
         emotion_scores: dict[str, float],
+        analysis_source: str = "",
     ) -> dict | None:
         session = self.get_session(session_id)
         if not session:
             return None
 
         text_result = await self.sensing.analyze(transcript, session.profile)
-        fused_result, acoustic_analysis = self.sensing.fuse_voice_analysis(
-            text_result,
-            emotion_scores,
-        )
+        if analysis_source == "gemini_text":
+            fused_result, acoustic_analysis = (
+                self.sensing.fuse_text_ai_analysis(
+                    text_result,
+                    emotion_scores,
+                )
+            )
+        else:
+            fused_result, acoustic_analysis = self.sensing.fuse_voice_analysis(
+                text_result,
+                emotion_scores,
+            )
         sensing = {
             "sentiment": fused_result.sentiment,
             "emotion_tags": fused_result.emotion_tags,
@@ -298,6 +307,7 @@ class CognitiveOrchestrator:
         input_mode: str = "text",
         risk_hint: str = "",
         voice_emotion_scores: dict[str, float] | None = None,
+        voice_analysis_source: str = "",
         on_text_chunk=None,
     ) -> AgentResponse:
         session = self.get_session(session_id)
@@ -319,7 +329,9 @@ class CognitiveOrchestrator:
         agent_trace.append({
             "agent": "sensing", "status": "analyzing",
             "label": (
-                "Sensing Agent 文本与声学融合分析..."
+                "Sensing Agent 文本与 Gemini 情绪融合分析..."
+                if voice_emotion_scores and voice_analysis_source == "gemini_text"
+                else "Sensing Agent 文本与声学融合分析..."
                 if voice_emotion_scores
                 else "Sensing Agent 文本情绪分析..."
             ),
@@ -327,10 +339,20 @@ class CognitiveOrchestrator:
         sensing_result = await self.sensing.analyze(user_message, profile)
         acoustic_analysis = {}
         if voice_emotion_scores:
-            sensing_result, acoustic_analysis = self.sensing.fuse_voice_analysis(
-                sensing_result,
-                voice_emotion_scores,
-            )
+            if voice_analysis_source == "gemini_text":
+                sensing_result, acoustic_analysis = (
+                    self.sensing.fuse_text_ai_analysis(
+                        sensing_result,
+                        voice_emotion_scores,
+                    )
+                )
+            else:
+                sensing_result, acoustic_analysis = (
+                    self.sensing.fuse_voice_analysis(
+                        sensing_result,
+                        voice_emotion_scores,
+                    )
+                )
         timings_ms["sensing"] = round(
             (time.perf_counter() - step_started) * 1000
         )
@@ -483,8 +505,7 @@ class CognitiveOrchestrator:
             session.counseling_data.update(response.metadata["counseling_data"])
         if (
             active_agent == AgentRole.COUNSELOR
-            and session.report_status == "idle"
-            and not session.insight_report
+            and session.report_status != "generating"
         ):
             session.report_status = "generating"
             self._schedule_background(
@@ -797,13 +818,19 @@ class CognitiveOrchestrator:
             f"{name}={float(value):.2f}"
             for name, value in signals.items()
         )
+        is_text_inference = analysis.get("analysis_type") == "transcript_text"
         incongruent = (
             "文本与声学表达方向存在差异，应通过开放式提问继续了解。"
-            if analysis.get("text_voice_incongruent")
+            if analysis.get("text_voice_incongruent") and not is_text_inference
             else ""
         )
+        source_label = (
+            "辅助文本情绪推断（不分析声纹或语调）"
+            if is_text_inference
+            else "辅助声学表达信息"
+        )
         return (
-            "辅助声学表达信息（仅作对话线索，不构成诊断或危机判定）："
+            f"{source_label}（仅作对话线索，不构成诊断或危机判定）："
             f"主要表达={top_emotions or '无明确主导情绪'}；"
             f"趋势信号={signal_text or '无'}。{incongruent}"
         )
@@ -963,11 +990,7 @@ class CognitiveOrchestrator:
             case_formulation=data.get("case_formulation", {}),
             cultural_analysis=data.get("cultural_analysis", {}),
             insight_report=data.get("insight_report", {}),
-            report_status=(
-                "error"
-                if data.get("report_status") == "generating"
-                else data.get("report_status", "idle")
-            ),
+            report_status=data.get("report_status", "idle"),
             latest_supervision=data.get("latest_supervision", {}),
             training_records=data.get("training_records", []),
             training_baseline=data.get("training_baseline", {}),

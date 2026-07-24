@@ -1,43 +1,73 @@
-"""文本情绪分析 API — 替代 Hume prosody，用 Gemini 分析对话情绪"""
+"""Transcript emotion analysis for browser voice input."""
+from __future__ import annotations
+
 import json
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+import re
+
+from fastapi import APIRouter, Depends, HTTPException
 from openai import AsyncOpenAI
-from config import config
+from pydantic import BaseModel, Field
+
 from auth import get_current_user
+from config import config
 from database import User
 
 router = APIRouter()
 
-# 情绪分析 prompt
-EMOTION_PROMPT = """分析以下对话文本中的用户情绪。返回 JSON 格式的情绪分数（0-1）。
+ALLOWED_EMOTIONS = {
+    "anger",
+    "anxiety",
+    "calmness",
+    "confusion",
+    "disappointment",
+    "distress",
+    "fear",
+    "interest",
+    "joy",
+    "sadness",
+    "satisfaction",
+    "tiredness",
+}
 
-支持的情绪维度：
-- joy（快乐）
-- sadness（悲伤）
-- anxiety（焦虑）
-- anger（愤怒）
-- calm（平静）
-- hopelessness（绝望）
-- loneliness（孤独）
-- stress（压力）
+EMOTION_PROMPT = """You analyze emotional cues expressed in text.
+Return one JSON object whose keys are selected only from this list:
+anger, anxiety, calmness, confusion, disappointment, distress, fear,
+interest, joy, sadness, satisfaction, tiredness.
 
-只返回 JSON，不要其他文字。示例：
-{"joy": 0.2, "anxiety": 0.7, "sadness": 0.5}
-
-对话文本：
-"""
+Each value must be a number from 0 to 1. Include only emotions supported by
+the wording and recent context. This is a text inference, not vocal-prosody,
+voiceprint, diagnosis, or independent crisis assessment. Return JSON only."""
 
 
 class EmotionRequest(BaseModel):
-    text: str
-    history: list[str] = []  # 最近几轮对话
+    text: str = Field(min_length=1, max_length=5000)
+    history: list[str] = Field(default_factory=list, max_length=10)
 
 
 class EmotionResponse(BaseModel):
     emotions: dict[str, float]
-    dominant: str  # 主要情绪
-    risk_level: str  # low | medium | high
+    dominant: str
+    risk_level: str
+    analysis_source: str = "gemini_text"
+
+
+def _parse_scores(raw: str) -> dict[str, float]:
+    match = re.search(r"\{.*\}", raw, re.DOTALL)
+    if not match:
+        raise ValueError("model did not return a JSON object")
+    payload = json.loads(match.group(0))
+    if not isinstance(payload, dict):
+        raise ValueError("emotion response must be an object")
+
+    scores = {}
+    for name, value in payload.items():
+        if name not in ALLOWED_EMOTIONS or isinstance(value, bool):
+            continue
+        if isinstance(value, (int, float)):
+            scores[name] = round(max(0.0, min(1.0, float(value))), 4)
+    if not scores:
+        raise ValueError("model returned no valid emotion scores")
+    return scores
 
 
 @router.post("/analyze-emotion", response_model=EmotionResponse)
@@ -45,58 +75,48 @@ async def analyze_emotion(
     req: EmotionRequest,
     _user: User = Depends(get_current_user),
 ):
-    """分析文本情绪，返回情绪分数和风险等级"""
+    """Infer emotion scores from a transcript with the configured Flash model."""
+    recent_context = "\n".join(line[:1000] for line in req.history[-6:])
+    user_content = (
+        f"Recent conversation:\n{recent_context}\n\nCurrent user transcript:\n{req.text}"
+        if recent_context
+        else f"Current user transcript:\n{req.text}"
+    )
     client = AsyncOpenAI(
         api_key=config.OPENAI_API_KEY,
         base_url=config.OPENAI_BASE_URL,
+        timeout=12.0,
     )
-
-    # 拼接最近对话上下文
-    context = "\n".join(req.history[-5:]) if req.history else ""
-    prompt = EMOTION_PROMPT + f"\n{context}\n用户: {req.text}" if context else EMOTION_PROMPT + req.text
 
     try:
         response = await client.chat.completions.create(
-            model=config.LLM_MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
-            max_tokens=1024,
+            model=config.EMOTION_MODEL,
+            messages=[
+                {"role": "system", "content": EMOTION_PROMPT},
+                {"role": "user", "content": user_content},
+            ],
+            temperature=0.1,
+            max_tokens=300,
         )
-        raw = response.choices[0].message.content.strip()
-        # 提取 JSON
-        if "```" in raw:
-            raw = raw.split("```")[1].strip()
-            if raw.startswith("json"):
-                raw = raw[4:].strip()
-        emotions = json.loads(raw)
+        raw = response.choices[0].message.content or ""
+        emotions = _parse_scores(raw)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="Text emotion analysis is temporarily unavailable",
+        ) from exc
 
-        # 计算主要情绪
-        dominant = max(emotions, key=emotions.get) if emotions else "calm"
-
-        # 计算风险等级
-        risk_score = (
-            emotions.get("hopelessness", 0) * 1.5 +
-            emotions.get("sadness", 0) * 0.8 +
-            emotions.get("anxiety", 0) * 0.6 +
-            emotions.get("anger", 0) * 0.4
-        )
-        if risk_score > 0.7:
-            risk_level = "high"
-        elif risk_score > 0.4:
-            risk_level = "medium"
-        else:
-            risk_level = "low"
-
-        return EmotionResponse(
-            emotions=emotions,
-            dominant=dominant,
-            risk_level=risk_level,
-        )
-
-    except Exception as e:
-        # 解析失败时返回默认值
-        return EmotionResponse(
-            emotions={"calm": 0.5},
-            dominant="calm",
-            risk_level="low",
-        )
+    dominant = max(emotions, key=emotions.get)
+    risk_score = max(
+        emotions.get("distress", 0.0),
+        emotions.get("sadness", 0.0) * 0.8,
+        emotions.get("anxiety", 0.0) * 0.7,
+        emotions.get("fear", 0.0) * 0.7,
+        emotions.get("anger", 0.0) * 0.4,
+    )
+    risk_level = "high" if risk_score >= 0.75 else "medium" if risk_score >= 0.45 else "low"
+    return EmotionResponse(
+        emotions=emotions,
+        dominant=dominant,
+        risk_level=risk_level,
+    )

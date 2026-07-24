@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { BearMood } from '../components/PandaFace'
 import { useUser } from '../hooks/useUser'
-import { Activity, Brain, Clock, Dumbbell, FileText, Globe, Heart, Lightbulb, MessageSquare } from 'lucide-react'
+import { Activity, ArrowLeft, Brain, Clock, Dumbbell, FileText, Globe, Heart, Lightbulb, MessageSquare } from 'lucide-react'
 import { getLatestSession, getReportByDate, getSessionState } from '../utils/api'
 
 function getEmptyReport(isEnglish) {
@@ -12,13 +12,13 @@ function getEmptyReport(isEnglish) {
     emotionIndex: 0,
     eventTimeline: [],
     mechanismAnalysis: isEnglish
-      ? 'After an in-depth conversation, an analysis based on your conversation will appear here.'
-      : '完成一次深入对话后，这里会展示基于真实交流形成的分析。',
+      ? 'Not available yet. This section updates as the conversation continues.'
+      : '暂无。继续交流后，此模块会实时更新。',
     cultureStage: {
-      stage: isEnglish ? 'More information needed' : '待进一步了解',
+      stage: isEnglish ? 'Not available yet' : '暂无',
       desc: isEnglish
-        ? 'More conversation is needed to understand your cultural adaptation stage.'
-        : '需要更多真实交流信息后才能判断文化适应阶段。',
+        ? 'This section updates when enough relevant information is available.'
+        : '获取到相关信息后，此模块会自动更新。',
     },
     needs: [],
     interventions: {
@@ -26,8 +26,8 @@ function getEmptyReport(isEnglish) {
       immediate: [],
     },
     pandaMessage: isEnglish
-      ? 'After your conversation, Panda will leave a personalized message here.'
-      : '完成对话后，Panda 会在这里留下基于本次交流生成的寄语。',
+      ? 'Not available yet. A personalized message will appear here.'
+      : '暂无。获取到足够信息后，这里会显示个性化寄语。',
   }
 }
 
@@ -128,6 +128,8 @@ export default function ReportPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const requestedDate = location.state?.date || null
+  const requestedSessionId = location.state?.sessionId || null
+  const returnToChat = location.state?.returnToChat || null
   const { user } = useUser()
   const isEnglish = user.language === 'en'
   const [expandedModule, setExpandedModule] = useState(null)
@@ -135,14 +137,20 @@ export default function ReportPage() {
   const [recommendation, setRecommendation] = useState(() => getFallbackRecommendation(isEnglish))
   const [reportStatus, setReportStatus] = useState('idle')
   const [hasReport, setHasReport] = useState(false)
+  const [hasSession, setHasSession] = useState(false)
   const [reportLoaded, setReportLoaded] = useState(false)
 
   useEffect(() => {
     let cancelled = false
     let refreshTimer = null
     const loadReport = async () => {
-      const latest = await getLatestSession()
-      if (!latest.session_id) return
+      const latest = requestedSessionId
+        ? { session_id: requestedSessionId }
+        : await getLatestSession()
+      if (!latest.session_id) {
+        setHasSession(false)
+        return
+      }
       const state = await getSessionState(latest.session_id)
       if (requestedDate) {
         const datedReport = await getReportByDate(
@@ -153,6 +161,7 @@ export default function ReportPage() {
         state.report_status = 'ready'
       }
       if (cancelled) return
+      setHasSession(true)
       setReport(mapReport(state, isEnglish))
       setHasReport(Boolean(
         state.insight_report
@@ -178,7 +187,7 @@ export default function ReportPage() {
       cancelled = true
       if (refreshTimer) window.clearTimeout(refreshTimer)
     }
-  }, [requestedDate, isEnglish])
+  }, [requestedDate, requestedSessionId, isEnglish])
 
   const cultureLabels = {
     china_in_us: isEnglish ? '🇨🇳 Chinese student in the U.S.' : '🇨🇳 在美中国学生',
@@ -190,7 +199,7 @@ export default function ReportPage() {
     setExpandedModule(expandedModule === key ? null : key)
   }
 
-  if (!hasReport) {
+  if (reportLoaded && !hasSession) {
     return (
       <div className="h-full overflow-y-auto pb-20">
         <div className="bg-gradient-to-b from-panda-primary/10 to-transparent px-6 pt-6 pb-4">
@@ -237,14 +246,37 @@ export default function ReportPage() {
   return (
     <div className="h-full overflow-y-auto pb-20">
       <div className="bg-gradient-to-b from-panda-primary/10 to-transparent px-6 pt-6 pb-4">
-        <h1 className="text-xl font-bold mb-1">
-          {isEnglish ? 'Emotional Insight Report' : '心理情绪洞察报告'}
-        </h1>
+        <div className="flex items-center gap-3">
+          {returnToChat && (
+            <button
+              type="button"
+              onClick={() => navigate('/chat', { state: returnToChat })}
+              className="rounded-full bg-white/80 p-2 text-gray-600 shadow-sm"
+              aria-label={isEnglish ? 'Back to conversation' : '返回对话'}
+            >
+              <ArrowLeft size={20} />
+            </button>
+          )}
+          <div>
+            <h1 className="text-xl font-bold mb-1">
+              {isEnglish ? 'Emotional Insight Report' : '心理情绪洞察报告'}
+            </h1>
+            {returnToChat && (
+              <p className="text-xs font-medium text-panda-primary">
+                {isEnglish ? 'Conversation and report are saved separately' : '对话与报告已分别保存，可随时返回'}
+              </p>
+            )}
+          </div>
+        </div>
         <p className="text-sm text-gray-500">
           {reportStatus === 'generating'
             ? (isEnglish
               ? 'Generating report; available information is shown for now'
-              : '报告正在生成，当前先展示已有信息')
+              : '报告正在生成，未捕捉到的信息暂标为“暂无”')
+            : !hasReport
+              ? (isEnglish
+                ? 'The report updates after each conversation turn; missing information is marked “Not available yet”.'
+                : '报告会随每轮对话更新，尚未捕捉的信息暂标为“暂无”')
             : `${isEnglish ? 'Created for you' : '专属为你生成'} · ${
               requestedDate
                 ? new Date(`${requestedDate}T00:00:00`).toLocaleDateString(isEnglish ? 'en-US' : 'zh-CN')
@@ -269,10 +301,11 @@ export default function ReportPage() {
                   : (isEnglish ? 'Calm Panda' : '平静小熊')}
             </h3>
             <p className="text-sm text-gray-500">
-              {isEnglish ? 'Emotional index' : '情绪指数'}: {report.emotionIndex}/100
+              {isEnglish ? 'Emotional index' : '情绪指数'}:{' '}
+              {hasReport ? `${report.emotionIndex}/100` : (isEnglish ? 'Not available yet' : '暂无')}
             </p>
             <div className="progress-bar mt-2">
-              <div className="progress-bar-fill" style={{ width: `${report.emotionIndex}%` }} />
+              <div className="progress-bar-fill" style={{ width: `${hasReport ? report.emotionIndex : 0}%` }} />
             </div>
           </div>
         </motion.div>
@@ -324,10 +357,11 @@ export default function ReportPage() {
                   {mod.key === 'status' && (
                     <div>
                       <div className="flex items-center gap-3 mb-3">
-                        <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full" style={{ width: 48, height: 48, objectFit: 'cover' }} />
+                        <img src={`${import.meta.env.BASE_URL}panda-icon-v2.png`} alt="Panda" className="rounded-full" style={{ width: 48, height: 48, objectFit: 'cover' }} />
                         <div>
                           <p className="font-medium">
-                            {isEnglish ? 'Emotional index' : '情绪指数'}: {report.emotionIndex}/100
+                            {isEnglish ? 'Emotional index' : '情绪指数'}:{' '}
+                            {hasReport ? `${report.emotionIndex}/100` : (isEnglish ? 'Not available yet' : '暂无')}
                           </p>
                           <p className="text-sm text-gray-500">
                             {isEnglish
@@ -343,7 +377,7 @@ export default function ReportPage() {
                     <div className="space-y-3">
                       {report.eventTimeline.length === 0 && (
                         <p className="text-sm text-gray-400">
-                          {isEnglish ? 'No event timeline is available yet.' : '尚未形成事件时间线。'}
+                          {isEnglish ? 'Not available yet.' : '暂无'}
                         </p>
                       )}
                       {report.eventTimeline.map((item, j) => (
@@ -376,7 +410,7 @@ export default function ReportPage() {
                     <ul className="space-y-2">
                       {report.needs.length === 0 && (
                         <li className="text-sm text-gray-400">
-                          {isEnglish ? 'No needs analysis is available yet.' : '尚未形成需求分析。'}
+                          {isEnglish ? 'Not available yet.' : '暂无'}
                         </li>
                       )}
                       {report.needs.map((need, j) => (
@@ -397,7 +431,7 @@ export default function ReportPage() {
                         <ul className="space-y-1.5">
                           {report.interventions.long.length === 0 && (
                             <li className="text-sm text-gray-400">
-                              {isEnglish ? 'No long-term suggestions yet.' : '尚未生成长期建议。'}
+                              {isEnglish ? 'Not available yet.' : '暂无'}
                             </li>
                           )}
                           {report.interventions.long.map((item, j) => (
@@ -414,7 +448,7 @@ export default function ReportPage() {
                         <ul className="space-y-1.5">
                           {report.interventions.immediate.length === 0 && (
                             <li className="text-sm text-gray-400">
-                              {isEnglish ? 'No immediate suggestions yet.' : '尚未生成即时建议。'}
+                              {isEnglish ? 'Not available yet.' : '暂无'}
                             </li>
                           )}
                           {report.interventions.immediate.map((item, j) => (
@@ -429,7 +463,7 @@ export default function ReportPage() {
 
                   {mod.key === 'message' && (
                     <div className="bg-panda-light/50 rounded-xl p-4">
-                      <img src={`${import.meta.env.BASE_URL}panda-icon.svg`} alt="Panda" className="rounded-full mb-2" style={{ width: 40, height: 40, objectFit: 'cover' }} />
+                      <img src={`${import.meta.env.BASE_URL}panda-icon-v2.png`} alt="Panda" className="rounded-full mb-2" style={{ width: 40, height: 40, objectFit: 'cover' }} />
                       <p className="text-sm text-gray-700 leading-relaxed">{report.pandaMessage}</p>
                     </div>
                   )}
