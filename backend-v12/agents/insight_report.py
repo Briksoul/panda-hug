@@ -37,6 +37,8 @@ class InsightReportAgent:
             f"用户文化背景：{profile.cultural_bg.value}\n"
             f"PHQ-2分数：{profile.phq2_score}, GAD-2分数：{profile.gad2_score}\n\n"
             f"{language_instruction}\n\n"
+            "只能使用已提供的信息，不得猜测或编造用户的事件、想法、行为或文化经历。"
+            "信息不足的字段明确写‘暂无足够信息’，并随后续对话逐步补充。\n\n"
             "请生成包含以下7个模块的报告，返回JSON：\n"
             "{\n"
             '  "bear_status": {\n'

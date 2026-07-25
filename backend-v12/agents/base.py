@@ -232,11 +232,32 @@ class BaseAgent(ABC):
             )
         except Exception as e:
             print(f"[Agent Error] {self.role}: {e}")
-            return AgentResponse(
+            if self.role == AgentRole.COUNSELOR:
+                content = (
+                    "I hear that this is weighing on you. "
+                    "What part feels most difficult right now?"
+                    if profile.language == "en"
+                    else "我听见这件事正让你有些难受。眼下最让你感到压力的是哪一部分？"
+                )
+            else:
+                content = (
+                    "I am still here with you. Please try saying that once more."
+                    if profile.language == "en"
+                    else "我还在这里陪着你。可以再和我说一次吗？"
+                )
+            response = AgentResponse(
                 agent=self.role,
-                content="抱歉，系统暂时遇到了问题，请稍后再试。",
-                metadata={"error": str(e), "model": model_name},
+                content=content,
+                emotion_level=profile.emotion_level,
+                metadata={
+                    "error": str(e),
+                    "model": model_name,
+                    "fallback": True,
+                },
             )
+            if on_text_chunk:
+                await self._emit_text(on_text_chunk, response.content)
+            return response
 
     @staticmethod
     async def _emit_text(callback: Callable[[str], Any], text: str):

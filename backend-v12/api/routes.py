@@ -122,6 +122,30 @@ def _owned_session(session_id: str, user: User):
     return session
 
 
+def _ensure_counseling_session(session):
+    """Skip the retired conversational questionnaire for non-crisis sessions."""
+    if (
+        session.current_agent == AgentRole.TRIAGE
+        and not session.profile.crisis_triggered
+    ):
+        orch = get_orchestrator()
+        orch.force_transition(session.session_id, AgentRole.COUNSELOR)
+        return orch.get_session(session.session_id) or session
+    return session
+
+
+def _resume_pending_report_refresh(session):
+    """Start a queued refresh when a read request observes no active worker."""
+    if (
+        session.report_refresh_pending
+        and session.report_status != "generating"
+    ):
+        orch = get_orchestrator()
+        orch.request_report_refresh(session.session_id)
+        return orch.get_session(session.session_id) or session
+    return session
+
+
 @router.get("/psychoeducation/tip")
 async def get_psychoeducation_tip(
     user: User = Depends(get_current_user),
@@ -198,8 +222,10 @@ async def create_session(
         phq2_score=latest_assessment.phq2_score if latest_assessment else 0,
         gad2_score=latest_assessment.gad2_score if latest_assessment else 0,
     )
-    if latest_assessment is not None:
-        orch.force_transition(sid, AgentRole.COUNSELOR)
+    # PHQ-2/GAD-2 is completed on the emotion page, not inside the chat.
+    orch.force_transition(sid, AgentRole.COUNSELOR)
+    # Make an assessment-based baseline available before the first chat turn.
+    orch.request_report_refresh(sid)
     session = orch.get_session(sid)
     return CreateSessionResp(
         session_id=sid,
@@ -226,7 +252,7 @@ async def chat(
     user: User = Depends(get_current_user),
 ):
     """发送消息（含 Guardrail 危机拦截）"""
-    _owned_session(req.session_id, user)
+    session = _owned_session(req.session_id, user)
     input_mode = req.input_mode if req.input_mode in ("text", "voice") else "text"
     voice_scores = (
         _validated_voice_scores(req.voice_analysis)
@@ -249,6 +275,7 @@ async def chat(
         return ChatResp(**crisis_resp)
 
     # ─── 正常 Agent 链路 ───
+    _ensure_counseling_session(session)
     orch = get_orchestrator()
     response = await orch.process_message(
         req.session_id,
@@ -271,7 +298,7 @@ async def chat_stream(
     user: User = Depends(get_current_user),
 ):
     """Stream the visible Agent reply while preserving final structured state."""
-    _owned_session(req.session_id, user)
+    session = _owned_session(req.session_id, user)
     input_mode = req.input_mode if req.input_mode in ("text", "voice") else "text"
     voice_scores = (
         _validated_voice_scores(req.voice_analysis)
@@ -279,6 +306,8 @@ async def chat_stream(
         else {}
     )
     guard = check_guardrail(req.message)
+    if not guard.triggered:
+        _ensure_counseling_session(session)
 
     async def event_stream():
         if guard.triggered:
@@ -372,7 +401,9 @@ async def get_state(
     user: User = Depends(get_current_user),
 ):
     """获取会话状态"""
-    _owned_session(session_id, user)
+    _resume_pending_report_refresh(
+        _owned_session(session_id, user)
+    )
     orch = get_orchestrator()
     state = orch.get_state(session_id)
     if "error" in state:
@@ -387,7 +418,11 @@ async def get_history(
 ):
     """获取会话历史（用于恢复对话）"""
     orch = get_orchestrator()
-    session = _owned_session(session_id, user)
+    session = _resume_pending_report_refresh(
+        _ensure_counseling_session(
+            _owned_session(session_id, user)
+        )
+    )
     # 将 history 转为前端可用格式
     messages = []
     for msg in session.history:

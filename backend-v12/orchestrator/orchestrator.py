@@ -51,6 +51,7 @@ class SessionState:
     cultural_analysis: dict = field(default_factory=dict)
     insight_report: dict = field(default_factory=dict)
     report_status: str = "idle"
+    report_refresh_pending: bool = False
     latest_supervision: dict = field(default_factory=dict)
     training_records: list[dict] = field(default_factory=list)
     training_baseline: dict = field(default_factory=dict)
@@ -503,14 +504,7 @@ class CognitiveOrchestrator:
         # ─── Step 6: Collect counseling data and parallel case formulation ───
         if active_agent == AgentRole.COUNSELOR and response.metadata.get("counseling_data"):
             session.counseling_data.update(response.metadata["counseling_data"])
-        if (
-            active_agent == AgentRole.COUNSELOR
-            and session.report_status != "generating"
-        ):
-            session.report_status = "generating"
-            self._schedule_background(
-                self._build_case_and_generate_report(session_id)
-            )
+        report_refresh_requested = active_agent == AgentRole.COUNSELOR
 
         if case_task:
             cf = await case_task
@@ -588,19 +582,14 @@ class CognitiveOrchestrator:
             if active_agent == AgentRole.COACH and training_record:
                 session.phase = Phase.FOLLOW_UP
 
-        # Generate the report in the background after cultural analysis.
+        # Refresh again after cultural analysis adds another layer of context.
         if (response.agent == AgentRole.CULTURAL
-                and response.metadata.get("analysis_complete")
-                and session.case_formulation
-                and session.report_status != "generating"):
-            session.report_status = "generating"
+                and response.metadata.get("analysis_complete")):
+            report_refresh_requested = True
             agent_trace.append({
                 "agent": "insight_report", "status": "scheduled",
                 "label": "InsightReport 已进入后台生成...",
             })
-            self._schedule_background(
-                self._generate_insight_report(session_id)
-            )
 
         # 补充元数据
         response.metadata["sensing"] = {
@@ -649,8 +638,20 @@ class CognitiveOrchestrator:
             "total": round((time.perf_counter() - request_started) * 1000),
         }
 
+        # Preserve report fields that may have changed in the background while
+        # the foreground model was responding.
+        latest = self.get_session(session_id)
+        if latest:
+            session.insight_report = latest.insight_report
+            session.report_status = latest.report_status
+            session.report_refresh_pending = latest.report_refresh_pending
+            if not session.case_formulation:
+                session.case_formulation = latest.case_formulation
+
         # 持久化
         self._save_session(session)
+        if report_refresh_requested:
+            self.request_report_refresh(session_id)
         return response
 
     def _schedule_background(self, coroutine):
@@ -662,6 +663,22 @@ class CognitiveOrchestrator:
         self.background_tasks.discard(task)
         if not task.cancelled():
             task.exception()
+
+    def request_report_refresh(self, session_id: str) -> None:
+        """Coalesce report refreshes while ensuring the newest turn is included."""
+        session = self.get_session(session_id)
+        if not session:
+            return
+        if session.report_status == "generating":
+            session.report_refresh_pending = True
+            self._save_session(session)
+            return
+        session.report_status = "generating"
+        session.report_refresh_pending = False
+        self._save_session(session)
+        self._schedule_background(
+            self._build_case_and_generate_report(session_id)
+        )
 
     async def _run_supervision(
         self,
@@ -683,59 +700,77 @@ class CognitiveOrchestrator:
             self._save_session(session)
 
     async def _build_case_and_generate_report(self, session_id: str):
-        session = self.get_session(session_id)
-        if not session:
-            return
-        try:
-            source = dict(session.counseling_data)
-            if not source:
-                source["recent_history"] = session.history[-6:]
-            formulation = await self.case_formulation.build(
-                source,
-                session.profile,
-            )
-            session.case_formulation = {
-                "core_event": formulation.core_event,
-                "core_emotions": formulation.core_emotions,
-                "auto_thoughts": formulation.auto_thoughts,
-                "behavior_pattern": formulation.behavior_pattern,
-                "social_support": formulation.social_support,
-                "psychological_mechanisms": formulation.psychological_mechanisms,
-                "mechanism_chain": formulation.mechanism_chain,
-                "risk_level": formulation.risk_level,
-                "completeness": formulation.completeness,
-                "model": formulation.model,
-            }
-            self._save_session(session)
-            await self._generate_insight_report(session_id)
-        except Exception:
-            session.report_status = "error"
-            self._save_session(session)
+        while True:
+            session = self.get_session(session_id)
+            if not session:
+                return
+            try:
+                source = dict(session.counseling_data)
+                if not source and session.history:
+                    source["recent_history"] = session.history[-6:]
+                if source:
+                    formulation = await self.case_formulation.build(
+                        source,
+                        session.profile,
+                    )
+                else:
+                    formulation = CaseFormulation(
+                        completeness=0.0,
+                        model="assessment_baseline",
+                    )
 
-    async def _generate_insight_report(self, session_id: str):
-        session = self.get_session(session_id)
-        if not session:
-            return
-        try:
-            report = await self.insight_report.generate(
-                case_formulation=dict(session.case_formulation),
-                cultural_analysis=dict(session.cultural_analysis),
-                profile=session.profile,
-            )
-            session.insight_report = report
-            session.report_status = "ready"
-            memory = self.memory.record_report(
-                session.profile,
-                session_id,
-                report,
-            )
-            session.profile.memory_summary = memory.get(
-                "dynamic_summary",
-                session.profile.memory_summary,
-            )
-        except Exception:
-            session.report_status = "error"
-        self._save_session(session)
+                # Reload after each model call so a newer conversation turn is
+                # never overwritten by a stale background snapshot.
+                session = self.get_session(session_id)
+                if not session:
+                    return
+                session.case_formulation = {
+                    "core_event": formulation.core_event,
+                    "core_emotions": formulation.core_emotions,
+                    "auto_thoughts": formulation.auto_thoughts,
+                    "behavior_pattern": formulation.behavior_pattern,
+                    "social_support": formulation.social_support,
+                    "psychological_mechanisms": formulation.psychological_mechanisms,
+                    "mechanism_chain": formulation.mechanism_chain,
+                    "risk_level": formulation.risk_level,
+                    "completeness": formulation.completeness,
+                    "model": formulation.model,
+                }
+                self._save_session(session)
+
+                report = await self.insight_report.generate(
+                    case_formulation=dict(session.case_formulation),
+                    cultural_analysis=dict(session.cultural_analysis),
+                    profile=session.profile,
+                )
+                session = self.get_session(session_id)
+                if not session:
+                    return
+                session.insight_report = report
+                memory = self.memory.record_report(
+                    session.profile,
+                    session_id,
+                    report,
+                )
+                session.profile.memory_summary = memory.get(
+                    "dynamic_summary",
+                    session.profile.memory_summary,
+                )
+                refresh_again = session.report_refresh_pending
+                session.report_refresh_pending = False
+                session.report_status = (
+                    "generating" if refresh_again else "ready"
+                )
+                self._save_session(session)
+                if not refresh_again:
+                    return
+            except Exception:
+                session = self.get_session(session_id)
+                if session:
+                    session.report_status = "error"
+                    session.report_refresh_pending = False
+                    self._save_session(session)
+                return
 
     def _transition(self, session: SessionState, next_agent: AgentRole):
         session.current_agent = next_agent
@@ -888,6 +923,7 @@ class CognitiveOrchestrator:
             },
             "insight_report": session.insight_report,
             "report_status": session.report_status,
+            "report_refresh_pending": session.report_refresh_pending,
             "latest_supervision": session.latest_supervision,
             "training_records": session.training_records,
             "training_baseline": session.training_baseline,
@@ -926,6 +962,7 @@ class CognitiveOrchestrator:
             "cultural_analysis": session.cultural_analysis,
             "insight_report": session.insight_report,
             "report_status": session.report_status,
+            "report_refresh_pending": session.report_refresh_pending,
             "latest_supervision": session.latest_supervision,
             "training_records": session.training_records,
             "training_baseline": session.training_baseline,
@@ -991,6 +1028,7 @@ class CognitiveOrchestrator:
             cultural_analysis=data.get("cultural_analysis", {}),
             insight_report=data.get("insight_report", {}),
             report_status=data.get("report_status", "idle"),
+            report_refresh_pending=data.get("report_refresh_pending", False),
             latest_supervision=data.get("latest_supervision", {}),
             training_records=data.get("training_records", []),
             training_baseline=data.get("training_baseline", {}),

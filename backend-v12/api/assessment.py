@@ -108,6 +108,15 @@ def save_assessment(
                 else "moderate"
             )
             state["profile"] = profile
+            if (
+                state.get("current_agent", "triage") == "triage"
+                and not profile.get("crisis_triggered", False)
+            ):
+                state["current_agent"] = "counselor"
+                state["phase"] = "counseling"
+            # A running report worker will consume this flag; otherwise the
+            # next report/history read starts a refresh with the new scores.
+            state["report_refresh_pending"] = True
             session.state = state
     database.commit()
     return _serialize(record)
